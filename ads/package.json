@@ -10,7 +10,7 @@
   "author": "Magnit",
   "license": "ISC",
   "dependencies": {
-    "@constants/tdb-constants": "^1.0.10",
+    "@constants/tdb-constants": "^1.0.11",
     "@utils/tdb_globalutils": "^1.0.15",
     "axios": "^0.21.1",
     "cookie-parser": "^1.4.5",
