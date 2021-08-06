@@ -4,7 +4,7 @@ const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./config/swagger.yaml');
-const { AppError } = require('tdb_globalutils');
+const { AppError } = require('@utils/tdb_globalutils');
 
 const PORT = 3005; // port
 const app = express();
