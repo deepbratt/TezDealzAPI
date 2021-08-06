@@ -1,0 +1,783 @@
+swagger: '2.0'
+info:
+  description: 'TezDeals Api Documentation'
+  version: '1.0.0'
+  title: 'TezDeals'
+paths:
+  /v1/Users/google-auth:
+    post:
+      tags:
+        - 'Contine With Google'
+      summary: 'use for Contine with Google'
+      description: ''
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'with google'
+          required: true
+          schema:
+            $ref: '#/definitions/continue-google'    
+      responses:
+        '200':
+          description: 'operation successful'
+
+  /v1/Users/facebook-auth:
+    post:
+      tags:
+        - 'Contine With Facebook'
+      summary: 'use for Contine with Facebook'
+      description: ''
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'User information'
+          required: true
+          schema:
+            $ref: '#/definitions/continue-facebook'  
+      responses:
+        '200':
+          description: 'operation successful'
+  /v1/Users/login-email:
+    post:
+      tags:
+        - 'login'
+      summary: 'use for login email'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'User information'
+          required: true
+          schema:
+            $ref: '#/definitions/login-email'
+      responses:
+        '400':
+          description: 'email or password incorrect'
+        '200':
+          description: 'logged In Successfully'
+  /v1/Users/login-phone:
+    post:
+      tags:
+        - 'login'
+      summary: 'use for login phone'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'User information'
+          required: true
+          schema:
+            $ref: '#/definitions/login-phone'
+      responses:
+        '400':
+          description: 'phone or password incorrect'
+        '200':
+          description: 'logged In Successfully'        
+
+  /v1/Users:
+    get:
+      tags:
+        - 'Logout'
+      summary: 'use for logout'
+      description: ''
+      produces:
+        - 'application/json'
+      responses:
+        '200':
+          description: 'operation successful'
+
+  /v1/Users/signup-email:
+    post:
+      tags:
+        - 'signup'
+      summary: 'use for signup With Email'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'User information'
+          required: true
+          schema:
+            $ref: '#/definitions/signup-email'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Account created Successfully'
+
+  /v1/Users/signup-phone:
+    post:
+      tags:
+        - 'signup'
+      summary: 'use for signup With Number'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'User information'
+          required: true
+          schema:
+            $ref: '#/definitions/signup-phone'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Account created Successfully'
+
+  /v1/Users/forgotPassword:
+    post:
+      tags:
+        - 'forgotPassword'
+      summary: 'use for forgot password with Email or phone'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'Users Email or phone'
+          required: true
+          schema:
+            $ref: '#/definitions/forgotPassword'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Token sent Successfully'
+
+  /v1/Users/resetPassword/{token}:
+    post:
+      tags:
+        - 'resetPassword'
+      summary: 'use for reset password'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'token'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'password and passwordConfirm required'
+          required: true
+          schema:
+            $ref: '#/definitions/resetPassword'
+      responses:
+        '400':
+          description: 'Invalid or expired Token'
+        '200':
+          description: 'Password reset Successfully'     
+  /v1/Users/account-verification/{token}:
+    patch:
+      tags:
+        - 'account verification'
+      summary: 'use for account verification'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'token'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid or expired Token'
+        '200':
+          description: 'account verified Successfully'
+  /v1/Users/protected:
+    post:
+      tags:
+        - 'users'
+      summary: 'use to get current users'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'No User Found'
+        '200':
+          description: 'current user'
+  /v1/Users/:
+    get:
+      tags:
+        - 'users'
+      summary: 'use to get All Users'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'No User Found'
+        '200':
+          description: 'List of all the Users'
+
+  /v1/Users/{id}:
+    get:
+      tags:
+        - 'users'
+      summary: 'use to get One User'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'No User Found'
+        '200':
+          description: 'User details'
+
+  /v1/Users/:id:
+    patch:
+      tags:
+        - 'users'
+      summary: 'use to update One User'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'Users details required'
+          required: true
+          schema:
+            $ref: '#/definitions/Users'
+      responses:
+        '404':
+          description: 'No User Found'
+        '200':
+          description: 'User Updated Successfully'
+
+  /v1/Users/id:
+    delete:
+      tags:
+        - 'users'
+      summary: 'use to delete One User'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'No User Found'
+        '200':
+          description: 'User deleted Successfully'
+  /v1/Users/currentUser:
+    post:
+      tags:
+        - 'users'
+      summary: 'use to delete One User'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'No User Found'
+        '200':
+          description: 'User deleted Successfully'        
+
+  /v1/categories:
+    post:
+      tags:
+        - 'Categories'
+      summary: 'used to Create Category'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'Categories data'
+          required: true
+          schema:
+            $ref: '#/definitions/Category'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Category created Successfully'
+
+  /v1/categories/{id}:
+    get:
+      tags:
+        - 'Categories'
+      summary: 'use to get single Category'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'No Category Found'
+        '200':
+          description: 'Category details'
+
+  /v1/categories/:
+    get:
+      tags:
+        - 'Categories'
+      summary: 'use to get All Categories'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'No Category Found'
+        '200':
+          description: 'Categories details'
+
+  /v1/categories/id:
+    patch:
+      tags:
+        - 'Categories'
+      summary: 'use to Update category'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'Category details required'
+          required: true
+          schema:
+            $ref: '#/definitions/Category'
+      responses:
+        '404':
+          description: 'No Category Found'
+        '200':
+          description: 'Category update'
+
+  /v1/categories/:id:
+    delete:
+      tags:
+        - 'Categories'
+      summary: 'use to delete category'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'No Category Found'
+        '200':
+          description: 'Category deleted Successfully'
+
+  /v1/ads/cars:
+    post:
+      tags:
+        - 'Cars'
+      summary: 'used to Post Car'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'Cars data'
+          required: true
+          schema:
+            $ref: '#/definitions/Cars'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Car Posted Successfully'
+
+  /v1/ads/cars/{id}:
+    get:
+      tags:
+        - 'Cars'
+      summary: 'use to get single cars'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'No cars Found'
+        '200':
+          description: 'cars details'
+
+  /v1/ads/cars/:
+    get:
+      tags:
+        - 'Cars'
+      summary: 'use to get All car'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'No Category Found'
+        '200':
+          description: 'cars details'
+
+  /v1/ads/cars/:id:
+    patch:
+      tags:
+        - 'Cars'
+      summary: 'use to Update cars'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'car details required'
+          required: true
+          schema:
+            $ref: '#/definitions/Cars'
+      responses:
+        '404':
+          description: 'No cars Found'
+        '200':
+          description: 'cars update'
+
+  /v1/ads/cars/id:
+    delete:
+      tags:
+        - 'Cars'
+      summary: 'use to delete car'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'No car Found'
+        '200':
+          description: 'car deleted Successfully'
+  /v1/ads/cars/favourites:
+    get:
+      tags:
+        - 'Cars'
+      summary: 'get my favourites'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'        
+  /v1/ads/cars/myCars:
+    get:
+      tags:
+        - 'Cars'
+      summary: 'get my cars'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'                
+  /v1/ads/cars/remove-from-fav/:id:
+    patch:
+      tags:
+        - 'Cars'
+      summary: 'remove from fav'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'
+  /v1/ads/cars/add-to-fav/:id:
+    patch:
+      tags:
+        - 'Cars'
+      summary: 'add to fav'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'        
+definitions:
+  signup-email:
+    type: 'object'
+    properties:
+      firstName:
+        type: 'string'
+      lastName:
+        type: 'string'
+      email:
+        type: 'string'
+      password:
+        type: 'string'
+      passwordConfirm:
+        type: 'string'
+  signup-phone:
+    type: 'object'
+    properties:
+      firstName:
+        type: 'string'
+      lastName:
+        type: 'string'
+      phone:
+        type: 'string'
+      password:
+        type: 'string'
+      passwordConfirm:
+        type: 'string'
+  continue-google:
+    type: 'object'
+    properties:
+      googleId:
+        type: 'string'
+      displayName:  
+        type: 'string'
+      firstName:
+        type: 'string'
+      lastName:
+        type: 'string'
+      image:
+        type: 'string'                      
+      email:
+        type: 'string'
+  continue-facebook:
+    type: 'object'
+    properties:
+      facebookId:
+        type: 'string'
+      displayName:  
+        type: 'string'
+      firstName:
+        type: 'string'
+      middleName:
+        type: 'string'  
+      lastName:
+        type: 'string'
+      image:
+        type: 'string'                      
+      email:
+        type: 'string'      
+  login-email:
+    type: 'object'
+    properties:
+      email:
+        type: 'string'
+      password:
+        type: 'string'
+  login-phone:
+    type: 'object'
+    properties:
+      phone:
+        type: 'string'
+      password:
+        type: 'string'      
+  forgotPassword:
+    type: 'object'
+    properties:
+      data:
+        type: 'string'
+  resetPassword:
+    type: 'object'
+    properties:
+      password:
+        type: 'string'
+      passwordConfirm:
+        type: 'string'
+  Users:
+    type: 'object'
+    properties:
+      firstName:
+        type: 'string'
+      lastName:
+        type: 'string'
+      email:
+        type: 'string'
+      phone:
+        type: 'string'
+      password:
+        type: 'string'
+      passwordConfirm:
+        type: 'string'
+  Category:
+    type: 'object'
+    properties:
+      title:
+        type: 'string'
+      type:
+        type: 'string'
+      category:
+        type: 'string'
+      image:
+        type: 'string'
+      description:
+        type: 'string'
+  Cars:
+    type: object
+    properties:
+      country:
+        type: string
+      province:
+        type: string
+      city:
+        type: string
+      location:
+        type: object
+        properties:
+          coordinates:
+            type: object
+            properties:
+              lat: 
+                type: number
+              long: 
+                type: number
+          address:
+            type: string
+      images:
+        type: array
+        items:
+          type: string
+      model:
+        type: string
+      make:
+        type: string
+      transmission:
+        type: string
+      assembly:
+        type: string
+      registrationCity:
+        type: string
+      bodyColor:
+        type: string
+      milage:
+        type: number
+      price:
+        type: number    
+      condition:
+        type: string
+      description:
+        type: string
+      bodyType:
+        type: string
+      engineType:
+        type: string
+      date:
+        type: string
+      features:
+        type: array
+        items:
+          type: string  

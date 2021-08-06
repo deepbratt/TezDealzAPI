@@ -1,0 +1,39 @@
+version: '3.5'
+services:
+  swagger:
+    build: './swagger'
+    ports:
+      - "3005:3005"
+    networks: 
+      - ms_network  
+  users:
+    build: './users'
+    ports:
+      - "3004:3004"
+    networks: 
+      - ms_network
+  ads:
+    build: './ads'
+    ports:
+      - "3003:3003"
+    depends_on: 
+      - users
+    networks: 
+      - ms_network  
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - users
+      - ads
+      - swagger
+    networks: 
+      - ms_network
+networks:
+  ms_network:
+    driver: bridge
+    name: ms_network
+      
