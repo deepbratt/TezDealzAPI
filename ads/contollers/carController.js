@@ -29,6 +29,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
 exports.getAll = catchAsync(async (req, res, next) => {
 	const freatures = new APIFeatures(Car.find(), req.query)
 		.filter()
+		.search()
 		.sort()
 		.limitFields()
 		.pagination();

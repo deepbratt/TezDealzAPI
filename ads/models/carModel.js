@@ -127,6 +127,8 @@ const carsSchema = new mongoose.Schema(
 	}
 );
 
+carsSchema.index({country:'text',province:'text',city:'text',model:'text',make:'text',bodyColor:'text',engineType:'text',condition:'text'})
+
 const Car = mongoose.model('Car', carsSchema);
 
 module.exports = Car;
