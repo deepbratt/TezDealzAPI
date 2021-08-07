@@ -29,13 +29,12 @@ router.post('/send-verification-phone', authController.sendVerificationCodetoPho
 router.patch('/account-verification/:token', authController.accountVerification);
 //users
 router.use(authenticate);
+router.route('/currentUser').get(authController.isLoggedIn);
 router.route('/').get(userController.getAllUsers).post(userController.createUser);
 router
 	.route('/:id')
 	.get(userController.getUser)
 	.patch(userController.updateUser)
 	.delete(userController.deleteUser);
-
-router.route('/currentUser').post(authController.isLoggedIn);
 
 module.exports = router;

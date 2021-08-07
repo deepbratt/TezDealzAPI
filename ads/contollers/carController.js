@@ -34,6 +34,7 @@ exports.getAll = catchAsync(async (req, res, next) => {
 		.limitFields()
 		.pagination();
 	const result = await freatures.query;
+	
 	if (result.length === 0)
 		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 

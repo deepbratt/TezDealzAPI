@@ -213,21 +213,6 @@ paths:
           description: "Invalid or expired Token"
         "200":
           description: "account verified Successfully"
-  /v1/Users/protected:
-    post:
-      tags:
-        - "users"
-      summary: "use to get current users"
-      description: ""
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      responses:
-        "404":
-          description: "No User Found"
-        "200":
-          description: "current user"
   /v1/Users/:
     get:
       tags:
@@ -313,7 +298,7 @@ paths:
         "200":
           description: "User deleted Successfully"
   /v1/Users/currentUser:
-    post:
+    get:
       tags:
         - "users"
       summary: "use to delete One User"
@@ -480,8 +465,8 @@ paths:
         "200":
           description: "cars details"
 
-  /v1/ads/cars?keyword=cars with Petrol&fields=engineType,make,model,city&price[gt]=50000&price[lt]=100000000000:
-    get:
+  ? /v1/ads/cars?keyword=cars with Petrol&fields=engineType,make,model,city&price[gt]=50000&price[lt]=100000000000&limit=2&page=1
+  : get:
       tags:
         - "Cars"
       summary: "how to filter data using query params"
@@ -500,6 +485,21 @@ paths:
       tags:
         - "Cars"
       summary: "how to filter data using query params"
+      description: ""
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "404":
+          description: "No Category Found"
+        "200":
+          description: "cars details"
+  /v1/ads/Cars?_id=610b584d121a5a001dfb3a91&_id=610b5e3fa4190f001d9de601:
+    get:
+      tags:
+        - "Cars"
+      summary: "car comparision"
       description: ""
       consumes:
         - "application/json"
