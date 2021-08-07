@@ -479,6 +479,37 @@ paths:
           description: "No cars Found"
         "200":
           description: "cars details"
+
+  /v1/ads/cars?keyword=cars with Petrol&fields=engineType,make,model,city&price[gt]=50000&price[lt]=100000000000:
+    get:
+      tags:
+        - "Cars"
+      summary: "how to filter data using query params"
+      description: ""
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "404":
+          description: "No Found"
+        "200":
+          description: "cars details"
+  /v1/ads/cars?engineType=Petrol&price[gt]=4000&sort=-price,milage:
+    get:
+      tags:
+        - "Cars"
+      summary: "how to filter data using query params"
+      description: ""
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "404":
+          description: "No Category Found"
+        "200":
+          description: "cars details"
   /v1/ads/cars/:
     get:
       tags:
