@@ -465,8 +465,8 @@ paths:
         "200":
           description: "cars details"
 
-  ? /v1/ads/cars?keyword=cars with Petrol&fields=engineType,make,model,city&price[gt]=50000&price[lt]=100000000000&limit=2&page=1
-  : get:
+  /v1/ads/cars?keyword=cars with Petrol&fields=engineType,make,model,city&price[gt]=50000&price[lt]=100000000000&limit=2&page=1:
+    get:
       tags:
         - "Cars"
       summary: "how to filter data using query params"
