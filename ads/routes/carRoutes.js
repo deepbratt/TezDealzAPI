@@ -1,20 +1,20 @@
 const express = require('express');
+const User = require('../models/userModel');
 const carController = require('../contollers/carController');
-const auth = require('../middleware/auth');
+const { authenticate, checkIsLoggedIn } = require('@auth/tdb-auth');
 const { upload } = require('@utils/tdb_globalutils');
 const router = express.Router();
 
-router.use(auth);
-router.route('/cars').get(carController.getAll);
-router.route('/cars').post(upload('image').array('image', 10), carController.createOne);
-router.route('/cars/myCars').get(carController.getMine);
-router.route('/cars/add-to-fav/:id').patch(carController.addtoFav);
-router.route('/cars/remove-from-fav/:id').patch(carController.removeFromFav);
-router.route('/cars/favourites').get(carController.favorites);
+router.route('/cars').get(checkIsLoggedIn(User), carController.getAll);
+router.route('/cars').post(authenticate(User),upload('image').array('image', 10), carController.createOne);
+router.route('/cars/myCars').get(authenticate(User),carController.getMine);
+router.route('/cars/add-to-fav/:id').patch(authenticate(User),carController.addtoFav);
+router.route('/cars/remove-from-fav/:id').patch(authenticate(User), carController.removeFromFav);
+router.route('/cars/favourites').get(authenticate(User), carController.favorites);
 router
 	.route('/cars/:id')
-	.get(carController.getOne)
-	.patch(carController.updateOne)
-	.delete(carController.deleteOne);
+	.get(checkIsLoggedIn(User), carController.getOne)
+	.patch(authenticate(User), carController.updateOne)
+	.delete(authenticate(User), carController.deleteOne);
 
 module.exports = router;
