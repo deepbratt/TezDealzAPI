@@ -8,7 +8,7 @@ const {
   SUCCESS_MSG,
   STATUS,
 } = require('@constants/tdb-constants');
-const Email = require('../../utils/email');
+//const Email = require('../../utils/email');
 const sendSMS = require('../../utils/sendSMS');
 
 exports.sendVerificationCodetoPhone = async (req, res, next) => {
