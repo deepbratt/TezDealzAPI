@@ -120,6 +120,10 @@ const carsSchema = new mongoose.Schema(
 				ref: 'User',
 			},
 		],
+		isFav: {
+			type: Boolean,
+			default: undefined,
+		},
 	},
 	{
 		toJSON: { virtuals: true },
@@ -127,7 +131,16 @@ const carsSchema = new mongoose.Schema(
 	}
 );
 
-carsSchema.index({country:'text',province:'text',city:'text',model:'text',make:'text',bodyColor:'text',engineType:'text',condition:'text'})
+carsSchema.index({
+	country: 'text',
+	province: 'text',
+	city: 'text',
+	model: 'text',
+	make: 'text',
+	bodyColor: 'text',
+	engineType: 'text',
+	condition: 'text',
+});
 
 const Car = mongoose.model('Car', carsSchema);
 

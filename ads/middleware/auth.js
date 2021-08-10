@@ -5,8 +5,8 @@
 // const auth = async (req, res, next) => {
 // 	try {
 // 		const response = await await axios({
-// 			method: 'POST',
-// 			url: `${srv_url.user}/v1/users/isLoggedin`,
+// 			method: 'GET',
+// 			url: `${srv_url.user}/v1/users/currentUser`,
 // 			headers: { Authorization: `Bearer ${req.session.jwt}` },
 // 		});
 // 		if (response.status === STATUS_CODE.OK) {

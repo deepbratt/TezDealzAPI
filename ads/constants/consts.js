@@ -3,5 +3,5 @@ exports.routeConsts = {
 };
 
 exports.srv_url = {
-	user: 'http://users-srv:3004',
+	user: 'http://users:3004',
 };

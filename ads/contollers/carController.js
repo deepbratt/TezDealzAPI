@@ -34,10 +34,18 @@ exports.getAll = catchAsync(async (req, res, next) => {
 		.limitFields()
 		.pagination();
 	const result = await freatures.query;
-	
+
 	if (result.length === 0)
 		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-
+	if (req.user) {
+		for (var i = 0; i < result.length; i++) {
+			if (result[i].favOf.includes(req.user._id)) {
+				result[i].isFav = true;
+			} else {
+				result[i].isFav = false;
+			}
+		}
+	}
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
@@ -50,8 +58,12 @@ exports.getAll = catchAsync(async (req, res, next) => {
 
 exports.getOne = catchAsync(async (req, res, next) => {
 	const result = await Car.findById(req.params.id).populate('createdBy');
-
 	if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	if (req.user && result.favOf.includes(req.user._id)) {
+		result.isFav = true;
+	} else {
+		result.isFav = false;
+	}
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
@@ -152,7 +164,8 @@ exports.favorites = catchAsync(async (req, res, next) => {
 
 	const result = await freatures.query;
 
-	if (result.length === 0) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	if (result.length === 0)
+		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
