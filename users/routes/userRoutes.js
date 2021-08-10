@@ -73,6 +73,8 @@ router.patch(
 router.delete('/deleteMe', authenticate, userController.deleteMe);
 
 //users
+router.route('/currentUser').post(authController.isLoggedIn);
+
 router
   .route('/')
   .get(userController.getAllUsers)
@@ -82,10 +84,4 @@ router
   .get(userController.getUser)
   .patch(userController.updateUser)
   .delete(userController.deleteUser);
-router.route('/isLoggedin').post(authController.isLoggedIn);
-router.route('/protected').post(authenticate, (req, res) => {
-  res.json({
-    user: req.user,
-  });
-});
 module.exports = router;
