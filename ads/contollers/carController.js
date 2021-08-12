@@ -59,11 +59,14 @@ exports.getAll = catchAsync(async (req, res, next) => {
 exports.getOne = catchAsync(async (req, res, next) => {
 	const result = await Car.findById(req.params.id).populate('createdBy');
 	if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-	if (req.user && result.favOf.includes(req.user._id)) {
-		result.isFav = true;
-	} else {
-		result.isFav = false;
+	if (req.user) {
+		if (result.favOf.includes(req.user._id)) {
+			result.isFav = true;
+		} else {
+			result.isFav = false;
+		}
 	}
+
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
