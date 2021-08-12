@@ -126,12 +126,6 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     new: true,
   });
 
-  // if user change phone number then user will be unverified.
-  // if (req.body.phone) {
-  //   user.isVerified = false;
-  //   await user.save();
-  // }
-
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.UPDATE,
