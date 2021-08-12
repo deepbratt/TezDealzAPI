@@ -75,7 +75,7 @@ exports.sendVerificationCodetoEmail = async (req, res, next) => {
 };
 
 // Phone verification
-exports.phonetVerification = catchAsync(async (req, res, next) => {
+exports.phoneVerification = catchAsync(async (req, res, next) => {
   const hashedToken = crypto
     .createHash('sha256')
     .update(req.params.token)
@@ -94,13 +94,18 @@ exports.phonetVerification = catchAsync(async (req, res, next) => {
     );
   }
 
-  user.isVerified = true;
-  user.isPhoneVerified = true;
-  user.loggedInWithPhone = true;
-  // user.isEmailVerified = undefined;
-  // user.loggedInWithEmail = undefined;
-  user.phoneVerificationCode = undefined;
-  user.phoneVerificationTokenExpires = undefined;
+  // check if user is logged in with phone or only want to verify its phone after logged in with email.
+  if (user.loggedInWithPhone === true) {
+    user.isVerified = true;
+    user.isPhoneVerified = true;
+    user.phoneVerificationCode = undefined;
+    user.phoneVerificationTokenExpires = undefined;
+  } else {
+    user.isPhoneVerified = true;
+    user.phoneVerificationCode = undefined;
+    user.phoneVerificationTokenExpires = undefined;
+  }
+
   await user.save();
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
@@ -128,13 +133,18 @@ exports.emailVerification = catchAsync(async (req, res, next) => {
     );
   }
 
-  user.isVerified = true;
-  user.isEmailVerified = true;
-  user.loggedInWithEmail = true;
-  // user.isPhoneVerified = undefined;
-  // user.loggedInWithPhone = undefined;
-  user.emailVerificationCode = undefined;
-  user.emailVerificationTokenExpires = undefined;
+  // check if user is logged in with email or only want to verify its email after logged in with phone.
+  if (user.loggedInWithEmail === true) {
+    user.isVerified = true;
+    user.isEmailVerified = true;
+    user.emailVerificationCode = undefined;
+    user.emailVerificationTokenExpires = undefined;
+  } else {
+    user.isEmailVerified = true;
+    user.emailVerificationCode = undefined;
+    user.emailVerificationTokenExpires = undefined;
+  }
+
   await user.save();
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,

@@ -53,7 +53,7 @@ router.post(
 // );
 
 // Phone verification
-router.patch('/phone-verification/:token', authController.phonetVerification);
+router.patch('/phone-verification/:token', authController.phoneVerification);
 
 // Email verification
 router.patch('/email-verification/:token', authController.emailVerification);
@@ -71,6 +71,12 @@ router.patch(
 
 // Delete/Inactive Current User
 router.delete('/deleteMe', authenticate, userController.deleteMe);
+
+// Update Current User's Phone
+router.patch('/addMyPhone', authenticate, authController.addUserPhone);
+
+// Update Current User's  Email
+router.patch('/addMyEmail', authenticate, authController.addUserEmail);
 
 //users
 router.route('/currentUser').post(authController.isLoggedIn);

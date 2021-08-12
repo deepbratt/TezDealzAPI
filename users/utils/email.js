@@ -36,6 +36,33 @@ module.exports = class Email {
     });
     return response;
   }
+  async emailVerifivation() {
+    const response = await mailchimp.messages.sendTemplate({
+      template_name: 'passwordresettoken',
+      template_content: [
+        {
+          name: 'fname',
+          content: this.firstName,
+        },
+        {
+          name: 'resetToken',
+          content: this.resetToken,
+        },
+      ],
+      message: {
+        subject: 'Email Verification Token Valid for 30 minutes',
+        from_email: 'info@themagnit.com',
+        from_name: 'TezDeal',
+        to: [
+          {
+            email: this.to,
+            name: this.firstName,
+          },
+        ],
+      },
+    });
+    return response;
+  }
 };
 
 // const sendEmail = async (options) => {

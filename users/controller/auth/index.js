@@ -1,7 +1,7 @@
 const {
   sendVerificationCodetoEmail,
   sendVerificationCodetoPhone,
-  phonetVerification,
+  phoneVerification,
   emailVerification,
 } = require('./accountVerification');
 const {
@@ -18,10 +18,12 @@ const {
   continueFacebook,
   isLoggedIn,
   logout,
+  addUserEmail,
+  addUserPhone,
 } = require('./authController');
 
 module.exports = {
-  phonetVerification,
+  phoneVerification,
   emailVerification,
   sendVerificationCodetoEmail,
   sendVerificationCodetoPhone,
@@ -36,4 +38,6 @@ module.exports = {
   isLoggedIn,
   logout,
   updatePassword,
+  addUserEmail,
+  addUserPhone,
 };

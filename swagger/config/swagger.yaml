@@ -376,6 +376,50 @@ paths:
           description: 'Invalid input'
         '200':
           description: 'Password Updated Successfully'
+  /v1/Users/addMyEmail:
+    patch:
+      tags:
+        - 'Current/LoggedIn User'
+      summary: 'Use to add Current/LoggedIn User email'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'Current/LoggedIn User email'
+          required: true
+          schema:
+            $ref: '#/definitions/addUserEmail'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Email Updated Successfully'
+  /v1/Users/addMyPhone:
+    patch:
+      tags:
+        - 'Current/LoggedIn User'
+      summary: 'Use to add Current/LoggedIn User phone'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'Current/LoggedIn User phone'
+          required: true
+          schema:
+            $ref: '#/definitions/addUserPhone'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Phone Updated Successfully'
   /v1/Users/deleteMe:
     delete:
       tags:
@@ -901,6 +945,8 @@ definitions:
         type: 'string'
       lastName:
         type: 'string'
+      image:
+        type: 'string'
       gender:
         type: 'string'
       country:
@@ -917,4 +963,14 @@ definitions:
       password:
         type: 'string'
       passwordConfirm:
+        type: 'string'
+  addUserPhone:
+    type: object
+    properties:
+      phone:
+        type: 'string'
+  addUserEmail:
+    type: object
+    properties:
+      email:
         type: 'string'

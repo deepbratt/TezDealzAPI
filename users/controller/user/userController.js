@@ -134,6 +134,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.UPDATE,
     result: {
       user,
     },
