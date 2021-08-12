@@ -132,23 +132,23 @@ exports.getMine = catchAsync(async (req, res, next) => {
 
 exports.addtoFav = catchAsync(async (req, res, next) => {
 	const result = await Car.findOne({ _id: req.params.id, favOf: req.user._id });
-	if (result) return next(new AppError('Already in favourites', STATUS_CODE.BAD_REQUEST));
+	if (result) return next(new AppError(ERRORS.INVALID.ALREADY_FAV, STATUS_CODE.BAD_REQUEST));
 	await Car.updateOne({ _id: req.params.id }, { $push: { favOf: req.user._id } });
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
-		message: 'Added to Favorites',
+		message: SUCCESS_MSG.SUCCESS_MESSAGES.ADDED_FAV,
 	});
 });
 
 exports.removeFromFav = catchAsync(async (req, res, next) => {
 	const result = await Car.findOne({ _id: req.params.id, favOf: req.user._id });
 	if (!result) {
-		return next(new AppError('You have not added to favourites yet', STATUS_CODE.BAD_REQUEST));
+		return next(new AppError(ERRORS.INVALID.NOT_IN_FAV, STATUS_CODE.BAD_REQUEST));
 	}
 	await Car.updateOne({ _id: req.params.id }, { $pull: { favOf: req.user._id } });
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
-		message: 'Removed from Favorites',
+		message: SUCCESS_MSG.SUCCESS_MESSAGES.REMOVED_FAV,
 	});
 });
 
