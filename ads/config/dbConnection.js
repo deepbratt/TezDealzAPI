@@ -9,6 +9,7 @@ const dbConnect = async () => {
 			useNewUrlParser: true,
 			useCreateIndex: true,
 			useFindAndModify: false,
+			autoIndex: true,
 		});
 		console.log('DB Connected Successfuly');
 	} catch (error) {

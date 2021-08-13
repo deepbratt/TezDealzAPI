@@ -19,7 +19,12 @@ router.route('/cars/favourites').get(authenticate(User), carController.favorites
 router
 	.route('/cars/:id')
 	.get(checkIsLoggedIn(User), carController.getOne)
-	.patch(authenticate(User), permessionCheck, carController.updateOne)
+	.patch(
+		authenticate(User),
+		permessionCheck,
+		upload('image').array('image', 10),
+		carController.updateOne
+	)
 	.delete(authenticate(User), permessionCheck, carController.deleteOne);
 
 module.exports = router;
