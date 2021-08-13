@@ -15,7 +15,7 @@ exports.signupEmailRules = [
     .not()
     .isEmpty()
     .isAlpha()
-    .withMessage(ERRORS.INVALID.INVALID_FIRSTNAME),
+    .withMessage(ERRORS.I),
   check('lastName', ERRORS.REQUIRED.LASTNAME_REQUIRED)
     .not()
     .isEmpty()
@@ -44,6 +44,7 @@ exports.signupPhoneRules = [
     .isEmpty()
     .isAlpha()
     .withMessage(ERRORS.INVALID.INVALID_LASTNAME),
+  check('email', ERRORS.INVALID.INVALID_EMAIL).not().isEmpty().isMobilePhone(),  
   check('password', ERRORS.INVALID.PASSWORD_LENGTH)
     .isLength({ min: 8 })
     .custom((value, { req }) => {
@@ -54,4 +55,40 @@ exports.signupPhoneRules = [
         return value;
       }
     }),
+];
+
+exports.continueGoogleRules = [
+	check('firstName', ERRORS.REQUIRED.FIRSTNAME_REQUIRED)
+		.not()
+		.isEmpty()
+		.isAlpha()
+		.withMessage(ERRORS.INVALID.INVALID_FIRSTNAME),
+	check('lastName', ERRORS.REQUIRED.LASTNAME_REQUIRED)
+		.not()
+		.isEmpty()
+		.isAlpha()
+		.withMessage(ERRORS.INVALID.INVALID_LASTNAME),
+	check('googleId', ERRORS.REQUIRED.GOOGLE_ID_REQUIRED)
+		.not()
+		.isEmpty()
+		.withMessage(ERRORS.REQUIRED.GOOGLE_ID_REQUIRED),
+	check('email', ERRORS.INVALID.INVALID_EMAIL).not().isEmpty().isEmail(),
+];
+
+exports.continueFaceBookRules = [
+	check('firstName', ERRORS.REQUIRED.FIRSTNAME_REQUIRED)
+		.not()
+		.isEmpty()
+		.isAlpha()
+		.withMessage(ERRORS.INVALID.INVALID_FIRSTNAME),
+	check('lastName', ERRORS.REQUIRED.LASTNAME_REQUIRED)
+		.not()
+		.isEmpty()
+		.isAlpha()
+		.withMessage(ERRORS.INVALID.INVALID_LASTNAME),
+	check('facebookId', ERRORS.REQUIRED.FACEBOOK_ID_REQUIRED)
+		.not()
+		.isEmpty()
+		.withMessage(ERRORS.REQUIRED.GOOGLE_ID_REQUIRED),
+	check('email', ERRORS.INVALID.INVALID_EMAIL).not().isEmpty().isEmail(),
 ];
