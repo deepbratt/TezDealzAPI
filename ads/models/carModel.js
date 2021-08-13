@@ -7,17 +7,14 @@ const carsSchema = new mongoose.Schema(
 		country: {
 			type: String,
 			validate: [validator.isAlpha, ERRORS.REQUIRED.ONLY_APLHA_REQUIRED],
-			lowercase: true,
 		},
 		province: {
 			type: String,
 			validate: [validator.isAlpha, ERRORS.REQUIRED.ONLY_APLHA_REQUIRED],
-			lowercase: true,
 		},
 		city: {
 			type: String,
 			validate: [validator.isAlpha, ERRORS.REQUIRED.ONLY_APLHA_REQUIRED],
-			lowercase: true,
 		},
 		location: {
 			type: {
@@ -35,15 +32,11 @@ const carsSchema = new mongoose.Schema(
 			type: mongoose.Schema.ObjectId,
 			ref: 'User',
 		},
-		image: [
-			{
-				type: String,
-				required: [true, ERRORS.REQUIRED.IMAGE_REQUIRED],
-			},
-		],
+		image: [String],
 		regNumber: {
 			type: String,
 			unique: true,
+			index: true,
 			validate: [
 				validator.isAlphanumeric,
 				`${ERRORS.INVALID.INVALID_REG_NUM}.${ERRORS.REQUIRED.APLHA_NUMERIC_REQUIRED}`,
@@ -154,6 +147,7 @@ carsSchema.index({
 	engineType: 'text',
 	condition: 'text',
 	description: 'text',
+	bodyType: 'text',
 });
 
 const Car = mongoose.model('Car', carsSchema);

@@ -16,9 +16,12 @@ exports.createOne = catchAsync(async (req, res, next) => {
 			);
 			array.push(Location);
 		}
-		req.body.images = array;
+		req.body.image = array;
 	}
 	req.body.createdBy = req.user._id;
+	if (req.body.image.length <= 0) {
+		return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
+	}
 	const result = await Car.create(req.body);
 	if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 	res.status(STATUS_CODE.CREATED).json({
@@ -89,7 +92,10 @@ exports.updateOne = catchAsync(async (req, res, next) => {
 			);
 			array.push(Location);
 		}
-		req.body.images = array;
+		req.body.image = array;
+	}
+	if (req.body.image.length <= 0) {
+		return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
 	}
 	const result = await Car.findByIdAndUpdate(req.params.id, req.body, {
 		runValidators: true,
