@@ -1,10 +1,9 @@
 const User = require('../../model/userModel');
-const AppError = require('@utils/tdb_globalutils/errorHandling/AppError');
+const { AppError, Email } = require('@utils/tdb_globalutils');
 const catchAsync = require('@utils/tdb_globalutils/errorHandling/catchAsync');
 const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
 const jwtManagement = require('../../utils/jwtManagement');
 const jwt = require('jsonwebtoken');
-const Email = require('../../utils/email');
 const sendSMS = require('../../utils/sendSMS');
 const {
 	sendVerificationCodetoEmail,
@@ -46,15 +45,10 @@ exports.signupEmail = catchAsync(async (req, res, next) => {
 
 	let user = await User.create(newUser);
 
-	// const resetToken = await user.emailVerificationToken();
-	// await new Email(user, resetToken).emailVerifivation();
-	// if (res.status === 'rejected') {
-	//   throw new Error(ERRORS.RUNTIME.SENDING_EMAIL);
-	// }
-
+	const token = await user.emailVerificationToken();
+	await new Email(user, token).sendEmailVerificationToken();
 	user.loggedInWithEmail = true;
 	await user.save();
-
 	res.status(STATUS_CODE.CREATED).json({
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
@@ -190,16 +184,6 @@ exports.loginPhone = catchAsync(async (req, res, next) => {
 	jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
 });
 
-// Logout
-exports.logout = catchAsync(async (req, res, next) => {
-	res.cookie('TezDeals Token', 'loggedout', {
-		expires: new Date(Date.now() + 10),
-		httpOnly: true,
-	});
-	res.status(STATUS_CODE.OK).json({ status: STATUS.SUCCESS });
-});
-
-//! --------------------------------------------------------?//
 // Add Current user's phone // user logged in with email
 exports.addUserPhone = catchAsync(async (req, res, next) => {
 	//Get user form User's Collection
