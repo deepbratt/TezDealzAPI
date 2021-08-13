@@ -24,6 +24,7 @@ exports.createSendJwtToken = (user, statuscode, req, res) => {
   user.password = undefined;
   res.status(statuscode).json({
     status: 'success',
+    message: 'Operation Successfull',
     token,
     data: {
       user,

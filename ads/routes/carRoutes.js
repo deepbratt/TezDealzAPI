@@ -11,7 +11,9 @@ router
 	.route('/cars')
 	.post(authenticate(User), upload('image').array('image', 10), carController.createOne);
 router.route('/cars/myCars').get(authenticate(User), carController.getMine);
-router.route('/cars/add-to-fav/:id').patch(authenticate(User),favPermessionCheck, carController.addtoFav);
+router
+	.route('/cars/add-to-fav/:id')
+	.patch(authenticate(User), favPermessionCheck, carController.addtoFav);
 router.route('/cars/remove-from-fav/:id').patch(authenticate(User), carController.removeFromFav);
 router.route('/cars/favourites').get(authenticate(User), carController.favorites);
 router

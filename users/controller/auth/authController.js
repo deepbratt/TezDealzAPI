@@ -33,6 +33,7 @@ exports.continueFacebook = catchAsync(async (req, res, next) => {
 	jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
 });
 
+//! --------------------------------------------------------?//
 // Sign Up with Email
 exports.signupEmail = catchAsync(async (req, res, next) => {
 	const newUser = {
@@ -43,13 +44,24 @@ exports.signupEmail = catchAsync(async (req, res, next) => {
 		passwordConfirm: req.body.passwordConfirm,
 	};
 
-	await User.create(newUser);
-	res.status(STATUS_CODE.CREATED).json({
-		status: STATUS.SUCCESS,
-		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-	});
+  let user = await User.create(newUser);
+
+  // const resetToken = await user.emailVerificationToken();
+  // await new Email(user, resetToken).emailVerifivation();
+  // if (res.status === 'rejected') {
+  //   throw new Error(ERRORS.RUNTIME.SENDING_EMAIL);
+  // }
+
+  user.loggedInWithEmail = true;
+  await user.save();
+
+  res.status(STATUS_CODE.CREATED).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+  });
 });
 
+//! --------------------------------------------------------?//
 // Check logged in User
 exports.isLoggedIn = catchAsync(async (req, res, next) => {
 	//getting token and check is it there
@@ -79,6 +91,7 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
 	});
 });
 
+//! --------------------------------------------------------?//
 // Sign Up With Phone
 exports.signupPhone = catchAsync(async (req, res, next) => {
 	const newUser = {
@@ -91,14 +104,16 @@ exports.signupPhone = catchAsync(async (req, res, next) => {
 
 	const user = await User.create(newUser);
 
-	const verificationToken = await user.phoneVerificationToken();
-	// console.log(resetToken);
-	await user.save({ validateBeforeSave: false });
-	await sendSMS({
-		body: `${SUCCESS_MSG.SUCCESS_MESSAGES.TEZDEALZ_VEFRIFICATION_CODE} ${verificationToken}`,
-		phone: newUser.phone, // Text this number
-		from: process.env.TWILIO_PHONE_NUMBER, // From a valid Twilio number
-	});
+  user.loggedInWithPhone = true;
+
+  const verificationToken = await user.phoneVerificationToken();
+  // console.log(resetToken);
+  await user.save({ validateBeforeSave: false });
+  await sendSMS({
+    body: `${SUCCESS_MSG.SUCCESS_MESSAGES.TEZDEALZ_VEFRIFICATION_CODE} ${verificationToken}`,
+    phone: newUser.phone, // Text this number
+    from: process.env.TWILIO_PHONE_NUMBER, // From a valid Twilio number
+  });
 
 	res.status(STATUS_CODE.CREATED).json({
 		status: STATUS.SUCCESS,
@@ -106,55 +121,113 @@ exports.signupPhone = catchAsync(async (req, res, next) => {
 	});
 });
 
+//! --------------------------------------------------------?//
 // Login with Email
 exports.loginEmail = catchAsync(async (req, res, next) => {
-	const { email, password } = req.body;
-	if (!email || !password) {
-		// checking email or password empty?
-		return next(new AppError(ERRORS.INVALID.NO_CREDENTIALS_EMAIL, STATUS_CODE.BAD_REQUEST));
-	}
-	const user = await User.findOne({ email: email }).select('+password');
-	if (!user) {
-		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-	}
-	if (user.googleId || user.facebookId) {
-		return next(new AppError(ERRORS.INVALID.WRONG_CREDENTIAL_ERROR_EMAIL, STATUS_CODE.UNAUTHORIZED));
-	}
-	//user existance and password is correct
-	if (!user || !(await user.correctPassword(password, user.password))) {
-		return next(new AppError(ERRORS.INVALID.WRONG_CREDENTIAL_ERROR_EMAIL, STATUS_CODE.UNAUTHORIZED));
-	}
-	// check acccount verification
-	if (!user.isVerified || !user.isEmailVerified) {
-		return await sendVerificationCodetoEmail(req, res, next);
-	}
-	jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
+  const { email, password } = req.body;
+  if (!email || !password) {
+    // checking email or password empty?
+    return next(
+      new AppError(
+        ERRORS.INVALID.NO_CREDENTIALS_EMAIL,
+        STATUS_CODE.BAD_REQUEST,
+      ),
+    );
+  }
+  const user = await User.findOne({ email: email }).select('+password');
+  if (!user) {
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  }
+
+  // Check if user is logged in with email or not. if yes then he can log in otherwise unauthorize
+  if (!user.loggedInWithEmail) {
+    return next(
+      new AppError(
+        ERRORS.INVALID.INVALID_CREDENTIALS,
+        STATUS_CODE.UNAUTHORIZED,
+      ),
+    );
+  }
+
+  if (user.googleId || user.facebookId) {
+    return next(
+      new AppError(
+        ERRORS.INVALID.WRONG_CREDENTIAL_ERROR_EMAIL,
+        STATUS_CODE.UNAUTHORIZED,
+      ),
+    );
+  }
+  //user existance and password is correct
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    return next(
+      new AppError(
+        ERRORS.INVALID.WRONG_CREDENTIAL_ERROR_EMAIL,
+        STATUS_CODE.UNAUTHORIZED,
+      ),
+    );
+  }
+  // check acccount verification
+  if (!user.isVerified || !user.isEmailVerified) {
+    return await sendVerificationCodetoEmail(req, res, next);
+  }
+
+  jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
 });
 
+//! --------------------------------------------------------?//
 // Login with Phone Number
 exports.loginPhone = catchAsync(async (req, res, next) => {
 	const { phone, password } = req.body;
 
-	if (!phone || !password) {
-		// checking email or password empty?
-		return next(new AppError(ERRORS.INVALID.NO_CREDENTIALS_PHONE, STATUS_CODE.BAD_REQUEST));
-	}
-	const user = await User.findOne({ phone: phone }).select('+password');
-	if (!user) {
-		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-	}
-	if (user.googleId || user.facebookId) {
-		return next(new AppError(ERRORS.INVALID.WRONG_CREDENTIAL_ERROR_PHONE, STATUS_CODE.UNAUTHORIZED));
-	}
-	//user existance and password is correct
-	if (!user || !(await user.correctPassword(password, user.password))) {
-		return next(new AppError(ERRORS.INVALID.WRONG_CREDENTIAL_ERROR_PHONE, STATUS_CODE.UNAUTHORIZED));
-	}
-	// check acccount verification
-	if (!user.isVerified || !user.isPhoneVerified) {
-		return await sendVerificationCodetoPhone(req, res, next);
-	}
-	jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
+  if (!phone || !password) {
+    // checking email or password empty?
+    return next(
+      new AppError(
+        ERRORS.INVALID.NO_CREDENTIALS_PHONE,
+        STATUS_CODE.BAD_REQUEST,
+      ),
+    );
+  }
+
+  const user = await User.findOne({ phone: phone }).select('+password');
+  if (!user) {
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  }
+
+  // Check if user is logged in with phone or not. if yes then he can log in otherwise unauthorize
+  if (!user.loggedInWithPhone) {
+    return next(
+      new AppError(
+        ERRORS.INVALID.INVALID_CREDENTIALS,
+        STATUS_CODE.UNAUTHORIZED,
+      ),
+    );
+  }
+
+  if (user.googleId || user.facebookId) {
+    return next(
+      new AppError(
+        ERRORS.INVALID.WRONG_CREDENTIAL_ERROR_PHONE,
+        STATUS_CODE.UNAUTHORIZED,
+      ),
+    );
+  }
+  //user existance and password is correct
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    return next(
+      new AppError(
+        ERRORS.INVALID.WRONG_CREDENTIAL_ERROR_PHONE,
+        STATUS_CODE.UNAUTHORIZED,
+      ),
+    );
+  }
+
+  // check acccount verification
+  if (!user.isVerified || !user.isPhoneVerified) {
+    return await sendVerificationCodetoPhone(req, res, next);
+  }
+
+  jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
 });
 
 // Logout
@@ -164,4 +237,79 @@ exports.logout = catchAsync(async (req, res, next) => {
 		httpOnly: true,
 	});
 	res.status(STATUS_CODE.OK).json({ status: STATUS.SUCCESS });
+});
+
+//! --------------------------------------------------------?//
+// Add Current user's phone // user logged in with email
+exports.addUserPhone = catchAsync(async (req, res, next) => {
+  //Get user form User's Collection
+  const user = await User.findByIdAndUpdate(req.user.id, req.body, {
+    runValidators: true,
+  });
+
+  // check if user logged in with email
+  if (!user.loggedInWithEmail) {
+    return next(
+      new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED),
+    );
+  }
+
+  /**
+   * If User logged in with email and tries to update his phone he can update them.
+   * If User alrady has its phone verified then it will generate error
+   */
+  if (user.loggedInWithEmail === true && req.body.phone) {
+    // if user has already verified his phone then he cannot change it again.
+    if (user.isPhoneVerified === true) {
+      return next(
+        new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED),
+      );
+    }
+    return await sendVerificationCodetoPhone(req, res, next);
+  }
+
+  /**
+   * If User logged in with email and tries to update his email then it will generate an error
+   */
+  if (user.loggedInWithEmail === true && req.body.email) {
+    return next(
+      new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED),
+    );
+  }
+});
+
+//! --------------------------------------------------------?//
+// Update My Email // User logged in with Phone
+exports.addUserEmail = catchAsync(async (req, res, next) => {
+  //Get user form User's Collection
+  const user = await User.findByIdAndUpdate(req.user.id, req.body, {
+    runValidators: true,
+  });
+
+  // chek if user logged in with phone
+  if (!user.loggedInWithPhone) {
+    return next(
+      new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED),
+    );
+  }
+
+  if (user.loggedInWithPhone === true && req.body.email) {
+    // if user has already verified his email then he cannot change it again.
+    if (user.isEmailVerified === true) {
+      return next(
+        new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED),
+      );
+    }
+
+    return await sendVerificationCodetoEmail(req, res, next);
+  }
+
+  /**
+   * If User logged in with phone and tries to update his phone then it will generate an error
+   */
+  if (user.loggedInWithPhone === true && req.body.phone) {
+    return next(
+      new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED),
+    );
+  }
 });
