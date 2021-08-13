@@ -41,7 +41,23 @@ const carsSchema = new mongoose.Schema(
 				required: [true, ERRORS.REQUIRED.IMAGE_REQUIRED],
 			},
 		],
+		regNumber: {
+			type: String,
+			unique: true,
+			validate: [
+				validator.isAlphanumeric,
+				`${ERRORS.INVALID.INVALID_REG_NUM}.${ERRORS.REQUIRED.APLHA_NUMERIC_REQUIRED}`,
+			],
+			required: [true, ERRORS.REQUIRED.REG_NUMBER_REQUIRED],
+		},
 		model: String,
+		modelYear: {
+			type: Number,
+			validate: [validator.isNumeric, ERRORS.REQUIRED.ONLY_NUMERCI_REQUIRED],
+			min: [1960, ERRORS.INVALID.INVALID_MODEL_YEAR],
+			max: [new Date().getFullYear(), ERRORS.INVALID.INVALID_MODEL_YEAR],
+			required: [true, ERRORS.REQUIRED.M],
+		},
 		make: String,
 		price: Number,
 		engineType: {
@@ -110,10 +126,6 @@ const carsSchema = new mongoose.Schema(
 		},
 		features: [{ type: String, required: [true, ERRORS.REQUIRED.FEATURES_REQUIRED] }],
 		description: String,
-		date: {
-			type: Date,
-			default: Date.now(),
-		},
 		favOf: [
 			{
 				type: mongoose.Schema.ObjectId,
@@ -126,6 +138,7 @@ const carsSchema = new mongoose.Schema(
 		},
 	},
 	{
+		timestamps: true,
 		toJSON: { virtuals: true },
 		toObject: { virtuals: true },
 	}
@@ -140,6 +153,7 @@ carsSchema.index({
 	bodyColor: 'text',
 	engineType: 'text',
 	condition: 'text',
+	description: 'text',
 });
 
 const Car = mongoose.model('Car', carsSchema);
