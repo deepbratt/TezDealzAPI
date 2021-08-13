@@ -43,17 +43,6 @@ const userSchema = new mongoose.Schema({
 		minlength: [8, ERRORS.INVALID.PASSWORD_LENGTH],
 		select: false,
 	},
-	passwordConfirm: {
-		type: String,
-		minlength: [8, ERRORS.INVALID.PASSWORD_LENGTH],
-		select: false,
-		validate: {
-			validator: function (el) {
-				return el === this.password;
-			},
-			message: ERRORS.INVALID.PASSWORD_MISMATCH,
-		},
-	},
 	image: {
 		type: String,
 	},

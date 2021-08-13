@@ -66,17 +66,6 @@ const userSchema = new mongoose.Schema({
 		minlength: [8, ERRORS.INVALID.PASSWORD_LENGTH],
 		select: false,
 	},
-	passwordConfirm: {
-		type: String,
-		minlength: [8, ERRORS.INVALID.PASSWORD_LENGTH],
-		select: false,
-		validate: {
-			validator: function (el) {
-				return el === this.password;
-			},
-			message: ERRORS.INVALID.PASSWORD_MISMATCH,
-		},
-	},
 	image: {
 		type: String,
 	},
@@ -140,7 +129,6 @@ userSchema.index({ phone: 1 }, { unique: true, sparse: true });
 userSchema.pre('save', async function (next) {
 	if (!this.isModified('password')) return next();
 	this.password = await bcryptjs.hash(this.password, 12);
-	this.passwordConfirm = undefined;
 	next();
 });
 
@@ -155,7 +143,6 @@ userSchema.pre('save', function (next) {
 userSchema.pre(/^find/, function (next) {
 	// /^find/ find all that startsWith (find)
 	// this. points to current query
-
 	this.find({
 		active: {
 			$ne: false,
