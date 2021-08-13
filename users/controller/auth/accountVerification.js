@@ -2,76 +2,65 @@ const crypto = require('crypto');
 const User = require('../../model/userModel');
 const AppError = require('@utils/tdb_globalutils/errorHandling/AppError');
 const catchAsync = require('@utils/tdb_globalutils/errorHandling/catchAsync');
-const {
-  ERRORS,
-  STATUS_CODE,
-  SUCCESS_MSG,
-  STATUS,
-} = require('@constants/tdb-constants');
+const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
 //const Email = require('../../utils/email');
 const sendSMS = require('../../utils/sendSMS');
 
 exports.sendVerificationCodetoPhone = async (req, res, next) => {
-  const user = await User.findOne({ phone: req.body.phone });
-  if (!user) {
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-  }
-  const verificationToken = await user.phoneVerificationToken();
-  // console.log(resetToken);
-  await user.save({ validateBeforeSave: false });
+	const user = await User.findOne({ phone: req.body.phone });
+	if (!user) {
+		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	}
+	const verificationToken = await user.phoneVerificationToken();
+	// console.log(resetToken);
+	await user.save({ validateBeforeSave: false });
 
-  try {
-    await sendSMS({
-      body: `Your TezDealz account verification code is ${verificationToken}`,
-      phone: user.phone, // Text this number
-      from: process.env.TWILIO_PHONE_NUMBER, // From a valid Twilio number
-    });
+	try {
+		await sendSMS({
+			body: `Your TezDealz account verification code is ${verificationToken}`,
+			phone: user.phone, // Text this number
+			from: process.env.TWILIO_PHONE_NUMBER, // From a valid Twilio number
+		});
 
-    res.status(STATUS_CODE.OK).json({
-      status: STATUS.UNVERIFIED,
-      message: SUCCESS_MSG.SUCCESS_MESSAGES.TOKEN_SENT_PHONE,
-    });
-  } catch (err) {
-    user.phoneVerificationCode = undefined;
-    user.phoneVerificationTokenExpires = undefined;
-    await user.save({ validateBeforeSave: false });
-    return next(
-      new AppError(ERRORS.RUNTIME.SENDING_MESSAGE),
-      STATUS_CODE.SERVER_ERROR,
-    );
-  }
+		res.status(STATUS_CODE.OK).json({
+			status: STATUS.UNVERIFIED,
+			message: SUCCESS_MSG.SUCCESS_MESSAGES.TOKEN_SENT_PHONE,
+		});
+	} catch (err) {
+		user.phoneVerificationCode = undefined;
+		user.phoneVerificationTokenExpires = undefined;
+		await user.save({ validateBeforeSave: false });
+		return next(new AppError(ERRORS.RUNTIME.SENDING_MESSAGE), STATUS_CODE.SERVER_ERROR);
+	}
 };
 
 exports.sendVerificationCodetoEmail = async (req, res, next) => {
-  const user = await User.findOne({ email: req.body.email });
+	const user = await User.findOne({ email: req.body.email });
 
-  if (!user) {
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND), STATUS_CODE.NOT_FOUND);
-  }
+	if (!user) {
+		return next(new AppError(ERRORS.INVALID.NOT_FOUND), STATUS_CODE.NOT_FOUND);
+	}
 
-  const verificationToken = await user.emailVerificationToken();
-  await user.save({ validateBeforeSave: false });
+	const verificationToken = await user.emailVerificationToken();
+	await user.save({ validateBeforeSave: false });
 
-  try {
-    // await sendSMS({
-    // 	body: `Your TezDealz account verification code is ${verificationToken}`,
-    // 	phone: user.phone, // Text this number
-    // 	from: process.env.TWILIO_PHONE_NUMBER, // From a valid Twilio number
-    // });
+	try {
+		// await sendSMS({
+		// 	body: `Your TezDealz account verification code is ${verificationToken}`,
+		// 	phone: user.phone, // Text this number
+		// 	from: process.env.TWILIO_PHONE_NUMBER, // From a valid Twilio number
+		// });
 
-    res.status(STATUS_CODE.OK).json({
-      status: STATUS.UNVERIFIED,
-      message: SUCCESS_MSG.SUCCESS_MESSAGES.TOKEN_SENT_EMAIL,
-    });
-  } catch (err) {
-    user.emailVerificationCode = undefined;
-    user.emailVerificationTokenExpires = undefined;
-    await user.save({ validateBeforeSave: false });
-    return next(
-      new AppError(ERRORS.RUNTIME.SENDING_MESSAGE),
-      STATUS_CODE.SERVER_ERROR,
-    );
-  }
+		res.status(STATUS_CODE.OK).json({
+			status: STATUS.UNVERIFIED,
+			message: SUCCESS_MSG.SUCCESS_MESSAGES.TOKEN_SENT_EMAIL,
+		});
+	} catch (err) {
+		user.emailVerificationCode = undefined;
+		user.emailVerificationTokenExpires = undefined;
+		await user.save({ validateBeforeSave: false });
+		return next(new AppError(ERRORS.RUNTIME.SENDING_MESSAGE), STATUS_CODE.SERVER_ERROR);
+	}
 };
 
 // Phone verification

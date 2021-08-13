@@ -1,53 +1,48 @@
 const User = require('../../model/userModel');
 const AppError = require('@utils/tdb_globalutils/errorHandling/AppError');
 const catchAsync = require('@utils/tdb_globalutils/errorHandling/catchAsync');
-const {
-  ERRORS,
-  STATUS_CODE,
-  SUCCESS_MSG,
-  STATUS,
-} = require('@constants/tdb-constants');
+const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
 const jwtManagement = require('../../utils/jwtManagement');
 const jwt = require('jsonwebtoken');
 const Email = require('../../utils/email');
 const sendSMS = require('../../utils/sendSMS');
 const {
-  sendVerificationCodetoEmail,
-  sendVerificationCodetoPhone,
+	sendVerificationCodetoEmail,
+	sendVerificationCodetoPhone,
 } = require('./accountVerification');
 
 // Continue With Google
 exports.continueGoogle = catchAsync(async (req, res, next) => {
-  let user;
-  user = await User.findOne({ googleId: req.body.googleId });
-  if (!user) {
-    req.body.isVerified = true;
-    user = await User.create(req.body);
-  }
-  jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
+	let user;
+	user = await User.findOne({ googleId: req.body.googleId });
+	if (!user) {
+		req.body.isVerified = true;
+		user = await User.create(req.body);
+	}
+	jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
 });
 
 // Continue With Facebook
 exports.continueFacebook = catchAsync(async (req, res, next) => {
-  let user;
-  user = await User.findOne({ facebookId: req.body.facebookId });
-  if (!user) {
-    req.body.isVerified = true;
-    user = await User.create(req.body);
-  }
-  jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
+	let user;
+	user = await User.findOne({ facebookId: req.body.facebookId });
+	if (!user) {
+		req.body.isVerified = true;
+		user = await User.create(req.body);
+	}
+	jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
 });
 
 //! --------------------------------------------------------?//
 // Sign Up with Email
 exports.signupEmail = catchAsync(async (req, res, next) => {
-  const newUser = {
-    firstName: req.body.firstName.trim(),
-    lastName: req.body.lastName.trim(),
-    email: req.body.email.trim(),
-    password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
-  };
+	const newUser = {
+		firstName: req.body.firstName.trim(),
+		lastName: req.body.lastName.trim(),
+		email: req.body.email.trim(),
+		password: req.body.password,
+		passwordConfirm: req.body.passwordConfirm,
+	};
 
   let user = await User.create(newUser);
 
@@ -69,54 +64,45 @@ exports.signupEmail = catchAsync(async (req, res, next) => {
 //! --------------------------------------------------------?//
 // Check logged in User
 exports.isLoggedIn = catchAsync(async (req, res, next) => {
-  //getting token and check is it there
-  let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
-    token = req.headers.authorization.split(' ')[1];
-  } else if (req.session.jwt) {
-    token = req.session.jwt;
-  }
-  if (!token) {
-    return next(
-      new AppError(ERRORS.UNAUTHORIZED.NOT_LOGGED_IN, STATUS_CODE.UNAUTHORIZED),
-    );
-  }
-  //verification token
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  //check if user sitll exists
-  const currentUser = await User.findById(decoded.userdata.id);
-  if (!currentUser) {
-    return next(
-      new AppError(`User ${ERRORS.INVALID.NOT_FOUND}`, STATUS_CODE.NOT_FOUND),
-    );
-  }
-  //check if user changed password after the token was issued
-  if (currentUser.changedPasswordAfter(decoded.iat)) {
-    return next(
-      new AppError(ERRORS.UNAUTHORIZED.INVALID_JWT, STATUS_CODE.UNAUTHORIZED),
-    );
-  }
-  //send loggedIn User
-  res.status(STATUS_CODE.OK).json({
-    user: currentUser,
-  });
+	//getting token and check is it there
+	let token;
+	if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+		token = req.headers.authorization.split(' ')[1];
+	} else if (req.session.jwt) {
+		token = req.session.jwt;
+	}
+	if (!token) {
+		return next(new AppError(ERRORS.UNAUTHORIZED.NOT_LOGGED_IN, STATUS_CODE.UNAUTHORIZED));
+	}
+	//verification token
+	const decoded = jwt.verify(token, process.env.JWT_SECRET);
+	//check if user sitll exists
+	const currentUser = await User.findById(decoded.userdata.id);
+	if (!currentUser) {
+		return next(new AppError(`User ${ERRORS.INVALID.NOT_FOUND}`, STATUS_CODE.NOT_FOUND));
+	}
+	//check if user changed password after the token was issued
+	if (currentUser.changedPasswordAfter(decoded.iat)) {
+		return next(new AppError(ERRORS.UNAUTHORIZED.INVALID_JWT, STATUS_CODE.UNAUTHORIZED));
+	}
+	//send loggedIn User
+	res.status(STATUS_CODE.OK).json({
+		user: currentUser,
+	});
 });
 
 //! --------------------------------------------------------?//
 // Sign Up With Phone
 exports.signupPhone = catchAsync(async (req, res, next) => {
-  const newUser = {
-    firstName: req.body.firstName.trim(),
-    lastName: req.body.lastName.trim(),
-    phone: req.body.phone,
-    password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
-  };
+	const newUser = {
+		firstName: req.body.firstName.trim(),
+		lastName: req.body.lastName.trim(),
+		phone: req.body.phone,
+		password: req.body.password,
+		passwordConfirm: req.body.passwordConfirm,
+	};
 
-  const user = await User.create(newUser);
+	const user = await User.create(newUser);
 
   user.loggedInWithPhone = true;
 
@@ -129,10 +115,10 @@ exports.signupPhone = catchAsync(async (req, res, next) => {
     from: process.env.TWILIO_PHONE_NUMBER, // From a valid Twilio number
   });
 
-  res.status(STATUS_CODE.CREATED).json({
-    status: STATUS.SUCCESS,
-    message: `${SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL} ${SUCCESS_MSG.SUCCESS_MESSAGES.ACCOUNT_VERIFICATION_TOKEN}`,
-  });
+	res.status(STATUS_CODE.CREATED).json({
+		status: STATUS.SUCCESS,
+		message: `${SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL} ${SUCCESS_MSG.SUCCESS_MESSAGES.ACCOUNT_VERIFICATION_TOKEN}`,
+	});
 });
 
 //! --------------------------------------------------------?//
@@ -191,7 +177,7 @@ exports.loginEmail = catchAsync(async (req, res, next) => {
 //! --------------------------------------------------------?//
 // Login with Phone Number
 exports.loginPhone = catchAsync(async (req, res, next) => {
-  const { phone, password } = req.body;
+	const { phone, password } = req.body;
 
   if (!phone || !password) {
     // checking email or password empty?
@@ -246,11 +232,11 @@ exports.loginPhone = catchAsync(async (req, res, next) => {
 
 // Logout
 exports.logout = catchAsync(async (req, res, next) => {
-  res.cookie('TezDeals Token', 'loggedout', {
-    expires: new Date(Date.now() + 10),
-    httpOnly: true,
-  });
-  res.status(STATUS_CODE.OK).json({ status: STATUS.SUCCESS });
+	res.cookie('TezDeals Token', 'loggedout', {
+		expires: new Date(Date.now() + 10),
+		httpOnly: true,
+	});
+	res.status(STATUS_CODE.OK).json({ status: STATUS.SUCCESS });
 });
 
 //! --------------------------------------------------------?//

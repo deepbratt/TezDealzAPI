@@ -35,7 +35,7 @@ const carsSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: 'User',
     },
-    images: [
+    image: [
       {
         type: String,
         required: [true, ERRORS.REQUIRED.IMAGE_REQUIRED],

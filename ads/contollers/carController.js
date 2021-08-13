@@ -1,6 +1,7 @@
 const Car = require('../models/carModel');
 const { AppError, catchAsync, uploadS3, APIFeatures } = require('@utils/tdb_globalutils');
 const { ERRORS, STATUS, STATUS_CODE, SUCCESS_MSG } = require('@constants/tdb-constants');
+const { filter } = require('./factoryHandler');
 
 exports.createOne = catchAsync(async (req, res, next) => {
 	if (req.files) {
@@ -27,19 +28,14 @@ exports.createOne = catchAsync(async (req, res, next) => {
 });
 
 exports.getAll = catchAsync(async (req, res, next) => {
-	const freatures = new APIFeatures(Car.find(), req.query)
-		.filter()
-		.search()
-		.sort()
-		.limitFields()
-		.pagination();
-	const result = await freatures.query;
+	const [result, totalCount] = await filter(Car.find(), req.query);
 
-	if (result.length === 0)
+	if (result.length === 0) {
 		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	}
 	if (req.user) {
 		for (var i = 0; i < result.length; i++) {
-			if (result[i].favOf.includes(req.user._id)) {
+			if (result[i].favOf.length > 0 && result[i].favOf.includes(req.user._id)) {
 				result[i].isFav = true;
 			} else {
 				result[i].isFav = false;
@@ -49,7 +45,8 @@ exports.getAll = catchAsync(async (req, res, next) => {
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-		results: result.length,
+		countOnPage: result.length,
+		totalCount: totalCount,
 		data: {
 			result,
 		},
@@ -118,18 +115,16 @@ exports.deleteOne = catchAsync(async (req, res, next) => {
 });
 
 exports.getMine = catchAsync(async (req, res, next) => {
-	const freatures = new APIFeatures(Car.find({ createdBy: req.user._id }), req.query)
-		.filter()
-		.sort()
-		.limitFields()
-		.pagination();
-	const result = await freatures.query;
-	if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	const [result, totalCount] = await filter(Car.find({ createdBy: req.user._id }), req.query);
+
+	if (result.length === 0)
+		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-		results: result.length,
+		countOnPage: result.length,
+		totalCount: totalCount,
 		data: {
 			result,
 		},
@@ -138,34 +133,28 @@ exports.getMine = catchAsync(async (req, res, next) => {
 
 exports.addtoFav = catchAsync(async (req, res, next) => {
 	const result = await Car.findOne({ _id: req.params.id, favOf: req.user._id });
-	if (result) return next(new AppError('Already in favourites', STATUS_CODE.BAD_REQUEST));
+	if (result) return next(new AppError(ERRORS.INVALID.ALREADY_FAV, STATUS_CODE.BAD_REQUEST));
 	await Car.updateOne({ _id: req.params.id }, { $push: { favOf: req.user._id } });
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
-		message: 'Added to Favorites',
+		message: SUCCESS_MSG.SUCCESS_MESSAGES.ADDED_FAV,
 	});
 });
 
 exports.removeFromFav = catchAsync(async (req, res, next) => {
 	const result = await Car.findOne({ _id: req.params.id, favOf: req.user._id });
 	if (!result) {
-		return next(new AppError('You have not added to favourites yet', STATUS_CODE.BAD_REQUEST));
+		return next(new AppError(ERRORS.INVALID.NOT_IN_FAV, STATUS_CODE.BAD_REQUEST));
 	}
 	await Car.updateOne({ _id: req.params.id }, { $pull: { favOf: req.user._id } });
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
-		message: 'Removed from Favorites',
+		message: SUCCESS_MSG.SUCCESS_MESSAGES.REMOVED_FAV,
 	});
 });
 
 exports.favorites = catchAsync(async (req, res, next) => {
-	const freatures = new APIFeatures(Car.find({ favOf: req.user._id }), req.query)
-		.filter()
-		.sort()
-		.limitFields()
-		.pagination();
-
-	const result = await freatures.query;
+	const [result, totalCount] = await filter(Car.find({ favOf: req.user._id }), req.query);
 
 	if (result.length === 0)
 		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
@@ -173,7 +162,8 @@ exports.favorites = catchAsync(async (req, res, next) => {
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-		results: result.length,
+		countOnPage: result.length,
+		totalCount: totalCount,
 		data: {
 			result,
 		},
