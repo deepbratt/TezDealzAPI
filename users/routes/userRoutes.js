@@ -28,7 +28,6 @@ router.post('/signup-email', signupEmailRules, validationFunction, authControlle
 router.post('/signup-phone', signupPhoneRules, validationFunction, authController.signupPhone);
 router.post('/login-email', authController.loginEmail);
 router.post('/login-phone', authController.loginPhone);
-router.get('/logout', authController.logout);
 
 // forgot Password with Email/Phone
 router.post('/forgotPassword', authController.forgotPassword);
