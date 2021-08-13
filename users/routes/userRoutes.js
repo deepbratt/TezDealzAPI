@@ -4,6 +4,7 @@ const { authenticate } = require('@auth/tdb-auth');
 const authController = require('../controller/auth/index');
 const userController = require('../controller/user/userController');
 const {
+	changePassword,
 	signupEmailRules,
 	signupPhoneRules,
 	continueGoogleRules,
@@ -32,7 +33,12 @@ router.post('/login-phone', authController.loginPhone);
 // forgot Password with Email/Phone
 router.post('/forgotPassword', authController.forgotPassword);
 //Reset Password
-router.patch('/resetPassword/:token', authController.resetPassword);
+router.patch(
+	'/resetPassword/:token',
+	changePassword,
+	validationFunction,
+	authController.resetPassword
+);
 //Send verification email
 router.post('/send-verification-email', authController.sendVerificationCodetoEmail);
 //Send verification Phone
@@ -53,7 +59,12 @@ router.patch('/email-verification/:token', authController.emailVerification);
 router.use(authenticate(User));
 
 // Update Current User's Password
-router.patch('/updateMyPassword', authController.updatePassword);
+router.patch(
+	'/updateMyPassword',
+	changePassword,
+	validationFunction,
+	authController.updatePassword
+);
 
 // Update Current User's Data
 router.patch('/updateMe', upload('image').single('image'), userController.updateMe);

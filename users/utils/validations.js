@@ -82,3 +82,16 @@ exports.continueFaceBookRules = [
 	check('facebookId', ERRORS.REQUIRED.FACEBOOK_ID_REQUIRED).not().isEmpty(),
 	check('email', ERRORS.INVALID.INVALID_EMAIL).not().isEmpty().isEmail(),
 ];
+
+exports.changePassword = [
+	check('password', ERRORS.INVALID.PASSWORD_LENGTH)
+		.isLength({ min: 8 })
+		.custom((value, { req }) => {
+			if (value !== req.body.passwordConfirm) {
+				// trow error if passwords do not match
+				throw new Error(ERRORS.INVALID.PASSWORD_MISMATCH);
+			} else {
+				return value;
+			}
+		}),
+];
