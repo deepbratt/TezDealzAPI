@@ -52,7 +52,7 @@ const carsSchema = new mongoose.Schema(
 		},
 		model: String,
 		modelYear: {
-			type: Number,
+			type: String,
 			validate: [validator.isNumeric, ERRORS.REQUIRED.ONLY_NUMERCI_REQUIRED],
 			min: [1960, ERRORS.INVALID.INVALID_MODEL_YEAR],
 			max: [Number(new Date().getFullYear()), ERRORS.INVALID.INVALID_MODEL_YEAR],
