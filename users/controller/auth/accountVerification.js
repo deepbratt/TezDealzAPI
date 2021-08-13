@@ -54,7 +54,7 @@ exports.sendVerificationCodetoEmail = async (req, res, next) => {
 		user.emailVerificationCode = undefined;
 		user.emailVerificationTokenExpires = undefined;
 		await user.save({ validateBeforeSave: false });
-		return next(new AppError(err, STATUS_CODE.SERVER_ERROR));
+		return next(new AppError(ERRORS.RUNTIME.SENDING_TOKEN, STATUS_CODE.SERVER_ERROR));
 	}
 };
 
