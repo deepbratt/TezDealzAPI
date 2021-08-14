@@ -4,122 +4,127 @@ const bcryptjs = require('bcryptjs');
 const crypto = require('crypto');
 const { ERRORS } = require('@constants/tdb-constants');
 
-const userSchema = new mongoose.Schema({
-	facebookId: {
-		type: String,
-	},
-	googleId: {
-		type: String,
-	},
-	displayName: {
-		type: String,
-	},
-	firstName: {
-		type: String,
-		minlength: 3,
-		maxlength: 15,
-		required: [true, ERRORS.REQUIRED.FIRSTNAME_REQUIRED],
-		// validate: [validator.isAlpha, ERRORS.INVALID.INVALID_FIRSTNAME],
-	},
-	middleName: {
-		type: String,
-	},
-	lastName: {
-		type: String,
-		minlength: 3,
-		maxlength: 15,
-		required: [true, ERRORS.REQUIRED.LASTNAME_REQUIRED],
-		validate: [validator.isAlpha, ERRORS.INVALID.INVALID_LASTNAME],
-	},
-	gender: {
-		type: String,
-		enum: {
-			values: ['Male', 'Female'],
+const userSchema = new mongoose.Schema(
+	{
+		facebookId: {
+			type: String,
 		},
-		message: ERRORS.INVALID.INVALID_GENDER,
+		googleId: {
+			type: String,
+		},
+		displayName: {
+			type: String,
+		},
+		firstName: {
+			type: String,
+			minlength: 3,
+			maxlength: 15,
+			required: [true, ERRORS.REQUIRED.FIRSTNAME_REQUIRED],
+			// validate: [validator.isAlpha, ERRORS.INVALID.INVALID_FIRSTNAME],
+		},
+		middleName: {
+			type: String,
+		},
+		lastName: {
+			type: String,
+			minlength: 3,
+			maxlength: 15,
+			required: [true, ERRORS.REQUIRED.LASTNAME_REQUIRED],
+			validate: [validator.isAlpha, ERRORS.INVALID.INVALID_LASTNAME],
+		},
+		gender: {
+			type: String,
+			enum: {
+				values: ['Male', 'Female'],
+			},
+			message: ERRORS.INVALID.INVALID_GENDER,
+		},
+		country: {
+			type: String,
+			lowercase: true,
+			trim: true,
+		},
+		city: {
+			type: String,
+			lowercase: true,
+			trim: true,
+		},
+		dateOfBirth: {
+			type: Date, // Format  => year-month-day
+			trim: true,
+		},
+		email: {
+			type: String,
+			lowercase: true,
+			validate: [validator.isEmail, ERRORS.INVALID.INVALID_EMAIL],
+		},
+		phone: {
+			type: String,
+			validate: [validator.isMobilePhone, ERRORS.INVALID.INVALID_PHONE_NUM],
+		},
+		password: {
+			type: String,
+			minlength: [8, ERRORS.INVALID.PASSWORD_LENGTH],
+			select: false,
+		},
+		image: {
+			type: String,
+		},
+		isVerified: {
+			type: Boolean,
+			default: false,
+		},
+		isEmailVerified: {
+			type: Boolean,
+			default: false,
+		},
+		isPhoneVerified: {
+			type: Boolean,
+			default: false,
+		},
+		emailVerificationCode: {
+			type: String,
+			select: false,
+		},
+		phoneVerificationCode: {
+			type: String,
+			select: false,
+		},
+		emailVerificationTokenExpires: {
+			type: Date,
+			select: false,
+		},
+		phoneVerificationTokenExpires: {
+			type: Date,
+			select: false,
+		},
+		loggedInWithPhone: {
+			type: Boolean,
+			default: false,
+		},
+		loggedInWithEmail: {
+			type: Boolean,
+			default: false,
+		},
+		passwordResetToken: {
+			type: String,
+			select: false,
+		},
+		passwordResetExpires: {
+			type: Date,
+			select: false,
+		},
+		passwordChangedAt: Date,
+		active: {
+			type: Boolean,
+			default: true,
+			select: false,
+		}
 	},
-	country: {
-		type: String,
-		lowercase: true,
-		trim: true,
-	},
-	city: {
-		type: String,
-		lowercase: true,
-		trim: true,
-	},
-	dateOfBirth: {
-		type: Date, // Format  => year-month-day
-		trim: true,
-	},
-	email: {
-		type: String,
-		lowercase: true,
-		validate: [validator.isEmail, ERRORS.INVALID.INVALID_EMAIL],
-	},
-	phone: {
-		type: String,
-		validate: [validator.isMobilePhone, ERRORS.INVALID.INVALID_PHONE_NUM],
-	},
-	password: {
-		type: String,
-		minlength: [8, ERRORS.INVALID.PASSWORD_LENGTH],
-		select: false,
-	},
-	image: {
-		type: String,
-	},
-	isVerified: {
-		type: Boolean,
-		default: false,
-	},
-	isEmailVerified: {
-		type: Boolean,
-		default: false,
-	},
-	isPhoneVerified: {
-		type: Boolean,
-		default: false,
-	},
-	emailVerificationCode: {
-		type: String,
-		select: false,
-	},
-	phoneVerificationCode: {
-		type: String,
-		select: false,
-	},
-	emailVerificationTokenExpires: {
-		type: Date,
-		select: false,
-	},
-	phoneVerificationTokenExpires: {
-		type: Date,
-		select: false,
-	},
-	loggedInWithPhone: {
-		type: Boolean,
-		default: false,
-	},
-	loggedInWithEmail: {
-		type: Boolean,
-		default: false,
-	},
-	passwordResetToken: {
-		type: String,
-		select: false,
-	},
-	passwordResetExpires: {
-		type: Date,
-		select: false,
-	},
-	passwordChangedAt: Date,
-	active: {
-		type: Boolean,
-		default: true,
-		select: false,
-	},
-});
+	{
+		timestamps: true,
+	}
+);
 
 //indexes
 userSchema.index({ email: 1 }, { unique: true, sparse: true });

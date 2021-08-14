@@ -95,7 +95,11 @@ exports.updateOne = catchAsync(async (req, res, next) => {
 			);
 			array.push(Location);
 		}
-		req.body.image = [...req.body.image, ...array];
+		if (req.body.image) {
+			req.body.image = [...req.body.image, ...array];
+		} else {
+			req.body.image = array;
+		}
 	}
 	if (req.body.image.length <= 0) {
 		return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
