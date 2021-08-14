@@ -73,7 +73,6 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 	}
 
 	user.password = req.body.password;
-	user.passwordConfirm = req.body.passwordConfirm;
 	user.passwordResetToken = undefined;
 	user.passwordResetExpires = undefined;
 	await user.save();
@@ -95,7 +94,6 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
 	// if User is correct then Update Current user's password
 	user.password = req.body.password;
-	user.passwordConfirm = req.body.passwordConfirm;
 	await user.save();
 
 	jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);

@@ -34,6 +34,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
 });
 
 exports.getAll = catchAsync(async (req, res, next) => {
+	console.log(req.query);
 	const [result, totalCount] = await filter(Car.find(), req.query);
 
 	if (result.length === 0) {
@@ -41,10 +42,12 @@ exports.getAll = catchAsync(async (req, res, next) => {
 	}
 	if (req.user) {
 		for (var i = 0; i < result.length; i++) {
-			if (result[i].favOf.length > 0 && result[i].favOf.includes(req.user._id)) {
-				result[i].isFav = true;
-			} else {
-				result[i].isFav = false;
+			if (result[i].favOf) {
+				if (result[i].favOf.length > 0 && result[i].favOf.includes(req.user._id)) {
+					result[i].isFav = true;
+				} else {
+					result[i].isFav = false;
+				}
 			}
 		}
 	}
@@ -92,7 +95,7 @@ exports.updateOne = catchAsync(async (req, res, next) => {
 			);
 			array.push(Location);
 		}
-		req.body.image = array;
+		req.body.image = [...req.body.image, ...array];
 	}
 	if (req.body.image.length <= 0) {
 		return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
