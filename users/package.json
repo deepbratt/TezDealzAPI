@@ -13,7 +13,7 @@
 		"@auth/tdb-auth": "^1.0.0",
 		"@constants/tdb-constants": "^1.0.19",
 		"@mailchimp/mailchimp_transactional": "^1.0.31",
-		"@utils/tdb_globalutils": "^1.0.34",
+		"@utils/tdb_globalutils": "^1.0.44",
 		"axios": "^0.21.1",
 		"bcryptjs": "^2.4.3",
 		"cookie-parser": "^1.4.5",
