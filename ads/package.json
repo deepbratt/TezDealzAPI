@@ -14,7 +14,6 @@
     "@constants/tdb-constants": "^1.0.18",
     "@utils/tdb_globalutils": "^1.0.44",
     "axios": "^0.21.1",
-    "cookie-parser": "^1.4.5",
     "cookie-session": "^1.4.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",

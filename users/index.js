@@ -1,7 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
-const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const { AppError } = require('@utils/tdb_globalutils');
 //const {c}= require('tdb_globalutils')

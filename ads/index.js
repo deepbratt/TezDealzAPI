@@ -11,7 +11,7 @@ const { errorHandler, AppError } = require('@utils/tdb_globalutils');
 const adsRoutes = require('./constants/consts').routeConsts.carRoutes;
 const adsRouter = require('./routes/carRoutes');
 
-const PORT = process.env.PORT || 5000; // port
+const PORT = 3003; // port
 const app = express();
 
 // CORS
