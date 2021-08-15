@@ -21,7 +21,7 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
   const result = await Users.find();
 
   if (!result) {
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND), STATUS_CODE.NOT_FOUND);
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
 
   res.status(STATUS_CODE.OK).json({
@@ -42,7 +42,7 @@ exports.getUser = catchAsync(async (req, res, next) => {
   const result = await Users.findById(req.params.id);
 
   if (!result) {
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND), STATUS_CODE.NOT_FOUND);
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
 
   res.status(STATUS_CODE.OK).json({
@@ -61,7 +61,7 @@ exports.updateUser = catchAsync(async (req, res, next) => {
   });
 
   if (!result)
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND), STATUS_CODE.NOT_FOUND);
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
@@ -76,7 +76,7 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
   const result = await Users.findByIdAndDelete(req.params.id);
 
   if (!result) {
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND), STATUS_CODE.NOT_FOUND);
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
 
   res.status(STATUS_CODE.OK).json({
