@@ -43,15 +43,25 @@ const carsSchema = new mongoose.Schema(
 			],
 			required: [true, ERRORS.REQUIRED.REG_NUMBER_REQUIRED],
 		},
-		model: String,
+		model: {
+			type: String,
+			required: [true, 'Car Model is Required.'],
+		},
 		modelYear: {
 			type: Number,
 			min: [1960, ERRORS.INVALID.INVALID_MODEL_YEAR],
 			max: [Number(new Date().getFullYear()), ERRORS.INVALID.INVALID_MODEL_YEAR],
 			required: [true, ERRORS.REQUIRED.MODEL_YEAR_REQUIRED],
 		},
-		make: String,
-		price: Number,
+		make: {
+			type: String,
+			required: [true, 'Car Make is Required.'],
+		},
+		price: {
+			type: Number,
+			min: [10000, 'Price Should Be greater than 10000.'],
+			required: [true, 'Price is required'],
+		},
 		engineType: {
 			type: String,
 			required: [true, ERRORS.REQUIRED.ENGINE_TYPE_REQUIRED],
@@ -99,15 +109,25 @@ const carsSchema = new mongoose.Schema(
 			},
 			trim: true,
 		},
-		bodyColor: String,
-		engineCapacity: Number,
+		bodyColor: {
+			type: String,
+			required: [true, 'Body Color is Required.'],
+		},
+		engineCapacity: {
+			type: Number,
+			min: [200, 'Engine Capacity Must be greater than or equal to 200cc'],
+			required: [true, 'EngineCapacity is Required.'],
+		},
 		registrationCity: {
 			type: String,
 			trim: true,
 			lowercase: true,
 			validate: [validator.isAlpha, ERRORS.REQUIRED.ONLY_APLHA_REQUIRED],
 		},
-		milage: Number,
+		milage: {
+			type: Number,
+			required: [true, 'Milage is Required.'],
+		},
 		assembly: {
 			type: String,
 			required: [true, ERRORS.REQUIRED.ASSEMBLY_REQUIRED],
@@ -117,7 +137,10 @@ const carsSchema = new mongoose.Schema(
 			},
 		},
 		features: [{ type: String, required: [true, ERRORS.REQUIRED.FEATURES_REQUIRED] }],
-		description: String,
+		description: {
+			type: String,
+			required: [true, 'Description is Required'],
+		},
 		favOf: [
 			{
 				type: mongoose.Schema.ObjectId,
