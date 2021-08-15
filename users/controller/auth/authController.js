@@ -4,12 +4,34 @@ const catchAsync = require('@utils/tdb_globalutils/errorHandling/catchAsync');
 const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
 const jwtManagement = require('../../utils/jwtManagement');
 const jwt = require('jsonwebtoken');
+const { OAuth2Client } = require('google-auth-library');
 const sendSMS = require('../../utils/sendSMS');
 const {
 	sendVerificationCodetoEmail,
 	sendVerificationCodetoPhone,
 } = require('./accountVerification');
-
+const client = new OAuth2Client(process.env.CLIENT_ID);
+// New Continue With Google
+// exports.continueWithGoogle = catchAsync(async (req, res, next) => {
+// 	const { token } = req.body;
+// 	const ticket = await client.verifyIdToken({
+// 		idToken: token,
+// 		audience: process.env.CLIENT_ID,
+// 	});
+// 	const { name, email, picture } = ticket.getPayload();
+// 	const user = await db.user.upsert({
+// 		where: { email: email },
+// 		update: { name, picture },
+// 		create: { name, email, picture },
+// 	});
+// 	let user;
+// 	user = await User.findOne({ googleId: req.body.googleId });
+// 	if (!user) {
+// 		req.body.isVerified = true;
+// 		user = await User.create(req.body);
+// 	}
+// 	jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
+// });
 // Continue With Google
 exports.continueGoogle = catchAsync(async (req, res, next) => {
 	let user;

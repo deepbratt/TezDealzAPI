@@ -95,6 +95,7 @@ exports.updateOne = catchAsync(async (req, res, next) => {
 			);
 			array.push(Location);
 		}
+		console.log(req.body.image);
 		if (req.body.image) {
 			req.body.image = [...req.body.image, ...array];
 		} else {
