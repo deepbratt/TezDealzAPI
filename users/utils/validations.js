@@ -44,7 +44,7 @@ exports.signupPhoneRules = [
 		.isEmpty()
 		.isAlpha()
 		.withMessage(ERRORS.INVALID.INVALID_LASTNAME),
-	check('email', ERRORS.INVALID.INVALID_EMAIL).not().isEmpty().isMobilePhone(),
+	check('phone', 'Invalid Phone Number').not().isEmpty().isMobilePhone(),
 	check('password', ERRORS.INVALID.PASSWORD_LENGTH)
 		.isLength({ min: 8 })
 		.custom((value, { req }) => {
