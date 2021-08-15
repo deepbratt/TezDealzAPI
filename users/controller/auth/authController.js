@@ -38,6 +38,7 @@ exports.continueGoogle = catchAsync(async (req, res, next) => {
 	user = await User.findOne({ googleId: req.body.googleId });
 	if (!user) {
 		req.body.isVerified = true;
+		req.body.isEmailVerified = true;
 		user = await User.create(req.body);
 	}
 	jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);

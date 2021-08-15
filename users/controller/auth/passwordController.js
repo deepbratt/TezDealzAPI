@@ -69,7 +69,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 	});
 
 	if (!user) {
-		return next(new AppError(ERRORS.INVALID.INVALID_RESET_LINK));
+		return next(new AppError(ERRORS.INVALID.INVALID_RESET_LINK, STATUS_CODE.BAD_REQUEST));
 	}
 
 	user.password = req.body.password;

@@ -29,7 +29,7 @@ exports.sendVerificationCodetoPhone = async (req, res, next) => {
 		user.phoneVerificationCode = undefined;
 		user.phoneVerificationTokenExpires = undefined;
 		await user.save({ validateBeforeSave: false });
-		return next(new AppError(ERRORS.RUNTIME.SENDING_MESSAGE), STATUS_CODE.SERVER_ERROR);
+		return next(new AppError(ERRORS.RUNTIME.SENDING_MESSAGE, STATUS_CODE.SERVER_ERROR));
 	}
 };
 
@@ -37,7 +37,7 @@ exports.sendVerificationCodetoEmail = async (req, res, next) => {
 	const user = await User.findOne({ email: req.body.email });
 
 	if (!user) {
-		return next(new AppError(ERRORS.INVALID.NOT_FOUND), STATUS_CODE.NOT_FOUND);
+		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 	}
 
 	const verificationToken = await user.emailVerificationToken();
@@ -69,7 +69,7 @@ exports.phoneVerification = catchAsync(async (req, res, next) => {
 	});
 
 	if (!user) {
-		return next(new AppError(ERRORS.INVALID.INVALID_VERIFICATION_TOKEN), STATUS_CODE.UNAUTHORIZED);
+		return next(new AppError(ERRORS.INVALID.INVALID_VERIFICATION_TOKEN, STATUS_CODE.UNAUTHORIZED));
 	}
 
 	// check if user is logged in with phone or only want to verify its phone after logged in with email.
@@ -102,7 +102,7 @@ exports.emailVerification = catchAsync(async (req, res, next) => {
 	});
 
 	if (!user) {
-		return next(new AppError(ERRORS.INVALID.INVALID_VERIFICATION_TOKEN), STATUS_CODE.UNAUTHORIZED);
+		return next(new AppError(ERRORS.INVALID.INVALID_VERIFICATION_TOKEN, STATUS_CODE.UNAUTHORIZED));
 	}
 
 	// check if user is logged in with email or only want to verify its email after logged in with phone.
