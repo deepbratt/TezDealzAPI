@@ -4,49 +4,45 @@ const { authenticate } = require('@auth/tdb-auth');
 const authController = require('../controller/auth/index');
 const userController = require('../controller/user/userController');
 const {
-  signupEmailRules,
-  signupPhoneRules,
-  validationFunction,
+	changePassword,
+	signupEmailRules,
+	signupPhoneRules,
+	continueGoogleRules,
+	continueFaceBookRules,
+	validationFunction,
 } = require('../utils/validations');
 const { upload } = require('@utils/tdb_globalutils');
 
 const router = express.Router();
 
 // Google Authentication Route
-router.post('/google-auth', authController.continueGoogle);
+router.post('/google-auth', continueGoogleRules, validationFunction, authController.continueGoogle);
 // Facebook Authentication Route
-router.post('/facebook-auth', authController.continueFacebook);
+router.post(
+	'/facebook-auth',
+	continueFaceBookRules,
+	validationFunction,
+	authController.continueFacebook
+);
 //email-phone
-router.post(
-  '/signup-email',
-  signupEmailRules,
-  validationFunction,
-  authController.signupEmail,
-);
-router.post(
-  '/signup-phone',
-  signupPhoneRules,
-  validationFunction,
-  authController.signupPhone,
-);
+router.post('/signup-email', signupEmailRules, validationFunction, authController.signupEmail);
+router.post('/signup-phone', signupPhoneRules, validationFunction, authController.signupPhone);
 router.post('/login-email', authController.loginEmail);
 router.post('/login-phone', authController.loginPhone);
-router.get('/logout', authController.logout);
 
 // forgot Password with Email/Phone
 router.post('/forgotPassword', authController.forgotPassword);
 //Reset Password
-router.patch('/resetPassword/:token', authController.resetPassword);
+router.patch(
+	'/resetPassword/:token',
+	changePassword,
+	validationFunction,
+	authController.resetPassword
+);
 //Send verification email
-router.post(
-  '/send-verification-email',
-  authController.sendVerificationCodetoEmail,
-);
+router.post('/send-verification-email', authController.sendVerificationCodetoEmail);
 //Send verification Phone
-router.post(
-  '/send-verification-phone',
-  authController.sendVerificationCodetoPhone,
-);
+router.post('/send-verification-phone', authController.sendVerificationCodetoPhone);
 //account verification
 // router.patch(
 //   '/account-verification/:token',
@@ -63,14 +59,15 @@ router.patch('/email-verification/:token', authController.emailVerification);
 router.use(authenticate(User));
 
 // Update Current User's Password
-router.patch('/updateMyPassword', authController.updatePassword);
+router.patch(
+	'/updateMyPassword',
+	changePassword,
+	validationFunction,
+	authController.updatePassword
+);
 
 // Update Current User's Data
-router.patch(
-  '/updateMe',
-  upload('image').single('image'),
-  userController.updateMe,
-);
+router.patch('/updateMe', upload('image').single('image'), userController.updateMe);
 
 // Delete/Inactive Current User
 router.delete('/deleteMe', userController.deleteMe);
@@ -84,13 +81,10 @@ router.patch('/addMyEmail', authController.addUserEmail);
 //users
 router.route('/currentUser').get(authController.isLoggedIn);
 
+router.route('/').get(userController.getAllUsers).post(userController.createUser);
 router
-  .route('/')
-  .get(userController.getAllUsers)
-  .post(userController.createUser);
-router
-  .route('/:id')
-  .get(userController.getUser)
-  .patch(userController.updateUser)
-  .delete(userController.deleteUser);
+	.route('/:id')
+	.get(userController.getUser)
+	.patch(userController.updateUser)
+	.delete(userController.deleteUser);
 module.exports = router;

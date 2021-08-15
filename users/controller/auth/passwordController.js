@@ -1,10 +1,8 @@
 const crypto = require('crypto');
 const User = require('../../model/userModel');
-const AppError = require('@utils/tdb_globalutils/errorHandling/AppError');
-const catchAsync = require('@utils/tdb_globalutils/errorHandling/catchAsync');
+const { AppError, Email, catchAsync } = require('@utils/tdb_globalutils');
 const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
 var validator = require('email-validator');
-const Email = require('../../utils/email');
 const sendSMS = require('../../utils/sendSMS');
 const jwtManagement = require('../../utils/jwtManagement');
 
@@ -36,10 +34,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 	await user.save({ validateBeforeSave: false });
 	try {
 		if (validator.validate(req.body.data)) {
-			const res = await new Email(user, resetToken).forgotPassword();
-			if (res[0].status === 'rejected') {
-				throw new Error(ERRORS.RUNTIME.SENDING_EMAIL);
-			}
+			const res = await new Email(user, resetToken).sendPasswordResetToken();
 			return res.status(STATUS_CODE.OK).json({
 				status: STATUS.SUCCESS,
 				message: SUCCESS_MSG.SUCCESS_MESSAGES.TOKEN_SENT_EMAIL,
@@ -78,7 +73,6 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 	}
 
 	user.password = req.body.password;
-	user.passwordConfirm = req.body.passwordConfirm;
 	user.passwordResetToken = undefined;
 	user.passwordResetExpires = undefined;
 	await user.save();
@@ -100,7 +94,6 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
 	// if User is correct then Update Current user's password
 	user.password = req.body.password;
-	user.passwordConfirm = req.body.passwordConfirm;
 	await user.save();
 
 	jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
