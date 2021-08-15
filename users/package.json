@@ -11,7 +11,7 @@
 	"license": "ISC",
 	"dependencies": {
 		"@auth/tdb-auth": "^1.0.0",
-		"@constants/tdb-constants": "^1.0.11",
+		"@constants/tdb-constants": "^1.0.19",
 		"@mailchimp/mailchimp_transactional": "^1.0.31",
 		"@utils/tdb_globalutils": "^1.0.16",
 		"axios": "^0.21.1",
