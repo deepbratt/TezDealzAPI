@@ -2,12 +2,7 @@ const crypto = require('crypto');
 const User = require('../../model/userModel');
 const { AppError, Email } = require('@utils/tdb_globalutils');
 const catchAsync = require('@utils/tdb_globalutils/errorHandling/catchAsync');
-const {
-  ERRORS,
-  STATUS_CODE,
-  SUCCESS_MSG,
-  STATUS,
-} = require('@constants/tdb-constants');
+const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
 const sendSMS = require('../../utils/sendSMS');
 
 exports.sendVerificationCodetoPhone = async (req, res, next) => {
@@ -34,9 +29,7 @@ exports.sendVerificationCodetoPhone = async (req, res, next) => {
     user.phoneVerificationCode = undefined;
     user.phoneVerificationTokenExpires = undefined;
     await user.save({ validateBeforeSave: false });
-    return next(
-      new AppError(ERRORS.RUNTIME.SENDING_MESSAGE, STATUS_CODE.SERVER_ERROR),
-    );
+    return next(new AppError(ERRORS.RUNTIME.SENDING_MESSAGE, STATUS_CODE.SERVER_ERROR));
   }
 };
 
@@ -61,18 +54,13 @@ exports.sendVerificationCodetoEmail = async (req, res, next) => {
     user.emailVerificationCode = undefined;
     user.emailVerificationTokenExpires = undefined;
     await user.save({ validateBeforeSave: false });
-    return next(
-      new AppError(ERRORS.RUNTIME.SENDING_TOKEN, STATUS_CODE.SERVER_ERROR),
-    );
+    return next(new AppError(ERRORS.RUNTIME.SENDING_TOKEN, STATUS_CODE.SERVER_ERROR));
   }
 };
 
 // Phone verification
 exports.phoneVerification = catchAsync(async (req, res, next) => {
-  const hashedToken = crypto
-    .createHash('sha256')
-    .update(req.params.token)
-    .digest('hex');
+  const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
   //const hashedToken = req.params.token;
 
   const user = await User.findOne({
@@ -81,12 +69,7 @@ exports.phoneVerification = catchAsync(async (req, res, next) => {
   });
 
   if (!user) {
-    return next(
-      new AppError(
-        ERRORS.INVALID.INVALID_VERIFICATION_TOKEN,
-        STATUS_CODE.UNAUTHORIZED,
-      ),
-    );
+    return next(new AppError(ERRORS.INVALID.INVALID_VERIFICATION_TOKEN, STATUS_CODE.UNAUTHORIZED));
   }
 
   // check if user is logged in with phone or only want to verify its phone after logged in with email.
@@ -110,10 +93,7 @@ exports.phoneVerification = catchAsync(async (req, res, next) => {
 
 // email Verification code
 exports.emailVerification = catchAsync(async (req, res, next) => {
-  const hashedToken = crypto
-    .createHash('sha256')
-    .update(req.params.token)
-    .digest('hex');
+  const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
   //const hashedToken = req.params.token;
 
   const user = await User.findOne({
@@ -122,12 +102,7 @@ exports.emailVerification = catchAsync(async (req, res, next) => {
   });
 
   if (!user) {
-    return next(
-      new AppError(
-        ERRORS.INVALID.INVALID_VERIFICATION_TOKEN,
-        STATUS_CODE.UNAUTHORIZED,
-      ),
-    );
+    return next(new AppError(ERRORS.INVALID.INVALID_VERIFICATION_TOKEN, STATUS_CODE.UNAUTHORIZED));
   }
 
   // check if user is logged in with email or only want to verify its email after logged in with phone.
