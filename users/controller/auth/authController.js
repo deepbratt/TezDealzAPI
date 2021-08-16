@@ -34,13 +34,14 @@ const client = new OAuth2Client(process.env.CLIENT_ID);
 // });
 // Continue With Google
 exports.continueGoogle = catchAsync(async (req, res, next) => {
-  let user;
-  user = await User.findOne({ googleId: req.body.googleId });
-  if (!user) {
-    req.body.isVerified = true;
-    user = await User.create(req.body);
-  }
-  jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
+	let user;
+	user = await User.findOne({ googleId: req.body.googleId });
+	if (!user) {
+		req.body.isVerified = true;
+		req.body.isEmailVerified = true;
+		user = await User.create(req.body);
+	}
+	jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
 });
 
 // Continue With Facebook

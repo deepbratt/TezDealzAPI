@@ -1,12 +1,7 @@
 const crypto = require('crypto');
 const User = require('../../model/userModel');
 const { AppError, Email, catchAsync } = require('@utils/tdb_globalutils');
-const {
-  ERRORS,
-  STATUS_CODE,
-  SUCCESS_MSG,
-  STATUS,
-} = require('@constants/tdb-constants');
+const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
 var validator = require('email-validator');
 const sendSMS = require('../../utils/sendSMS');
 const jwtManagement = require('../../utils/jwtManagement');
@@ -40,7 +35,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
   try {
     if (validator.validate(req.body.data)) {
-      const res = await new Email(user, resetToken).sendPasswordResetToken();
+      await new Email(user, resetToken).sendPasswordResetToken();
       return res.status(STATUS_CODE.OK).json({
         status: STATUS.SUCCESS,
         message: SUCCESS_MSG.SUCCESS_MESSAGES.TOKEN_SENT_EMAIL,
@@ -60,18 +55,13 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save({ validateBeforeSave: false });
-    return next(
-      new AppError(ERRORS.RUNTIME.SENDING_TOKEN, STATUS_CODE.SERVER_ERROR),
-    );
+    return next(new AppError(ERRORS.RUNTIME.SENDING_TOKEN, STATUS_CODE.SERVER_ERROR));
   }
 });
 
 //Reset Password
 exports.resetPassword = catchAsync(async (req, res, next) => {
-  const hashedToken = crypto
-    .createHash('sha256')
-    .update(req.params.token)
-    .digest('hex');
+  const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
   //const hashedToken = req.params.token;
 
   const user = await User.findOne({
@@ -80,7 +70,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   });
 
   if (!user) {
-    return next(new AppError(ERRORS.INVALID.INVALID_RESET_LINK));
+    return next(new AppError(ERRORS.INVALID.INVALID_RESET_LINK, STATUS_CODE.BAD_REQUEST));
   }
 
   user.password = req.body.password;
@@ -100,9 +90,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
   // If user has GoogleId and FacebookId, then he cannot update Password
   if (user.googleId || user.facebookId) {
-    return next(
-      new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED),
-    );
+    return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
   }
 
   if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {

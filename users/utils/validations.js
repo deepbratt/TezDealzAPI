@@ -44,7 +44,7 @@ exports.signupPhoneRules = [
     .isEmpty()
     .isAlpha()
     .withMessage(ERRORS.INVALID.INVALID_LASTNAME),
-  check('phone', ERRORS.INVALID.INVALID_EMAIL).not().isEmpty().isMobilePhone(),
+  check('phone', 'Invalid Phone Number').not().isEmpty().isMobilePhone(),
   check('password', ERRORS.INVALID.PASSWORD_LENGTH)
     .isLength({ min: 8 })
     .custom((value, { req }) => {
@@ -58,17 +58,11 @@ exports.signupPhoneRules = [
 ];
 
 exports.continueGoogleRules = [
-  check(
-    'firstName',
-    `${ERRORS.REQUIRED.FIRSTNAME_REQUIRED}.${ERRORS.INVALID.INVALID_FIRSTNAME}`,
-  )
+  check('firstName', `${ERRORS.REQUIRED.FIRSTNAME_REQUIRED}.${ERRORS.INVALID.INVALID_FIRSTNAME}`)
     .not()
     .isEmpty()
     .isAlpha(),
-  check(
-    'lastName',
-    `${ERRORS.REQUIRED.LASTNAME_REQUIRED}.${ERRORS.INVALID.INVALID_LASTNAME}`,
-  )
+  check('lastName', `${ERRORS.REQUIRED.LASTNAME_REQUIRED}.${ERRORS.INVALID.INVALID_LASTNAME}`)
     .not()
     .isEmpty()
     .isAlpha(),
@@ -77,17 +71,11 @@ exports.continueGoogleRules = [
 ];
 
 exports.continueFaceBookRules = [
-  check(
-    'firstName',
-    `${ERRORS.REQUIRED.FIRSTNAME_REQUIRED}.${ERRORS.INVALID.INVALID_FIRSTNAME}`,
-  )
+  check('firstName', `${ERRORS.REQUIRED.FIRSTNAME_REQUIRED}.${ERRORS.INVALID.INVALID_FIRSTNAME}`)
     .not()
     .isEmpty()
     .isAlpha(),
-  check(
-    'lastName',
-    `${ERRORS.REQUIRED.LASTNAME_REQUIRED}.${ERRORS.INVALID.INVALID_LASTNAME}`,
-  )
+  check('lastName', `${ERRORS.REQUIRED.LASTNAME_REQUIRED}.${ERRORS.INVALID.INVALID_LASTNAME}`)
     .not()
     .isEmpty()
     .isAlpha(),
