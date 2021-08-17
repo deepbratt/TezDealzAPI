@@ -1,11 +1,6 @@
 const Users = require('../../model/userModel');
 const { AppError, catchAsync } = require('@utils/tdb_globalutils');
-const {
-  ERRORS,
-  STATUS_CODE,
-  SUCCESS_MSG,
-  STATUS,
-} = require('@constants/tdb-constants');
+const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
 const { uploadS3 } = require('@utils/tdb_globalutils');
 
 // To filter unwanted fields from req.body
@@ -60,8 +55,7 @@ exports.updateUser = catchAsync(async (req, res, next) => {
     new: true,
   });
 
-  if (!result)
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
@@ -89,9 +83,7 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
 exports.updateMe = catchAsync(async (req, res, next) => {
   // Create error if user tying to change/update passowrd data
   if (req.body.password || req.body.passwordConfirm) {
-    return next(
-      new AppError(ERRORS.INVALID.INVALID_ROUTE, STATUS_CODE.BAD_REQUEST),
-    );
+    return next(new AppError(ERRORS.INVALID.INVALID_ROUTE, STATUS_CODE.BAD_REQUEST));
   }
 
   // Image Upload
@@ -109,9 +101,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   // filter out fileds that cannot be updated e.g Role etc
   const filteredBody = filterObj(
     req.body,
-    'displayName',
     'firstName',
-    'middleName',
     'lastName',
     'image',
     'gender',

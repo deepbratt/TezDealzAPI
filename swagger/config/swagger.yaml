@@ -4,48 +4,11 @@ info:
   version: '1.0.0'
   title: 'TezDeals'
 paths:
-  /v1/Users/google-auth:
-    post:
-      tags:
-        - 'Contine With Google'
-      summary: 'use for Contine with Google'
-      description: ''
-      produces:
-        - 'application/json'
-      parameters:
-        - in: 'body'
-          name: 'body'
-          description: 'with google'
-          required: true
-          schema:
-            $ref: '#/definitions/continue-google'
-      responses:
-        '200':
-          description: 'operation successful'
-
-  /v1/Users/facebook-auth:
-    post:
-      tags:
-        - 'Contine With Facebook'
-      summary: 'use for Contine with Facebook'
-      description: ''
-      produces:
-        - 'application/json'
-      parameters:
-        - in: 'body'
-          name: 'body'
-          description: 'User information'
-          required: true
-          schema:
-            $ref: '#/definitions/continue-facebook'
-      responses:
-        '200':
-          description: 'operation successful'
-  /v1/Users/login-email:
+  /v1/Users/login:
     post:
       tags:
         - 'login'
-      summary: 'use for login email'
+      summary: 'use for login email/Phone'
       description: ''
       consumes:
         - 'application/json'
@@ -57,52 +20,18 @@ paths:
           description: 'User information'
           required: true
           schema:
-            $ref: '#/definitions/login-email'
+            $ref: '#/definitions/login'
       responses:
         '400':
-          description: 'email or password incorrect'
-        '200':
-          description: 'logged In Successfully'
-  /v1/Users/login-phone:
-    post:
-      tags:
-        - 'login'
-      summary: 'use for login phone'
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      parameters:
-        - in: 'body'
-          name: 'body'
-          description: 'User information'
-          required: true
-          schema:
-            $ref: '#/definitions/login-phone'
-      responses:
-        '400':
-          description: 'phone or password incorrect'
+          description: 'email/phone or password incorrect'
         '200':
           description: 'logged In Successfully'
 
-  /v1/Users:
-    get:
-      tags:
-        - 'Logout'
-      summary: 'use for logout'
-      description: ''
-      produces:
-        - 'application/json'
-      responses:
-        '200':
-          description: 'operation successful'
-
-  /v1/Users/signup-email:
+  /v1/Users/signup:
     post:
       tags:
         - 'signup'
-      summary: 'use for signup With Email'
+      summary: 'use for signup With Email/Phone'
       description: ''
       consumes:
         - 'application/json'
@@ -114,30 +43,7 @@ paths:
           description: 'User information'
           required: true
           schema:
-            $ref: '#/definitions/signup-email'
-      responses:
-        '400':
-          description: 'Invalid input'
-        '201':
-          description: 'Account created Successfully'
-
-  /v1/Users/signup-phone:
-    post:
-      tags:
-        - 'signup'
-      summary: 'use for signup With Number'
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      parameters:
-        - in: 'body'
-          name: 'body'
-          description: 'User information'
-          required: true
-          schema:
-            $ref: '#/definitions/signup-phone'
+            $ref: '#/definitions/signup'
       responses:
         '400':
           description: 'Invalid input'
@@ -193,46 +99,7 @@ paths:
           description: 'Invalid or expired Token'
         '200':
           description: 'Password reset Successfully'
-  /v1/Users/phone-verification/{token}:
-    patch:
-      tags:
-        - 'account verification'
-      summary: 'use for account verification'
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      parameters:
-        - in: 'path'
-          name: 'token'
-          required: true
-          type: 'string'
-      responses:
-        '400':
-          description: 'Invalid or expired Token'
-        '200':
-          description: 'account verified Successfully'
-  /v1/Users/email-verification/{token}:
-    patch:
-      tags:
-        - 'account verification'
-      summary: 'use for account verification'
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      parameters:
-        - in: 'path'
-          name: 'token'
-          required: true
-          type: 'string'
-      responses:
-        '400':
-          description: 'Invalid or expired Token'
-        '200':
-          description: 'account verified Successfully'
+
   /v1/Users/:
     get:
       tags:
@@ -376,50 +243,7 @@ paths:
           description: 'Invalid input'
         '200':
           description: 'Password Updated Successfully'
-  /v1/Users/addMyEmail:
-    patch:
-      tags:
-        - 'Current/LoggedIn User'
-      summary: 'Use to add Current/LoggedIn User email'
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      parameters:
-        - in: 'body'
-          name: 'body'
-          description: 'Current/LoggedIn User email'
-          required: true
-          schema:
-            $ref: '#/definitions/addUserEmail'
-      responses:
-        '400':
-          description: 'Invalid input'
-        '200':
-          description: 'Email Updated Successfully'
-  /v1/Users/addMyPhone:
-    patch:
-      tags:
-        - 'Current/LoggedIn User'
-      summary: 'Use to add Current/LoggedIn User phone'
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      parameters:
-        - in: 'body'
-          name: 'body'
-          description: 'Current/LoggedIn User phone'
-          required: true
-          schema:
-            $ref: '#/definitions/addUserPhone'
-      responses:
-        '400':
-          description: 'Invalid input'
-        '200':
-          description: 'Phone Updated Successfully'
+
   /v1/Users/deleteMe:
     delete:
       tags:
@@ -435,114 +259,6 @@ paths:
           description: 'Invalid input'
         '200':
           description: 'Token sent Successfully'
-
-  /v1/categories:
-    post:
-      tags:
-        - 'Categories'
-      summary: 'used to Create Category'
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      parameters:
-        - in: 'body'
-          name: 'body'
-          description: 'Categories data'
-          required: true
-          schema:
-            $ref: '#/definitions/Category'
-      responses:
-        '400':
-          description: 'Invalid input'
-        '201':
-          description: 'Category created Successfully'
-
-  /v1/categories/{id}:
-    get:
-      tags:
-        - 'Categories'
-      summary: 'use to get single Category'
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      parameters:
-        - in: 'path'
-          name: 'id'
-          required: true
-          type: 'string'
-      responses:
-        '404':
-          description: 'No Category Found'
-        '200':
-          description: 'Category details'
-
-  /v1/categories/:
-    get:
-      tags:
-        - 'Categories'
-      summary: 'use to get All Categories'
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      responses:
-        '404':
-          description: 'No Category Found'
-        '200':
-          description: 'Categories details'
-
-  /v1/categories/id:
-    patch:
-      tags:
-        - 'Categories'
-      summary: 'use to Update category'
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      parameters:
-        - in: 'path'
-          name: 'id'
-          required: true
-          type: 'string'
-        - in: 'body'
-          name: 'body'
-          description: 'Category details required'
-          required: true
-          schema:
-            $ref: '#/definitions/Category'
-      responses:
-        '404':
-          description: 'No Category Found'
-        '200':
-          description: 'Category update'
-
-  /v1/categories/:id:
-    delete:
-      tags:
-        - 'Categories'
-      summary: 'use to delete category'
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      parameters:
-        - in: 'path'
-          name: 'id'
-          required: true
-          type: 'string'
-      responses:
-        '404':
-          description: 'No Category Found'
-        '200':
-          description: 'Category deleted Successfully'
 
   /v1/ads/cars:
     post:
@@ -767,75 +483,23 @@ paths:
         '200':
           description: 'successfull'
 definitions:
-  signup-email:
+  signup:
     type: 'object'
     properties:
       firstName:
         type: 'string'
       lastName:
         type: 'string'
-      email:
+      data:
         type: 'string'
       password:
         type: 'string'
       passwordConfirm:
         type: 'string'
-  signup-phone:
+  login:
     type: 'object'
     properties:
-      firstName:
-        type: 'string'
-      lastName:
-        type: 'string'
-      phone:
-        type: 'string'
-      password:
-        type: 'string'
-      passwordConfirm:
-        type: 'string'
-  continue-google:
-    type: 'object'
-    properties:
-      googleId:
-        type: 'string'
-      displayName:
-        type: 'string'
-      firstName:
-        type: 'string'
-      lastName:
-        type: 'string'
-      image:
-        type: 'string'
-      email:
-        type: 'string'
-  continue-facebook:
-    type: 'object'
-    properties:
-      facebookId:
-        type: 'string'
-      displayName:
-        type: 'string'
-      firstName:
-        type: 'string'
-      middleName:
-        type: 'string'
-      lastName:
-        type: 'string'
-      image:
-        type: 'string'
-      email:
-        type: 'string'
-  login-email:
-    type: 'object'
-    properties:
-      email:
-        type: 'string'
-      password:
-        type: 'string'
-  login-phone:
-    type: 'object'
-    properties:
-      phone:
+      data:
         type: 'string'
       password:
         type: 'string'
@@ -850,34 +514,6 @@ definitions:
       password:
         type: 'string'
       passwordConfirm:
-        type: 'string'
-  Users:
-    type: 'object'
-    properties:
-      firstName:
-        type: 'string'
-      lastName:
-        type: 'string'
-      email:
-        type: 'string'
-      phone:
-        type: 'string'
-      password:
-        type: 'string'
-      passwordConfirm:
-        type: 'string'
-  Category:
-    type: 'object'
-    properties:
-      title:
-        type: 'string'
-      type:
-        type: 'string'
-      category:
-        type: 'string'
-      image:
-        type: 'string'
-      description:
         type: 'string'
   Cars:
     type: object
@@ -937,11 +573,7 @@ definitions:
   UpdateMyDetails:
     type: object
     properties:
-      displayName:
-        type: 'string'
       firstName:
-        type: 'string'
-      middleName:
         type: 'string'
       lastName:
         type: 'string'
@@ -963,14 +595,4 @@ definitions:
       password:
         type: 'string'
       passwordConfirm:
-        type: 'string'
-  addUserPhone:
-    type: object
-    properties:
-      phone:
-        type: 'string'
-  addUserEmail:
-    type: object
-    properties:
-      email:
         type: 'string'

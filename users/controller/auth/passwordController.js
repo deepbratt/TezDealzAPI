@@ -5,8 +5,7 @@ const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-con
 var validator = require('email-validator');
 const sendSMS = require('../../utils/sendSMS');
 const jwtManagement = require('../../utils/jwtManagement');
-const { ERROR } = require('@constants/tdb-constants/success/resStatus');
-
+``;
 //Forgot Password Via Email/phone
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   if (!req.body.data) {
@@ -74,12 +73,13 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   }
 
   user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
   await user.save();
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.TOKEN_SENT_EMAIL,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.PASSWORD_RESET,
   });
 });
 
@@ -100,6 +100,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
   // if User is correct then Update Current user's password
   user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
   await user.save();
 
   jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);

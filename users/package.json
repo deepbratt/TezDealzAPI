@@ -11,7 +11,7 @@
 	"license": "ISC",
 	"dependencies": {
 		"@auth/tdb-auth": "^1.0.0",
-		"@constants/tdb-constants": "^1.0.19",
+		"@constants/tdb-constants": "^1.0.21",
 		"@mailchimp/mailchimp_transactional": "^1.0.31",
 		"@utils/tdb_globalutils": "^1.0.44",
 		"axios": "^0.21.1",
@@ -33,6 +33,7 @@
 		"mongoose": "^5.13.2",
 		"morgan": "^1.10.0",
 		"nodemailer": "^6.6.3",
+		"phone": "^3.1.4",
 		"twilio": "^3.66.0",
 		"xss-clean": "^0.1.1"
 	},
