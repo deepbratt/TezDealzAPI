@@ -35,11 +35,11 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       lowercase: true,
-      validate: [validator.isEmail, ERRORS.INVALID.INVALID_SIGNUP_CREDENTIALS],
+      validate: [validator.isEmail, ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS],
     },
     phone: {
       type: String,
-      validate: [validator.isMobilePhone, ERRORS.INVALID.INVALID_SIGNUP_CREDENTIALS],
+      validate: [validator.isMobilePhone, ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS],
     },
     password: {
       type: String,
