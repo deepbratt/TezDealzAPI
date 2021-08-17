@@ -4,7 +4,7 @@ const catchAsync = require('@utils/tdb_globalutils/errorHandling/catchAsync');
 const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
 const jwtManagement = require('../../utils/jwtManagement');
 const jwt = require('jsonwebtoken');
-const { OAuth2Client } = require('google-auth-library');
+// const { OAuth2Client } = require('google-auth-library');
 const Validator = require('email-validator');
 
 // const sendSMS = require('../../utils/sendSMS');
@@ -15,12 +15,22 @@ const Validator = require('email-validator');
 
 // Sign Up
 exports.signup = catchAsync(async (req, res, next) => {
+  if (!req.body.data) {
+    return next(
+      new AppError(
+        `${ERRORS.REQUIRED.EMAIL_REQUIRED} / ${ERRORS.REQUIRED.PHONE_REQUIRED}`,
+        STATUS_CODE.UNAUTHORIZED,
+      ),
+    );
+  }
+
   let user;
   if (Validator.validate(req.body.data)) {
     user = await User.create({
       firstName: req.body.firstName.trim(),
       lastName: req.body.lastName.trim(),
       email: req.body.data,
+      username: req.body.username,
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
     });
@@ -29,12 +39,13 @@ exports.signup = catchAsync(async (req, res, next) => {
       firstName: req.body.firstName.trim(),
       lastName: req.body.lastName.trim(),
       phone: req.body.data,
+      username: req.body.username,
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
     });
   }
 
-  if (!user) {
+  if (!req.body.data) {
     return next(
       new AppError(
         `${ERRORS.INVALID.INVALID_EMAIL} / ${ERRORS.INVALID.INVALID_PHONE_NUM}`,
@@ -63,6 +74,9 @@ exports.login = catchAsync(async (req, res, next) => {
       },
       {
         phone: data,
+      },
+      {
+        username: data,
       },
     ],
   }).select('+password');

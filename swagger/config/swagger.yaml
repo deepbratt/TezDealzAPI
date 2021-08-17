@@ -8,7 +8,7 @@ paths:
     post:
       tags:
         - 'login'
-      summary: 'use for login email/Phone'
+      summary: 'use for login email or Phone or username'
       description: ''
       consumes:
         - 'application/json'
@@ -17,13 +17,13 @@ paths:
       parameters:
         - in: 'body'
           name: 'body'
-          description: 'User information'
+          description: 'User can login with email or phone or username'
           required: true
           schema:
             $ref: '#/definitions/login'
       responses:
         '400':
-          description: 'email/phone or password incorrect'
+          description: 'email or phone or username or password incorrect'
         '200':
           description: 'logged In Successfully'
 
@@ -31,7 +31,7 @@ paths:
     post:
       tags:
         - 'signup'
-      summary: 'use for signup With Email/Phone'
+      summary: 'use for signup With Email or Phone and username'
       description: ''
       consumes:
         - 'application/json'
@@ -40,7 +40,7 @@ paths:
       parameters:
         - in: 'body'
           name: 'body'
-          description: 'User information'
+          description: 'use for signup With Email or Phone and username is Required'
           required: true
           schema:
             $ref: '#/definitions/signup'
@@ -491,6 +491,8 @@ definitions:
       lastName:
         type: 'string'
       data:
+        type: 'string'
+      username:
         type: 'string'
       password:
         type: 'string'

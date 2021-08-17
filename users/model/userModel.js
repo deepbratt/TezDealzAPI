@@ -35,11 +35,16 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       lowercase: true,
-      validate: [validator.isEmail, ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS],
+      validate: [validator.isEmail, ERRORS.INVALID.INVALID_SIGNUP_CREDENTIALS],
     },
     phone: {
       type: String,
-      validate: [validator.isMobilePhone, ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS],
+      validate: [validator.isMobilePhone, ERRORS.INVALID.INVALID_SIGNUP_CREDENTIALS],
+    },
+    username: {
+      type: String,
+      required: [true, ERRORS.REQUIRED.USERNAME_REQUIRED],
+      minlength: [5, ERRORS.INVALID.USERNAME_LENGTH],
     },
     password: {
       type: String,
@@ -139,6 +144,7 @@ const userSchema = new mongoose.Schema(
 //indexes
 userSchema.index({ email: 1 }, { unique: true, sparse: true });
 userSchema.index({ phone: 1 }, { unique: true, sparse: true });
+userSchema.index({ username: 1 }, { unique: true, sparse: true });
 
 //pre save middleware (runs before data saved to db)
 userSchema.pre('save', async function (next) {
