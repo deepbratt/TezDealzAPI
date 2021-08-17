@@ -1,6 +1,6 @@
 {
 	"name": "users",
-	"version": "1.0.46",
+	"version": "1.0.48",
 	"description": "users service",
 	"main": "index.js",
 	"scripts": {
@@ -11,7 +11,7 @@
 	"license": "ISC",
 	"dependencies": {
 		"@auth/tdb-auth": "^1.0.0",
-		"@constants/tdb-constants": "^1.0.21",
+		"@constants/tdb-constants": "^1.0.23",
 		"@mailchimp/mailchimp_transactional": "^1.0.31",
 		"@utils/tdb_globalutils": "^1.0.44",
 		"axios": "^0.21.1",

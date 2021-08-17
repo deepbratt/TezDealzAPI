@@ -54,7 +54,7 @@ exports.login = catchAsync(async (req, res, next) => {
   const { data, password } = req.body;
   if (!data || !password) {
     // checking email or password empty?
-    return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
+    return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
   }
   const user = await User.findOne({
     $or: [
@@ -69,7 +69,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
   //user existance and password is correct
   if (!user || !(await user.correctPassword(password, user.password))) {
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.UNAUTHORIZED));
+    return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.UNAUTHORIZED));
   }
   jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
 });

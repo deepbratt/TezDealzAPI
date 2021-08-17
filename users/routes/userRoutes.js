@@ -17,7 +17,7 @@ const { upload } = require('@utils/tdb_globalutils');
 
 const router = express.Router();
 
-router.post('/signup', validationFunction, authController.signup);
+router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 
 // Google Authentication Route
