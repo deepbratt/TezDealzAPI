@@ -11,11 +11,30 @@ router
 	.route('/cars')
 	.post(authenticate(User), upload('image').array('image', 10), carController.createOne);
 router.route('/cars/myCars').get(authenticate(User), carController.getMine);
+
+//////////////////////////////FAVOURITES/////////////////////////////////////////
+router.route('/cars/favourites').get(authenticate(User), carController.favorites);
+
 router
 	.route('/cars/add-to-fav/:id')
 	.patch(authenticate(User), favPermessionCheck, carController.addtoFav);
 router.route('/cars/remove-from-fav/:id').patch(authenticate(User), carController.removeFromFav);
-router.route('/cars/favourites').get(authenticate(User), carController.favorites);
+
+///////////////////////MARK ACTIVE/SOLD////////////////////////////////////
+router
+	.route('/cars/mark-sold/:id')
+	.patch(authenticate(User), permessionCheck, carController.markSold);
+router
+	.route('/cars/mark-unsold/:id')
+	.patch(authenticate(User), permessionCheck, carController.unmarkSold);
+router
+	.route('/cars/mark-active/:id')
+	.patch(authenticate(User), permessionCheck, carController.markActive);
+router
+	.route('/cars/mark-inactive/:id')
+	.patch(authenticate(User), permessionCheck, carController.unmarkActive);
+///////////////////////////////////////////////////////////////////////////////////////	
+
 router
 	.route('/cars/:id')
 	.get(checkIsLoggedIn(User), carController.getOne)
