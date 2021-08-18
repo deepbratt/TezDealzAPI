@@ -51,7 +51,7 @@ paths:
           description: 'Account created Successfully'
 
   /v1/Users/forgotPassword:
-    post:
+    patch:
       tags:
         - 'forgotPassword'
       summary: 'use for forgot password with Email or phone'
@@ -660,6 +660,10 @@ definitions:
       lastName:
         type: 'string'
       image:
+        type: 'string'
+      email:
+        type: 'string'
+      phone:
         type: 'string'
       gender:
         type: 'string'
