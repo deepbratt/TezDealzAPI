@@ -86,6 +86,14 @@ const userSchema = new mongoose.Schema(
     image: {
       type: String,
     },
+    signedUpWithEmail: {
+      type: Boolean,
+      default: false,
+    },
+    signedUpWithPhone: {
+      type: Boolean,
+      default: false,
+    },
     // isVerified: {
     // 	type: Boolean,
     // 	default: false,

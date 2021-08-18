@@ -61,7 +61,7 @@ router.patch(
 // router.patch('/email-verification/:token', authController.emailVerification);
 
 // authenticate route
-// router.use(authenticate(User));
+router.use(authenticate(User));
 
 // Update Current User's Password
 router.patch(
