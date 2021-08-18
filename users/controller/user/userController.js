@@ -103,6 +103,8 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     req.body,
     'firstName',
     'lastName',
+    'phone',
+    'email',
     'image',
     'gender',
     'country',
@@ -116,13 +118,20 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     new: true,
   });
 
-  res.status(STATUS_CODE.OK).json({
-    status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.PROFILE_UPDATED_SUCCESSFULLY,
-    result: {
-      user,
-    },
-  });
+  // If User has phone and trying to update phone then ERROR
+  if (user.signedUpWithPhone === true && req.body.phone) {
+    return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
+  } else if (user.signedUpWithEmail === true && req.body.email) {
+    return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
+  } else {
+    res.status(STATUS_CODE.OK).json({
+      status: STATUS.SUCCESS,
+      message: SUCCESS_MSG.SUCCESS_MESSAGES.PROFILE_UPDATED_SUCCESSFULLY,
+      result: {
+        user,
+      },
+    });
+  }
 });
 
 exports.deleteMe = catchAsync(async (req, res, next) => {

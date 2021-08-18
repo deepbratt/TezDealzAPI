@@ -54,6 +54,13 @@ exports.signup = catchAsync(async (req, res, next) => {
     );
   }
 
+  if (Validator.validate(req.body.data)) {
+    user.signedUpWithEmail = true;
+  } else {
+    user.signedUpWithPhone = true;
+  }
+  await user.save();
+
   res.status(STATUS_CODE.CREATED).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
