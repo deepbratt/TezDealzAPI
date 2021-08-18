@@ -482,6 +482,86 @@ paths:
           description: 'Not Found'
         '200':
           description: 'successfull'
+  /v1/ads/cars/mark-sold/:id:
+    patch:
+      tags:
+        - 'Cars'
+      summary: 'mark-sold'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'
+  /v1/ads/cars/mark-unsold/:id:
+    patch:
+      tags:
+        - 'Cars'
+      summary: 'mark-unsold'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'
+  /v1/ads/cars/mark-active/:id:
+    patch:
+      tags:
+        - 'Cars'
+      summary: 'mark-active'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'
+  /v1/ads/cars/mark-inactive/:id:
+    patch:
+      tags:
+        - 'Cars'
+      summary: 'mark-inactive'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'                                       
 definitions:
   signup:
     type: 'object'
