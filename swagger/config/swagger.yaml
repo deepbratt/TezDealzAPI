@@ -74,7 +74,7 @@ paths:
           description: 'Token sent Successfully'
 
   /v1/Users/resetPassword/{token}:
-    post:
+    patch:
       tags:
         - 'resetPassword'
       summary: 'use for reset password'

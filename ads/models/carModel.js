@@ -159,6 +159,14 @@ const carsSchema = new mongoose.Schema(
 			type: Boolean,
 			default: true,
 		},
+		sellerType: {
+			type: String,
+			required: [true, 'Seller type is required'],
+			enum: {
+				values: ['Dealer','Individual'],
+				message: 'Seller Type must be Dealer or Individual',
+			},
+		},
 	},
 	{
 		timestamps: true,
