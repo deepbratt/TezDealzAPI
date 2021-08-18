@@ -2,6 +2,8 @@ const Car = require('../models/carModel');
 const { AppError, catchAsync, uploadS3, APIFeatures } = require('@utils/tdb_globalutils');
 const { ERRORS, STATUS, STATUS_CODE, SUCCESS_MSG } = require('@constants/tdb-constants');
 const { filter } = require('./factoryHandler');
+const redis = require('redis');
+const { client } = require('../utils/redisCache');
 
 exports.createOne = catchAsync(async (req, res, next) => {
   if (req.files) {
@@ -18,12 +20,21 @@ exports.createOne = catchAsync(async (req, res, next) => {
     }
     req.body.image = array;
   }
-  req.body.createdBy = req.user._id;
+  // req.body.createdBy = req.user._id;
   if (req.body.image.length <= 0) {
     return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
   }
   const result = await Car.create(req.body);
   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+
+  // Set during Post
+  client.setex(result.id, 60, JSON.stringify(result), (err, reply) => {
+    if (err) {
+      console.log('Error Storing Data');
+    }
+    console.log(reply);
+  });
+
   res.status(STATUS_CODE.CREATED).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
