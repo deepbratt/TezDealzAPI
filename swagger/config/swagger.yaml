@@ -652,6 +652,12 @@ definitions:
         type: array
         items:
           type: string
+      sellerType:
+        type: string
+      modelYear:
+        type: number
+      regNumber:
+        type: string        
   UpdateMyDetails:
     type: object
     properties:
