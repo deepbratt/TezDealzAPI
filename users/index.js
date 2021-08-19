@@ -7,7 +7,7 @@ const { AppError, errorHandler } = require('@utils/tdb_globalutils');
 dotenv.config({ path: './config/config.env' }); // read config.env to environmental variables
 require('./config/dbConnection')(); // db connection
 const session = require('cookie-session');
-const rateLimit = require('express-rate-limit');
+//const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
@@ -19,7 +19,7 @@ const { ERRORS } = require('@constants/tdb-constants');
 const userRoute = require('./constants/routeConts').routeConsts.userRoute;
 const userRouter = require('./routes/userRoutes');
 
-const rateLimitRoute = require('./constants/routeConts').routeConsts.rateLimitAPI;
+// const rateLimitRoute = require('./constants/routeConts').routeConsts.rateLimitAPI;
 
 const PORT = 3004; // port
 const app = express();
@@ -30,13 +30,13 @@ app.use(helmet());
 // CORS
 app.use(cors());
 
-// To prrevent Brute force Attack
-const limiter = rateLimit({
-  max: process.env.MAX_REQUESTS_FORM_SAME_IP,
-  windowMs: 60 * 60 * 1000,
-  message: ERRORS.INVALID.REQUESTS_EXCEDDED,
-});
-app.use(rateLimitRoute, limiter);
+// // To prrevent Brute force Attack
+// const limiter = rateLimit({
+//   max: process.env.MAX_REQUESTS_FORM_SAME_IP,
+//   windowMs: 60 * 60 * 1000,
+//   message: ERRORS.INVALID.REQUESTS_EXCEDDED,
+// });
+// app.use(rateLimitRoute, limiter);
 
 app.use(
   morgan('dev', {
@@ -57,11 +57,11 @@ app.use(mongoSanitize());
 app.use(xss());
 
 // Prevent Parameter Pollution
-app.use(
-  hpp({
-    // whitelist:['price etc]
-  }),
-);
+// app.use(
+//   hpp({
+//     // whitelist:['price etc]
+//   }),
+// );
 
 app.use(
   session({
