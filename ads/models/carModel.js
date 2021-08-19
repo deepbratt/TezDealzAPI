@@ -6,15 +6,15 @@ const carsSchema = new mongoose.Schema(
 	{
 		country: {
 			type: String,
-			validate: [validator.isAlpha, ERRORS.REQUIRED.ONLY_APLHA_REQUIRED],
+			validate: [validator.isAlpha, `country ${ERRORS.REQUIRED.ONLY_APLHA_REQUIRED}`],
 		},
 		province: {
 			type: String,
-			validate: [validator.isAlpha, ERRORS.REQUIRED.ONLY_APLHA_REQUIRED],
+			validate: [validator.isAlpha, `province ${ERRORS.REQUIRED.ONLY_APLHA_REQUIRED}`],
 		},
 		city: {
 			type: String,
-			validate: [validator.isAlpha, ERRORS.REQUIRED.ONLY_APLHA_REQUIRED],
+			validate: [validator.isAlpha, `city ${ERRORS.REQUIRED.ONLY_APLHA_REQUIRED}`],
 		},
 		location: {
 			type: {
@@ -121,8 +121,8 @@ const carsSchema = new mongoose.Schema(
 		registrationCity: {
 			type: String,
 			trim: true,
-			lowercase: true,
-			validate: [validator.isAlpha, ERRORS.REQUIRED.ONLY_APLHA_REQUIRED],
+			required: [true, `Registeration city ${ERRORS.REQUIRED.ONLY_APLHA_REQUIRED}`],
+			validate: [validator.isAlpha, `Registeration city ${ERRORS.REQUIRED.ONLY_APLHA_REQUIRED}`],
 		},
 		milage: {
 			type: Number,
@@ -163,7 +163,7 @@ const carsSchema = new mongoose.Schema(
 			type: String,
 			required: [true, 'Seller type is required'],
 			enum: {
-				values: ['Dealer','Individual'],
+				values: ['Dealer', 'Individual'],
 				message: 'Seller Type must be Dealer or Individual',
 			},
 		},
