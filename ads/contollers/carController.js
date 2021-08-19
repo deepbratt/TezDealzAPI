@@ -21,7 +21,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
 		req.body.image = array;
 	}
 	req.body.createdBy = req.user._id;
-	if (req.body.image && req.body.image.length <= 0) {
+	if (!req.body.image || req.body.image.length <= 0) {
 		return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
 	}
 	const result = await Car.create(req.body);
