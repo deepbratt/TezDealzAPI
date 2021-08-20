@@ -46,7 +46,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
 
 exports.getAll = catchAsync(async (req, res, next) => {
 	let result, totalCount;
-	if (req.user.role === 'User') {
+	if (req.user.role === 'User' || !req.user) {
 		[result, totalCount] = await filter(
 			Car.find({ active: { $ne: false }, isSold: { $ne: true }, banned: { $ne: true } }),
 			req.query
