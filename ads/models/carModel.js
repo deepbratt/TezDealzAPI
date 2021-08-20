@@ -167,6 +167,10 @@ const carsSchema = new mongoose.Schema(
 				message: ERRORS.INVALID.INVALID_SELLER_TYPE,
 			},
 		},
+		banned: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	{
 		timestamps: true,
@@ -176,16 +180,16 @@ const carsSchema = new mongoose.Schema(
 );
 
 carsSchema.index({
-  country: 'text',
-  province: 'text',
-  city: 'text',
-  model: 'text',
-  make: 'text',
-  bodyColor: 'text',
-  engineType: 'text',
-  condition: 'text',
-  description: 'text',
-  bodyType: 'text',
+	country: 'text',
+	province: 'text',
+	city: 'text',
+	model: 'text',
+	make: 'text',
+	bodyColor: 'text',
+	engineType: 'text',
+	condition: 'text',
+	description: 'text',
+	bodyType: 'text',
 });
 
 const Car = mongoose.model('Car', carsSchema);
