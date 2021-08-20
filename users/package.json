@@ -10,7 +10,7 @@
 	"author": "Magnit",
 	"license": "ISC",
 	"dependencies": {
-		"@auth/tdb-auth": "^1.0.0",
+		"@auth/tdb-auth": "^1.0.1",
 		"@constants/tdb-constants": "^1.0.24",
 		"@mailchimp/mailchimp_transactional": "^1.0.31",
 		"@utils/tdb_globalutils": "^1.0.55",

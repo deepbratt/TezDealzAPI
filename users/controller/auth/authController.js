@@ -81,17 +81,16 @@ exports.login = catchAsync(async (req, res, next) => {
 				username: data,
 			},
 		],
-	}).select('+password');
+	}).select('+password +active');
 
 	if (!user) {
 		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 	}
 
-	console.log(user.active);
-	// // If no user and not active:true then return Error
-	// if (!user.active) {
-	// 	return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.NOT_FOUND));
-	// }
+	// If no user and not active:true then return Error
+	if (!user.active) {
+		return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.NOT_FOUND));
+	}
 
 	//user existance and password is correct
 	if (!user || !(await user.correctPassword(password, user.password))) {
@@ -128,16 +127,6 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
 		user: currentUser,
 	});
 });
-
-// To Check User's Role
-exports.restrictTo = (...role) => {
-	return (req, res, next) => {
-		if (!role.includes(req.user.role)) {
-			return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
-		}
-		next();
-	};
-};
 
 //* ----------------------------------Previous Code is Below -----------------------------
 

@@ -62,3 +62,13 @@ exports.checkIsLoggedIn = (User) => {
 		next();
 	};
 };
+
+
+exports.restrictTo = (...role) => {
+	return (req, res, next) => {
+		if (!role.includes(req.user.role)) {
+			return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
+		}
+		next();
+	};
+};
