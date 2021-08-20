@@ -30,6 +30,7 @@ exports.signup = catchAsync(async (req, res, next) => {
       firstName: req.body.firstName.trim(),
       lastName: req.body.lastName.trim(),
       email: req.body.data,
+      role: req.body.role,
       username: req.body.username,
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
@@ -40,6 +41,7 @@ exports.signup = catchAsync(async (req, res, next) => {
       lastName: req.body.lastName.trim(),
       phone: req.body.data,
       username: req.body.username,
+      role: req.body.role,
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
     });
@@ -63,7 +65,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   res.status(STATUS_CODE.CREATED).json({
     status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.CREATED,
   });
 });
 
@@ -74,6 +76,8 @@ exports.login = catchAsync(async (req, res, next) => {
     // checking email or password empty?
     return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
   }
+
+  // Finding user by username, phone or email
   const user = await User.findOne({
     $or: [
       {
@@ -87,6 +91,11 @@ exports.login = catchAsync(async (req, res, next) => {
       },
     ],
   }).select('+password');
+
+  // If no user and not active:true then return Error
+  if (!(await User.findOne({ _id: user.id, active: true }))) {
+    return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.NOT_FOUND));
+  }
 
   //user existance and password is correct
   if (!user || !(await user.correctPassword(password, user.password))) {
@@ -123,6 +132,16 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
     user: currentUser,
   });
 });
+
+// To Check User's Role
+exports.restrictTo = (...role) => {
+  return (req, res, next) => {
+    if (!role.includes(req.user.role)) {
+      return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
+    }
+    next();
+  };
+};
 
 //* ----------------------------------Previous Code is Below -----------------------------
 

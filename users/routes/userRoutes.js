@@ -3,6 +3,7 @@ const User = require('../model/userModel');
 const { authenticate } = require('@auth/tdb-auth');
 const authController = require('../controller/auth/index');
 const userController = require('../controller/user/userController');
+const adminController = require('../controller/admin/adminController');
 
 const {
   changePassword,
@@ -16,7 +17,6 @@ const {
 const { upload } = require('@utils/tdb_globalutils');
 
 const router = express.Router();
-
 router.post('/signup', validationFunction, authController.signup);
 router.post('/login', authController.login);
 
@@ -67,15 +67,38 @@ router.use(authenticate(User));
 router.patch(
   '/updateMyPassword',
   //   changePassword,
+  authController.restrictTo('Admin', 'Moderator', 'User'),
   validationFunction,
   authController.updatePassword,
 );
 
 // Update Current User's Data
-router.patch('/updateMe', upload('image').single('image'), userController.updateMe);
+router.patch(
+  '/updateMe',
+  upload('image').single('image'),
+  authController.restrictTo('Admin', 'Moderator', 'User'),
+  userController.updateMe,
+);
 
 // Delete/Inactive Current User
-router.delete('/deleteMe', userController.deleteMe);
+router.delete(
+  '/deleteMe',
+  authController.restrictTo('Admin', 'Moderator', 'User'),
+  userController.deleteMe,
+);
+// Active User
+router.patch(
+  '/active-user/:id',
+  authController.restrictTo('Admin', 'Moderator'),
+  adminController.activeUser,
+);
+
+// inctive User
+router.patch(
+  '/inactive-user/:id',
+  authController.restrictTo('Admin', 'Moderator'),
+  adminController.inactiveUser,
+);
 
 // Update Current User's Phone
 // router.patch('/addMyPhone', authController.addUserPhone);
@@ -86,7 +109,10 @@ router.delete('/deleteMe', userController.deleteMe);
 //users
 router.route('/currentUser').get(authController.isLoggedIn);
 
-router.route('/').get(userController.getAllUsers).post(userController.createUser);
+router
+  .route('/')
+  .get(authController.restrictTo('Admin'), userController.getAllUsers)
+  .post(userController.createUser);
 router
   .route('/:id')
   .get(userController.getUser)

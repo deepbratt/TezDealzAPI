@@ -94,6 +94,14 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    role: {
+      type: String,
+      default: 'User',
+      enum: {
+        values: ['User', 'Moderartor', 'Admin'],
+        message: 'Role Must be User, Moderator or Admin',
+      },
+    },
     // isVerified: {
     // 	type: Boolean,
     // 	default: false,
@@ -170,16 +178,16 @@ userSchema.pre('save', function (next) {
 });
 
 // To show only active true users in Users.find() query
-userSchema.pre(/^find/, function (next) {
-  // /^find/ find all that startsWith (find)
-  // this. points to current query
-  this.find({
-    active: {
-      $ne: false,
-    },
-  });
-  next();
-});
+// userSchema.pre(/^find/, function (next) {
+//   // /^find/ find all that startsWith (find)
+//   // this. points to current query
+//   this.find({
+//     active: {
+//       $ne: false,
+//     },
+//   });
+//   next();
+// });
 
 //SCHEMA METHODS
 userSchema.methods.correctPassword = async function (candidatePassword, userpassword) {

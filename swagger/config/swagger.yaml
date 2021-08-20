@@ -260,6 +260,48 @@ paths:
         '200':
           description: 'Token sent Successfully'
 
+  /v1/users/active-user/:id:
+    patch:
+      tags:
+        - 'Active/Inactive User By Admin or Moderator'
+      summary: 'Active Users by Admin or Moderator by user id'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'User already active or does not exist'
+        '200':
+          description: 'User Activated Successfully'
+
+  /v1/users/inactive-user/:id:
+    patch:
+      tags:
+        - 'Active/Inactive User By Admin or Moderator'
+      summary: 'Inctive Users by Admin or Moderator by user id'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'User already inactive or does not exist'
+        '200':
+          description: 'User Inactivated Successfully'
+
   /v1/ads/cars:
     post:
       tags:
@@ -561,7 +603,7 @@ paths:
         '404':
           description: 'Not Found'
         '200':
-          description: 'successfull'                                       
+          description: 'successfull'
 definitions:
   signup:
     type: 'object'
@@ -573,6 +615,8 @@ definitions:
       data:
         type: 'string'
       username:
+        type: 'string'
+      role:
         type: 'string'
       password:
         type: 'string'
