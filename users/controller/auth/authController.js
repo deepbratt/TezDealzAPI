@@ -87,10 +87,10 @@ exports.login = catchAsync(async (req, res, next) => {
 		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 	}
 
-	// If no user and not active:true then return Error
-	if (!user.active) {
-		return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.NOT_FOUND));
-	}
+	// // If no user and not active:true then return Error
+	// if (!user.active) {
+	// 	return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.NOT_FOUND));
+	// }
 
 	//user existance and password is correct
 	if (!user || !(await user.correctPassword(password, user.password))) {
