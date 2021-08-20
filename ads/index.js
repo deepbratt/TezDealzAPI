@@ -16,7 +16,7 @@ const app = express();
 
 // CORS
 app.use(cors());
-
+app.options('*',cors())
 app.use(morgan('dev'));
 
 // GLOBAL MIDDLEWARES
