@@ -108,6 +108,20 @@ router.patch(
   adminController.inactiveUser,
 );
 
+// Ban User By Admin
+router.patch(
+  '/ban-user/:id',
+  authController.restrictTo('Admin', 'Moderator'),
+  adminController.banUser,
+);
+
+// unBan User By Admin
+router.patch(
+  '/unban-user/:id',
+  authController.restrictTo('Admin', 'Moderator'),
+  adminController.unbanUser,
+);
+
 // Update Current User's Phone
 // router.patch('/addMyPhone', authController.addUserPhone);
 

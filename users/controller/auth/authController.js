@@ -83,19 +83,27 @@ exports.login = catchAsync(async (req, res, next) => {
     ],
   }).select('+password');
 
-  if (!user) {
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-  }
-
-  // If no user and not active:true then return Error
-  if (!(await User.findOne({ id: user.id, active: true }))) {
-    return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.NOT_FOUND));
-  }
-
   //user existance and password is correct
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.UNAUTHORIZED));
   }
+
+  // Check if user is banned , if banned then Throw Error
+  if (!user.ban === false) {
+    return next(
+      new AppError(
+        'You have violated our Privacy Policy & Terms. For Further Information please contact our Customer Support Center. ',
+        STATUS_CODE.UNAUTHORIZED,
+      ),
+    );
+  }
+
+  // Check if user is active or not
+  if (!user.active === true) {
+    // If no user and not active:true then return Error
+    return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.NOT_FOUND));
+  }
+
   jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
 });
 

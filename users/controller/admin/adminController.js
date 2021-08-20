@@ -73,3 +73,29 @@ exports.activeUser = catchAsync(async (req, res, next) => {
     message: SUCCESS_MSG.SUCCESS_MESSAGES.USER_ACTIVATED,
   });
 });
+
+exports.unbanUser = catchAsync(async (req, res, next) => {
+  const result = await Users.findOne({ _id: req.params.id, ban: true });
+  if (!result) {
+    return next(new AppError('User is already Unban or Does not Exist', STATUS_CODE.BAD_REQUEST));
+  }
+  await Users.updateOne({ _id: req.params.id }, { ban: false });
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: 'You have Unbanned User successfully.',
+  });
+});
+
+exports.banUser = catchAsync(async (req, res, next) => {
+  const result = await Users.findOne({ _id: req.params.id, ban: false });
+  if (!result) {
+    return next(
+      new AppError('This User is already banned or Does not exist', STATUS_CODE.BAD_REQUEST),
+    );
+  }
+  await Users.updateOne({ _id: req.params.id }, { ban: true });
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: 'You have successfully Banned this User',
+  });
+});
