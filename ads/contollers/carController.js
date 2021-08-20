@@ -45,15 +45,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
 });
 
 exports.getAll = catchAsync(async (req, res, next) => {
-	let result, totalCount;
-	if (req.user.role === 'User' || !req.user) {
-		[result, totalCount] = await filter(
-			Car.find({ active: { $ne: false }, isSold: { $ne: true }, banned: { $ne: true } }),
-			req.query
-		);
-	} else {
-		[result, totalCount] = await filter(Car.find(), req.query);
-	}
+	const [result, totalCount] = await filter(Car.find(), req.query);
 
 	if (result.length === 0) {
 		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
