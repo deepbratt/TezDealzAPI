@@ -2,8 +2,8 @@ const Car = require('../models/carModel');
 const { AppError, catchAsync, uploadS3, APIFeatures } = require('@utils/tdb_globalutils');
 const { ERRORS, STATUS, STATUS_CODE, SUCCESS_MSG } = require('@constants/tdb-constants');
 const { filter } = require('./factoryHandler');
-const redis = require('redis');
-const { client } = require('../utils/redisCache');
+// const redis = require('redis');
+// const { client } = require('../utils/redisCache');
 
 exports.createOne = catchAsync(async (req, res, next) => {
   if (req.files) {
@@ -21,7 +21,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
     req.body.image = array;
   }
   req.body.createdBy = req.user._id;
-  if (req.body.image.length <= 0) {
+  if (!req.body.image || req.body.image.length <= 0) {
     return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
   }
   const result = await Car.create(req.body);
