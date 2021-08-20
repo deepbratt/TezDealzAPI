@@ -98,7 +98,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: 'User',
       enum: {
-        values: ['User', 'Moderartor', 'Admin'],
+        values: ['User', 'Moderator', 'Admin'],
         message: 'Role Must be User, Moderator or Admin',
       },
     },
