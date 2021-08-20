@@ -20,6 +20,14 @@ const router = express.Router();
 router.post('/signup', validationFunction, authController.signup);
 router.post('/login', authController.login);
 
+//Add User, Moderators or Admins by Admin
+router.post(
+  '/create-user',
+  authenticate(User),
+  authController.restrictTo('Admin'),
+  adminController.signupByAdmin,
+);
+
 // Google Authentication Route
 // router.post('/google-auth', continueGoogleRules, validationFunction, authController.continueGoogle);
 // Facebook Authentication Route

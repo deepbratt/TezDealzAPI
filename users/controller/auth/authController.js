@@ -15,15 +15,6 @@ const Validator = require('email-validator');
 
 // Sign Up
 exports.signup = catchAsync(async (req, res, next) => {
-  if (!req.body.data) {
-    return next(
-      new AppError(
-        `${ERRORS.REQUIRED.EMAIL_REQUIRED} / ${ERRORS.REQUIRED.PHONE_REQUIRED}`,
-        STATUS_CODE.UNAUTHORIZED,
-      ),
-    );
-  }
-
   let user;
   if (Validator.validate(req.body.data)) {
     user = await User.create({
@@ -50,7 +41,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   if (!req.body.data) {
     return next(
       new AppError(
-        `${ERRORS.INVALID.INVALID_EMAIL} / ${ERRORS.INVALID.INVALID_PHONE_NUM}`,
+        `${ERRORS.REQUIRED.EMAIL_REQUIRED} / ${ERRORS.REQUIRED.PHONE_REQUIRED}`,
         STATUS_CODE.UNAUTHORIZED,
       ),
     );
@@ -92,8 +83,12 @@ exports.login = catchAsync(async (req, res, next) => {
     ],
   }).select('+password');
 
+  if (!user) {
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  }
+
   // If no user and not active:true then return Error
-  if (!(await User.findOne({ _id: user.id, active: true }))) {
+  if (!(await User.findOne({ id: user.id, active: true }))) {
     return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.NOT_FOUND));
   }
 
