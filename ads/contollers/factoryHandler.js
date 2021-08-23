@@ -22,7 +22,7 @@ exports.stats = (Model) => {
 		const stats = await Model.aggregate([
 			{
 				$group: {
-					_id: { $toUpper: '$city' },
+					_id: null,
 					numCars: { $sum: 1 },
 					avgPrice: { $avg: '$price' },
 					minPrice: { $min: '$price' },
