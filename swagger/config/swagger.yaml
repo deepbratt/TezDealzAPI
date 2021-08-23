@@ -302,6 +302,71 @@ paths:
         '200':
           description: 'User Inactivated Successfully'
 
+  /v1/users/ban-user/:id:
+    patch:
+      tags:
+        - 'Ban/Unban User By Admin or Moderator'
+      summary: 'Ban Users by Admin or Moderator by user id'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'User already Banned or does not exist'
+        '200':
+          description: 'User Banned Successfully'
+
+  /v1/users/unban-user/:id:
+    patch:
+      tags:
+        - 'Ban/Unban User By Admin or Moderator'
+      summary: 'Unbanned Users by Admin or Moderator by user id'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'User already Unbanned or does not exist'
+        '200':
+          description: 'User Unbanned Successfully'
+
+  /v1/Users/create-user:
+    post:
+      tags:
+        - 'Create User By Admin'
+      summary: 'Admin can create User, Moderator and Admin'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'use for signup With Email or Phone and username is Required'
+          required: true
+          schema:
+            $ref: '#/definitions/signupByAdmin'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Account created Successfully'
+
   /v1/ads/cars:
     post:
       tags:
@@ -727,6 +792,23 @@ definitions:
     type: object
     properties:
       passwordCurrent:
+        type: 'string'
+      password:
+        type: 'string'
+      passwordConfirm:
+        type: 'string'
+  signupByAdmin:
+    type: 'object'
+    properties:
+      firstName:
+        type: 'string'
+      lastName:
+        type: 'string'
+      data:
+        type: 'string'
+      username:
+        type: 'string'
+      role:
         type: 'string'
       password:
         type: 'string'

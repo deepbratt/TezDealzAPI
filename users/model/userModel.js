@@ -98,7 +98,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: 'User',
       enum: {
-        values: ['User', 'Moderartor', 'Admin'],
+        values: ['User', 'Moderator', 'Admin'],
         message: 'Role Must be User, Moderator or Admin',
       },
     },
@@ -149,7 +149,10 @@ const userSchema = new mongoose.Schema(
     active: {
       type: Boolean,
       default: true,
-      select: false,
+    },
+    ban: {
+      type: Boolean,
+      default: false,
     },
   },
   {

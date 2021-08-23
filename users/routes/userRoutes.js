@@ -6,13 +6,13 @@ const userController = require('../controller/user/userController');
 const adminController = require('../controller/admin/adminController');
 
 const {
-	changePassword,
-	validationFunction,
-	signupRules,
-	//   signupEmailRules,
-	//   signupPhoneRules,
-	//   continueGoogleRules,
-	//   continueFaceBookRules,
+  changePassword,
+  validationFunction,
+  signupRules,
+  //   signupEmailRules,
+  //   signupPhoneRules,
+  //   continueGoogleRules,
+  //   continueFaceBookRules,
 } = require('../utils/validations');
 const { upload } = require('@utils/tdb_globalutils');
 
@@ -21,12 +21,7 @@ router.post('/signup', validationFunction, authController.signup);
 router.post('/login', authController.login);
 
 //Add User, Moderators or Admins by Admin
-router.post(
-	'/create-user',
-	authenticate(User),
-	restrictTo('Admin'),
-	adminController.signupByAdmin
-);
+router.post('/create-user', authenticate(User), restrictTo('Admin'), adminController.signupByAdmin);
 
 // Google Authentication Route
 // router.post('/google-auth', continueGoogleRules, validationFunction, authController.continueGoogle);
@@ -47,10 +42,10 @@ router.post(
 router.post('/forgotPassword', authController.forgotPassword);
 //Reset Password
 router.patch(
-	'/resetPassword/:token',
-	//   changePassword,
-	validationFunction,
-	authController.resetPassword
+  '/resetPassword/:token',
+  //   changePassword,
+  validationFunction,
+  authController.resetPassword,
 );
 //Send verification email
 // router.post('/send-verification-email', authController.sendVerificationCodetoEmail);
@@ -73,40 +68,28 @@ router.use(authenticate(User));
 
 // Update Current User's Password
 router.patch(
-	'/updateMyPassword',
-	//   changePassword,
-	restrictTo('Admin', 'Moderator', 'User'),
-	validationFunction,
-	authController.updatePassword
+  '/updateMyPassword',
+  //   changePassword,
+  validationFunction,
+  authController.updatePassword,
 );
 
 // Update Current User's Data
-router.patch(
-	'/updateMe',
-	upload('image').single('image'),
-	restrictTo('Admin', 'Moderator', 'User'),
-	userController.updateMe
-);
+router.patch('/updateMe', upload('image').single('image'), userController.updateMe);
 
 // Delete/Inactive Current User
-router.delete(
-	'/deleteMe',
-	restrictTo('Admin', 'Moderator', 'User'),
-	userController.deleteMe
-);
+router.delete('/deleteMe', userController.deleteMe);
 // Active User
-router.patch(
-	'/active-user/:id',
-	restrictTo('Admin', 'Moderator'),
-	adminController.activeUser
-);
+router.patch('/active-user/:id', restrictTo('Admin', 'Moderator'), adminController.activeUser);
 
 // inctive User
-router.patch(
-	'/inactive-user/:id',
-	restrictTo('Admin', 'Moderator'),
-	adminController.inactiveUser
-);
+router.patch('/inactive-user/:id', restrictTo('Admin', 'Moderator'), adminController.inactiveUser);
+
+// Ban User By Admin
+router.patch('/ban-user/:id', restrictTo('Admin', 'Moderator'), adminController.banUser);
+
+// unBan User By Admin
+router.patch('/unban-user/:id', restrictTo('Admin', 'Moderator'), adminController.unbanUser);
 
 // Update Current User's Phone
 // router.patch('/addMyPhone', authController.addUserPhone);
@@ -118,12 +101,12 @@ router.patch(
 router.route('/currentUser').get(authController.isLoggedIn);
 
 router
-	.route('/')
-	.get(restrictTo('Admin'), userController.getAllUsers)
-	.post(userController.createUser);
+  .route('/')
+  .get(restrictTo('Admin'), userController.getAllUsers)
+  .post(userController.createUser);
 router
-	.route('/:id')
-	.get(userController.getUser)
-	.patch(userController.updateUser)
-	.delete(userController.deleteUser);
+  .route('/:id')
+  .get(userController.getUser)
+  .patch(userController.updateUser)
+  .delete(restrictTo('Admin'), userController.deleteUser);
 module.exports = router;
