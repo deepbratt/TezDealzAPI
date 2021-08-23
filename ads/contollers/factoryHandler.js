@@ -52,14 +52,14 @@ exports.dailyAggregate = (Model) => {
 		const { min, max } = req.params;
 		console.log(min);
 		const stats = await Model.aggregate([
-			// {
-			// 	$match: {
-			// 		createdAt: { $gte: min, $lte: max },
-			// 	},
-			// },
+			{
+				$match: {
+					createdAt: { $gte: new Date(min), $lte: new Date(max) },
+				},
+			},
 			{
 				$group: {
-					_id: `$createdAt`,
+					_id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
 					cars: { $sum: 1 },
 				},
 			},
