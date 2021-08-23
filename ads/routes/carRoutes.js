@@ -36,7 +36,7 @@ router
 	.patch(authenticate(User), permessionCheck, carController.unmarkActive);
 ///////////////////////////////////////////////////////////////////////////////////////
 router.route('/cars/stats').get(authenticate(User), carController.carStats);
-router.route('/cars/daily-stats').get(authenticate(User), carController.carDailyStats);
+router.route('/cars/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);
 router
 	.route('/cars/ban/:id')
 	.patch(authenticate(User), restrictTo('Admin', 'Moderartor'), carController.markActive);
