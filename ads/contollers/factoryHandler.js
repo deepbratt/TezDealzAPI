@@ -50,12 +50,13 @@ exports.stats = (Model) => {
 exports.dailyAggregate = (Model) => {
 	return catchAsync(async (req, res, next) => {
 		const { min, max } = req.params;
+		console.log(min);
 		const stats = await Model.aggregate([
-			{
-				$match: {
-					createdAt: { $gte: min, $lte: max },
-				},
-			},
+			// {
+			// 	$match: {
+			// 		createdAt: { $gte: min, $lte: max },
+			// 	},
+			// },
 			{
 				$group: {
 					_id: `$createdAt`,
