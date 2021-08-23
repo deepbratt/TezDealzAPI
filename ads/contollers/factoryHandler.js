@@ -1,4 +1,4 @@
-const moment = require('moment');
+const moment= require('moment')
 const { APIFeatures, catchAsync } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
 
@@ -54,10 +54,7 @@ exports.dailyAggregate = (Model) => {
 		const stats = await Model.aggregate([
 			{
 				$match: {
-					createdAt: {
-						$lte: { regex: new Date(max), options: 'g' },
-						$gte: { regex: new Date(min), options: 'g' },
-					},
+					createdAt: { $lte: moment(max).toDate(), $gte: moment(min).toDate() },
 				},
 			},
 			{
