@@ -52,8 +52,8 @@ exports.dailyAggregate = (Model) => {
 			{
 				$match: {
 					createdAt: {
-						$lte: { $regex: moment(max).toDate(), $options: 'm' },
-						$gte: { $regex: moment(min).toDate(), $options: 'm' },
+						$lte: { $regex: `^${moment(max).toDate()}$`, $options: 'm' },
+						$gte: { $regex: `^${moment(min).toDate()}$`, $options: 'm' },
 					},
 				},
 			},
