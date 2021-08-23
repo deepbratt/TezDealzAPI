@@ -30,9 +30,6 @@ exports.stats = (Model) => {
 				},
 			},
 			{
-				$addFields: { city: '$_id' },
-			},
-			{
 				$project: { _id: 0 },
 			},
 			{
