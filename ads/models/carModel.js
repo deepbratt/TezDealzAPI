@@ -153,10 +153,12 @@ const carsSchema = new mongoose.Schema(
 		},
 		isSold: {
 			type: Boolean,
+			required: true,
 			default: false,
 		},
 		active: {
 			type: Boolean,
+			required: true,
 			default: true,
 		},
 		sellerType: {
@@ -169,6 +171,7 @@ const carsSchema = new mongoose.Schema(
 		},
 		banned: {
 			type: Boolean,
+			required: true,
 			default: false,
 		},
 	},
