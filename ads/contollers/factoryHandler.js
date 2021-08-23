@@ -59,7 +59,7 @@ exports.dailyAggregate = (Model) => {
 			},
 			{
 				$group: {
-					_id: { $date: { format: '%Y-%m-%d', date: '$createdAt' } },
+					_id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
 					cars: { $sum: 1 },
 				},
 			},
