@@ -45,7 +45,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
 });
 
 exports.getAll = catchAsync(async (req, res, next) => {
-	let [result, totalCount]
+	let result, totalCount;
 	if (req.user && req.user.role != 'User') {
 		[result, totalCount] = await filter(Car.find(), req.query);
 	} else {
