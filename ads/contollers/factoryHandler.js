@@ -54,7 +54,10 @@ exports.dailyAggregate = (Model) => {
 		const stats = await Model.aggregate([
 			{
 				$match: {
-					createdAt: { $lte: moment(max).toDate(), $gte: moment(min).toDate() },
+					createdAt: {
+						$lte: { regex: new Date(max), options: 'g' },
+						$gte: { regex: new Date(min), options: 'g' },
+					},
 				},
 			},
 			{
