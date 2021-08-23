@@ -1,4 +1,4 @@
-const moment= require('moment')
+const moment = require('moment');
 const { APIFeatures, catchAsync } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
 
@@ -17,13 +17,13 @@ exports.filter = async (query, queryParams) => {
 	return [doc, totalCount];
 };
 
-exports.stats = (Model) => {
+exports.stats = (Model, type) => {
 	return catchAsync(async (req, res, next) => {
 		const stats = await Model.aggregate([
 			{
 				$group: {
 					_id: null,
-					numCars: { $sum: 1 },
+					type: { $sum: 1 },
 					avgPrice: { $avg: '$price' },
 					minPrice: { $min: '$price' },
 					maxPrice: { $max: '$price' },
@@ -45,7 +45,7 @@ exports.stats = (Model) => {
 	});
 };
 
-exports.dailyAggregate = (Model) => {
+exports.dailyAggregate = (Model, type) => {
 	return catchAsync(async (req, res, next) => {
 		const { min, max } = req.params;
 		const stats = await Model.aggregate([
@@ -57,7 +57,7 @@ exports.dailyAggregate = (Model) => {
 			{
 				$group: {
 					_id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-					cars: { $sum: 1 },
+					type: { $sum: 1 },
 				},
 			},
 			{

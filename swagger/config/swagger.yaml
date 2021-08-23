@@ -708,7 +708,46 @@ paths:
         '404':
           description: 'Not Found'
         '200':
-          description: 'successfull'              
+          description: 'successfull'
+  /v1/ads/cars/stats:        
+    get:
+      tags:
+        - 'Admin/Moderator authorities for ads'
+      summary: 'stats'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'
+  /v1/ads/cars/daily-stats/:min/:max:        
+    get:
+      tags:
+        - 'Admin/Moderator authorities for ads'
+      summary: 'daily-stats'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'min'
+          required: true
+          type: 'string'
+        - in: 'path'  
+          name: 'max'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'                      
 definitions:
   signup:
     type: 'object'
