@@ -29,7 +29,53 @@ exports.stats = (Model) => {
 				},
 			},
 			{
+				$addFields: { city: '$_id' },
+			},
+			{
+				$project: { _id: 0 },
+			},
+			{
 				$sort: { avgPrice: 1 },
+			},
+		]);
+		res.status(200).json({
+			status: STATUS.SUCCESS,
+			data: {
+				stats,
+			},
+		});
+	});
+};
+
+exports.dailyAggregate = (Model) => {
+	return catchAsync(async (req, res, next) => {
+		const { min, max } = req.params;
+		const stats = await Model.aggregate([
+			{
+				$match: {
+					createdAt: { $gte: min, $lte: max },
+				},
+			},
+			{
+				$group: {
+					_id: `$createdAt`,
+					cars: { $sum: 1 },
+				},
+			},
+			{
+				$addFields: {
+					date: '$_id',
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+				},
+			},
+			{
+				$sort: {
+					date: 1,
+				},
 			},
 		]);
 		res.status(200).json({

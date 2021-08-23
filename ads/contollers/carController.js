@@ -1,7 +1,7 @@
 const Car = require('../models/carModel');
 const { AppError, catchAsync, uploadS3, APIFeatures } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
-const { filter, stats } = require('./factoryHandler');
+const { filter, stats, dailyAggregate } = require('./factoryHandler');
 // const redis = require('redis');
 // const { client } = require('../utils/redisCache');
 
@@ -270,3 +270,4 @@ exports.markunbanned = catchAsync(async (req, res, next) => {
 });
 
 exports.carStats = stats(Car);
+exports.carDailyStats = dailyAggregate(Car);
