@@ -6,13 +6,13 @@ const userController = require('../controller/user/userController');
 const adminController = require('../controller/admin/adminController');
 
 const {
-  changePassword,
-  validationFunction,
-  signupRules,
-  //   signupEmailRules,
-  //   signupPhoneRules,
-  //   continueGoogleRules,
-  //   continueFaceBookRules,
+	changePassword,
+	validationFunction,
+	signupRules,
+	//   signupEmailRules,
+	//   signupPhoneRules,
+	//   continueGoogleRules,
+	//   continueFaceBookRules,
 } = require('../utils/validations');
 const { upload } = require('@utils/tdb_globalutils');
 
@@ -42,10 +42,10 @@ router.post('/create-user', authenticate(User), restrictTo('Admin'), adminContro
 router.post('/forgotPassword', authController.forgotPassword);
 //Reset Password
 router.patch(
-  '/resetPassword/:token',
-  //   changePassword,
-  validationFunction,
-  authController.resetPassword,
+	'/resetPassword/:token',
+	//   changePassword,
+	validationFunction,
+	authController.resetPassword
 );
 //Send verification email
 // router.post('/send-verification-email', authController.sendVerificationCodetoEmail);
@@ -68,10 +68,10 @@ router.use(authenticate(User));
 
 // Update Current User's Password
 router.patch(
-  '/updateMyPassword',
-  //   changePassword,
-  validationFunction,
-  authController.updatePassword,
+	'/updateMyPassword',
+	//   changePassword,
+	validationFunction,
+	authController.updatePassword
 );
 
 // Update Current User's Data
@@ -101,12 +101,12 @@ router.patch('/unban-user/:id', restrictTo('Admin', 'Moderator'), adminControlle
 router.route('/currentUser').get(authController.isLoggedIn);
 
 router
-  .route('/')
-  .get(restrictTo('Admin'), userController.getAllUsers)
-  .post(userController.createUser);
+	.route('/')
+	.get(restrictTo('Admin'), userController.getAllUsers)
+	.post(userController.createUser);
 router
-  .route('/:id')
-  .get(userController.getUser)
-  .patch(userController.updateUser)
-  .delete(restrictTo('Admin'), userController.deleteUser);
+	.route('/:id')
+	.get(userController.getUser)
+	.patch(userController.updateUser)
+	.delete(restrictTo('Admin'), userController.deleteUser);
 module.exports = router;

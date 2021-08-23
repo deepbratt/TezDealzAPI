@@ -669,6 +669,46 @@ paths:
           description: 'Not Found'
         '200':
           description: 'successfull'
+  /v1/ads/cars/ban/:id:        
+    patch:
+      tags:
+        - 'Admin/Moderator authorities for ads'
+      summary: 'mark-ban'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'
+  /v1/ads/cars/unban/:id:        
+    patch:
+      tags:
+        - 'Admin/Moderator authorities for ads'
+      summary: 'mark-unban'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'              
 definitions:
   signup:
     type: 'object'
