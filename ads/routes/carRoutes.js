@@ -7,52 +7,52 @@ const { upload } = require('@utils/tdb_globalutils');
 const router = express.Router();
 //const { isCached } = require('../utils/redisCache');
 
-router.route('/cars').get(checkIsLoggedIn(User), carController.getAll);
 router
-	.route('/cars')
-	.post(authenticate(User), upload('image').array('image', 10), carController.createOne);
+  .route('/cars')
+  .post(authenticate(User), upload('image').array('image', 10), carController.createOne);
+router.route('/cars').get(checkIsLoggedIn(User), carController.getAll);
 router.route('/cars/myCars').get(authenticate(User), carController.getMine);
 
 //////////////////////////////FAVOURITES/////////////////////////////////////////
 router.route('/cars/favourites').get(authenticate(User), carController.favorites);
 
 router
-	.route('/cars/add-to-fav/:id')
-	.patch(authenticate(User), favPermessionCheck, carController.addtoFav);
+  .route('/cars/add-to-fav/:id')
+  .patch(authenticate(User), favPermessionCheck, carController.addtoFav);
 router.route('/cars/remove-from-fav/:id').patch(authenticate(User), carController.removeFromFav);
 
 ///////////////////////MARK ACTIVE/SOLD////////////////////////////////////
 router
-	.route('/cars/mark-sold/:id')
-	.patch(authenticate(User), permessionCheck, carController.markSold);
+  .route('/cars/mark-sold/:id')
+  .patch(authenticate(User), permessionCheck, carController.markSold);
 router
-	.route('/cars/mark-unsold/:id')
-	.patch(authenticate(User), permessionCheck, carController.unmarkSold);
+  .route('/cars/mark-unsold/:id')
+  .patch(authenticate(User), permessionCheck, carController.unmarkSold);
 router
-	.route('/cars/mark-active/:id')
-	.patch(authenticate(User), permessionCheck, carController.markActive);
+  .route('/cars/mark-active/:id')
+  .patch(authenticate(User), permessionCheck, carController.markActive);
 router
-	.route('/cars/mark-inactive/:id')
-	.patch(authenticate(User), permessionCheck, carController.unmarkActive);
+  .route('/cars/mark-inactive/:id')
+  .patch(authenticate(User), permessionCheck, carController.unmarkActive);
 ///////////////////////////////////////////////////////////////////////////////////////
 router.route('/cars/stats').get(authenticate(User), carController.carStats);
 router.route('/cars/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);
 router
-	.route('/cars/ban/:id')
-	.patch(authenticate(User), restrictTo('Admin', 'Moderartor'), carController.markActive);
+  .route('/cars/ban/:id')
+  .patch(authenticate(User), restrictTo('Admin', 'Moderartor'), carController.markActive);
 router
-	.route('/cars/unban/:id')
-	.patch(authenticate(User), restrictTo('Admin', 'Moderartor'), carController.unmarkActive);
+  .route('/cars/unban/:id')
+  .patch(authenticate(User), restrictTo('Admin', 'Moderartor'), carController.unmarkActive);
 ///////////////////////////////////////////////////////////////////////////////////////
 router
-	.route('/cars/:id')
-	.get(checkIsLoggedIn(User), carController.getOne)
-	.patch(
-		authenticate(User),
-		permessionCheck,
-		upload('image').array('image', 10),
-		carController.updateOne
-	)
-	.delete(authenticate(User), permessionCheck, carController.deleteOne);
+  .route('/cars/:id')
+  .get(checkIsLoggedIn(User), carController.getOne)
+  .patch(
+    authenticate(User),
+    permessionCheck,
+    upload('image').array('image', 10),
+    carController.updateOne,
+  )
+  .delete(authenticate(User), permessionCheck, carController.deleteOne);
 
 module.exports = router;

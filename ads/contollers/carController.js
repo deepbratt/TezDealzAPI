@@ -269,5 +269,5 @@ exports.markunbanned = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.carStats = stats(Car, 'TotalCars');
-exports.carDailyStats = dailyAggregate(Car, 'Cars');
+exports.carStats = stats(Car);
+exports.carDailyStats = dailyAggregate(Car);

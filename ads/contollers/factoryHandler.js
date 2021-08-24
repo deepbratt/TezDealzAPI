@@ -17,13 +17,13 @@ exports.filter = async (query, queryParams) => {
   return [doc, totalCount];
 };
 
-exports.stats = (Model, type) => {
+exports.stats = (Model) => {
   return catchAsync(async (req, res, next) => {
     const stats = await Model.aggregate([
       {
         $group: {
           _id: null,
-          type: { $sum: 1 },
+          totalCount: { $sum: 1 },
           avgPrice: { $avg: '$price' },
           minPrice: { $min: '$price' },
           maxPrice: { $max: '$price' },
@@ -45,7 +45,7 @@ exports.stats = (Model, type) => {
   });
 };
 
-exports.dailyAggregate = (Model, type) => {
+exports.dailyAggregate = (Model) => {
   return catchAsync(async (req, res, next) => {
     const { min, max } = req.params;
     const stats = await Model.aggregate([
@@ -57,7 +57,7 @@ exports.dailyAggregate = (Model, type) => {
       {
         $group: {
           _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-          type: { $sum: 1 },
+          count: { $sum: 1 },
         },
       },
       {
