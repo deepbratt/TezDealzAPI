@@ -1,4 +1,5 @@
 const Users = require('../../model/userModel');
+const moment = require('moment');
 const { AppError, catchAsync } = require('@utils/tdb_globalutils');
 const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
 const Validator = require('email-validator');
@@ -97,5 +98,85 @@ exports.banUser = catchAsync(async (req, res, next) => {
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: 'You have successfully Banned this User',
+  });
+});
+
+// User Statistics
+exports.userStats = catchAsync(async (req, res, next) => {
+  const stats = await Users.aggregate([
+    {
+      $group: {
+        _id: { $toUpper: '$role' },
+        // _id: null,
+        numUser: { $sum: 1 },
+        roles: { $push: '$role' },
+      },
+    },
+    {
+      $project: { _id: 1, numUser: 1, roles: 1 },
+    },
+    {
+      $sort: { numUser: 1 },
+    },
+  ]);
+
+  if (!stats) {
+    return next(new AppError('Error in Stats'));
+  }
+
+  res.status(200).json({
+    status: STATUS.SUCCESS,
+    data: {
+      stats,
+    },
+  });
+});
+
+// Stats of Users from one date to another
+exports.dailyUserAggregate = catchAsync(async (req, res, next) => {
+  const { min, max } = req.params;
+  const stats = await Users.aggregate([
+    {
+      $match: {
+        createdAt: { $lte: moment(max).toDate(), $gte: moment(min).toDate() },
+      },
+    },
+    {
+      $group: {
+        _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+        userCreated: { $sum: 1 },
+        userName: { $push: '$username' },
+        userEmail: { $push: '$email' },
+        userPhone: { $push: '$phone' },
+      },
+    },
+    {
+      $addFields: {
+        date: '$_id',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        userCreated: 1,
+        userName: 1,
+        userEmail: 1,
+        userPhone: 1,
+      },
+    },
+    {
+      $sort: {
+        date: -1,
+      },
+    },
+    // {
+    //   $limit: 10,
+    // },
+  ]);
+  res.status(200).json({
+    status: STATUS.SUCCESS,
+    data: {
+      stats,
+    },
   });
 });

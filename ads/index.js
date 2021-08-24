@@ -16,16 +16,16 @@ const app = express();
 
 // CORS
 app.use(cors());
-app.options('*',cors())
+app.options('*', cors());
 app.use(morgan('dev'));
 
 // GLOBAL MIDDLEWARES
 app.use(express.json()); // body parser (reading data from body to req.body)
 //app.use(cookieParser()); // cookie parser (reading data from cookie to req.cookie)
 app.use(
-	session({
-		signed: false,
-	})
+  session({
+    signed: false,
+  }),
 );
 app.use(adsRoutes, adsRouter);
 

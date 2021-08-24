@@ -19,9 +19,9 @@ app.use(cookieParser()); // cookie parser (reading data from cookie to req.cooki
 app.use('/v1/tezDeals-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.all('*', (req, res, next) => {
-	next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
+  next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
 });
 
 app.listen(PORT, () => {
-	console.log(`Listening on Port ${PORT}`);
+  console.log(`Listening on Port ${PORT}`);
 });

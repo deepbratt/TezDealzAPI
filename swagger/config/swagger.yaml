@@ -367,6 +367,47 @@ paths:
         '201':
           description: 'Account created Successfully'
 
+  /v1/Users/stats:
+    get:
+      tags:
+        - 'User Statistics For Admin/Moderator'
+      summary: 'User Stats'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Result'
+
+  /v1/Users/daily-stats/:min/:max:
+    get:
+      tags:
+        - 'User Statistics For Admin/Moderator'
+      summary: 'User Stats from one date to another date'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'min'
+          required: true
+          type: 'string'
+        - in: 'path'
+          name: 'max'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Result'
+
   /v1/ads/cars:
     post:
       tags:
@@ -669,7 +710,7 @@ paths:
           description: 'Not Found'
         '200':
           description: 'successfull'
-  /v1/ads/cars/ban/:id:        
+  /v1/ads/cars/ban/:id:
     patch:
       tags:
         - 'Admin/Moderator authorities for ads'
@@ -689,7 +730,7 @@ paths:
           description: 'Not Found'
         '200':
           description: 'successfull'
-  /v1/ads/cars/unban/:id:        
+  /v1/ads/cars/unban/:id:
     patch:
       tags:
         - 'Admin/Moderator authorities for ads'
@@ -708,7 +749,46 @@ paths:
         '404':
           description: 'Not Found'
         '200':
-          description: 'successfull'              
+          description: 'successfull'
+  /v1/ads/cars/stats:
+    get:
+      tags:
+        - 'Admin/Moderator authorities for ads'
+      summary: 'stats'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'
+  /v1/ads/cars/daily-stats/:min/:max:
+    get:
+      tags:
+        - 'Admin/Moderator authorities for ads'
+      summary: 'daily-stats'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'min'
+          required: true
+          type: 'string'
+        - in: 'path'
+          name: 'max'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'
 definitions:
   signup:
     type: 'object'

@@ -6,268 +6,268 @@ const { filter, stats, dailyAggregate } = require('./factoryHandler');
 // const { client } = require('../utils/redisCache');
 
 exports.createOne = catchAsync(async (req, res, next) => {
-	if (req.files) {
-		let array = [];
-		for (var i = 0; i < req.files.length; i++) {
-			let { Location } = await uploadS3(
-				req.files[i],
-				process.env.AWS_BUCKET_REGION,
-				process.env.AWS_ACCESS_KEY,
-				process.env.AWS_SECRET_KEY,
-				process.env.AWS_BUCKET_NAME
-			);
-			array.push(Location);
-		}
-		req.body.image = array;
-	}
-	req.body.createdBy = req.user._id;
-	if (!req.body.image || req.body.image.length <= 0) {
-		return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
-	}
-	const result = await Car.create(req.body);
-	if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  if (req.files) {
+    let array = [];
+    for (var i = 0; i < req.files.length; i++) {
+      let { Location } = await uploadS3(
+        req.files[i],
+        process.env.AWS_BUCKET_REGION,
+        process.env.AWS_ACCESS_KEY,
+        process.env.AWS_SECRET_KEY,
+        process.env.AWS_BUCKET_NAME,
+      );
+      array.push(Location);
+    }
+    req.body.image = array;
+  }
+  req.body.createdBy = req.user._id;
+  if (!req.body.image || req.body.image.length <= 0) {
+    return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
+  }
+  const result = await Car.create(req.body);
+  if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
-	//   // Set during Post
-	//   client.setex(result.id, 60, JSON.stringify(result), (err, reply) => {
-	//     if (err) {
-	//       console.log('Error Storing Data');
-	//     }
-	//     console.log(reply);
-	//   });
+  //   // Set during Post
+  //   client.setex(result.id, 60, JSON.stringify(result), (err, reply) => {
+  //     if (err) {
+  //       console.log('Error Storing Data');
+  //     }
+  //     console.log(reply);
+  //   });
 
-	res.status(STATUS_CODE.CREATED).json({
-		status: STATUS.SUCCESS,
-		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-		data: {
-			result,
-		},
-	});
+  res.status(STATUS_CODE.CREATED).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    data: {
+      result,
+    },
+  });
 });
 
 exports.getAll = catchAsync(async (req, res, next) => {
-	const [result, totalCount] = await filter(Car.find(), req.query);
+  const [result, totalCount] = await filter(Car.find(), req.query);
 
-	if (result.length === 0) {
-		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-	}
-	if (req.user) {
-		for (var i = 0; i < result.length; i++) {
-			if (result[i].favOf) {
-				if (result[i].favOf.length > 0 && result[i].favOf.includes(req.user._id)) {
-					result[i].isFav = true;
-				} else {
-					result[i].isFav = false;
-				}
-			}
-		}
-	}
-	res.status(STATUS_CODE.OK).json({
-		status: STATUS.SUCCESS,
-		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-		countOnPage: result.length,
-		totalCount: totalCount,
-		data: {
-			result,
-		},
-	});
+  if (result.length === 0) {
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  }
+  if (req.user) {
+    for (var i = 0; i < result.length; i++) {
+      if (result[i].favOf) {
+        if (result[i].favOf.length > 0 && result[i].favOf.includes(req.user._id)) {
+          result[i].isFav = true;
+        } else {
+          result[i].isFav = false;
+        }
+      }
+    }
+  }
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    countOnPage: result.length,
+    totalCount: totalCount,
+    data: {
+      result,
+    },
+  });
 });
 
 exports.getOne = catchAsync(async (req, res, next) => {
-	const result = await Car.findById(req.params.id).populate('createdBy');
-	if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-	if (req.user) {
-		if (result.favOf.includes(req.user._id)) {
-			result.isFav = true;
-		} else {
-			result.isFav = false;
-		}
-	}
+  const result = await Car.findById(req.params.id).populate('createdBy');
+  if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  if (req.user) {
+    if (result.favOf.includes(req.user._id)) {
+      result.isFav = true;
+    } else {
+      result.isFav = false;
+    }
+  }
 
-	res.status(STATUS_CODE.OK).json({
-		status: STATUS.SUCCESS,
-		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-		data: {
-			result,
-		},
-	});
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    data: {
+      result,
+    },
+  });
 });
 
 exports.updateOne = catchAsync(async (req, res, next) => {
-	if (req.files) {
-		let array = [];
-		for (var i = 0; i < req.files.length; i++) {
-			let { Location } = await uploadS3(
-				req.files[i],
-				process.env.AWS_BUCKET_REGION,
-				process.env.AWS_ACCESS_KEY,
-				process.env.AWS_SECRET_KEY,
-				process.env.AWS_BUCKET_NAME
-			);
-			array.push(Location);
-		}
-		console.log(req.body.image);
-		if (req.body.image) {
-			req.body.image = [...req.body.image, ...array];
-		} else {
-			req.body.image = array;
-		}
-	}
-	if (req.body.image.length <= 0) {
-		return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
-	}
-	const result = await Car.findByIdAndUpdate(req.params.id, req.body, {
-		runValidators: true,
-		new: true,
-	});
+  if (req.files) {
+    let array = [];
+    for (var i = 0; i < req.files.length; i++) {
+      let { Location } = await uploadS3(
+        req.files[i],
+        process.env.AWS_BUCKET_REGION,
+        process.env.AWS_ACCESS_KEY,
+        process.env.AWS_SECRET_KEY,
+        process.env.AWS_BUCKET_NAME,
+      );
+      array.push(Location);
+    }
+    console.log(req.body.image);
+    if (req.body.image) {
+      req.body.image = [...req.body.image, ...array];
+    } else {
+      req.body.image = array;
+    }
+  }
+  if (req.body.image.length <= 0) {
+    return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
+  }
+  const result = await Car.findByIdAndUpdate(req.params.id, req.body, {
+    runValidators: true,
+    new: true,
+  });
 
-	if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
-	res.status(STATUS_CODE.OK).json({
-		status: STATUS.SUCCESS,
-		message: SUCCESS_MSG.SUCCESS_MESSAGES.UPDATE,
-		data: {
-			result,
-		},
-	});
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.UPDATE,
+    data: {
+      result,
+    },
+  });
 });
 
 exports.deleteOne = catchAsync(async (req, res, next) => {
-	const result = await Car.findByIdAndDelete(req.params.id);
-	if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-	res.status(STATUS_CODE.OK).json({
-		status: STATUS.SUCCESS,
-		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-		data: null,
-	});
+  const result = await Car.findByIdAndDelete(req.params.id);
+  if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    data: null,
+  });
 });
 
 exports.getMine = catchAsync(async (req, res, next) => {
-	const [result, totalCount] = await filter(Car.find({ createdBy: req.user._id }), req.query);
+  const [result, totalCount] = await filter(Car.find({ createdBy: req.user._id }), req.query);
 
-	if (result.length === 0)
-		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  if (result.length === 0)
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
-	res.status(STATUS_CODE.OK).json({
-		status: STATUS.SUCCESS,
-		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-		countOnPage: result.length,
-		totalCount: totalCount,
-		data: {
-			result,
-		},
-	});
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    countOnPage: result.length,
+    totalCount: totalCount,
+    data: {
+      result,
+    },
+  });
 });
 
 exports.addtoFav = catchAsync(async (req, res, next) => {
-	const result = await Car.findOne({ _id: req.params.id, favOf: req.user._id });
-	if (result) return next(new AppError(ERRORS.INVALID.ALREADY_FAV, STATUS_CODE.BAD_REQUEST));
-	await Car.updateOne({ _id: req.params.id }, { $push: { favOf: req.user._id } });
-	res.status(STATUS_CODE.OK).json({
-		status: STATUS.SUCCESS,
-		message: SUCCESS_MSG.SUCCESS_MESSAGES.ADDED_FAV,
-	});
+  const result = await Car.findOne({ _id: req.params.id, favOf: req.user._id });
+  if (result) return next(new AppError(ERRORS.INVALID.ALREADY_FAV, STATUS_CODE.BAD_REQUEST));
+  await Car.updateOne({ _id: req.params.id }, { $push: { favOf: req.user._id } });
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.ADDED_FAV,
+  });
 });
 
 exports.removeFromFav = catchAsync(async (req, res, next) => {
-	const result = await Car.findOne({ _id: req.params.id, favOf: req.user._id });
-	if (!result) {
-		return next(new AppError(ERRORS.INVALID.NOT_IN_FAV, STATUS_CODE.BAD_REQUEST));
-	}
-	await Car.updateOne({ _id: req.params.id }, { $pull: { favOf: req.user._id } });
-	res.status(STATUS_CODE.OK).json({
-		status: STATUS.SUCCESS,
-		message: SUCCESS_MSG.SUCCESS_MESSAGES.REMOVED_FAV,
-	});
+  const result = await Car.findOne({ _id: req.params.id, favOf: req.user._id });
+  if (!result) {
+    return next(new AppError(ERRORS.INVALID.NOT_IN_FAV, STATUS_CODE.BAD_REQUEST));
+  }
+  await Car.updateOne({ _id: req.params.id }, { $pull: { favOf: req.user._id } });
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.REMOVED_FAV,
+  });
 });
 
 exports.favorites = catchAsync(async (req, res, next) => {
-	const [result, totalCount] = await filter(Car.find({ favOf: req.user._id }), req.query);
+  const [result, totalCount] = await filter(Car.find({ favOf: req.user._id }), req.query);
 
-	if (result.length === 0)
-		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  if (result.length === 0)
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
-	res.status(STATUS_CODE.OK).json({
-		status: STATUS.SUCCESS,
-		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-		countOnPage: result.length,
-		totalCount: totalCount,
-		data: {
-			result,
-		},
-	});
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    countOnPage: result.length,
+    totalCount: totalCount,
+    data: {
+      result,
+    },
+  });
 });
 
 exports.markSold = catchAsync(async (req, res, next) => {
-	const result = await Car.findOne({ _id: req.params.id, isSold: false });
-	if (!result) {
-		return next(new AppError(ERRORS.INVALID.MARK_SOLD, STATUS_CODE.BAD_REQUEST));
-	}
-	await Car.updateOne({ _id: req.params.id }, { isSold: true });
-	res.status(STATUS_CODE.OK).json({
-		status: STATUS.SUCCESS,
-		message: SUCCESS_MSG.SUCCESS_MESSAGES.MARKED_SOLD,
-	});
+  const result = await Car.findOne({ _id: req.params.id, isSold: false });
+  if (!result) {
+    return next(new AppError(ERRORS.INVALID.MARK_SOLD, STATUS_CODE.BAD_REQUEST));
+  }
+  await Car.updateOne({ _id: req.params.id }, { isSold: true });
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.MARKED_SOLD,
+  });
 });
 
 exports.unmarkSold = catchAsync(async (req, res, next) => {
-	const result = await Car.findOne({ _id: req.params.id, isSold: true });
-	if (!result) {
-		return next(new AppError(ERRORS.INVALID.UNMARK_SOLD, STATUS_CODE.BAD_REQUEST));
-	}
-	await Car.updateOne({ _id: req.params.id }, { isSold: false });
-	res.status(STATUS_CODE.OK).json({
-		status: STATUS.SUCCESS,
-		message: SUCCESS_MSG.SUCCESS_MESSAGES.MARKED_UNSOLD,
-	});
+  const result = await Car.findOne({ _id: req.params.id, isSold: true });
+  if (!result) {
+    return next(new AppError(ERRORS.INVALID.UNMARK_SOLD, STATUS_CODE.BAD_REQUEST));
+  }
+  await Car.updateOne({ _id: req.params.id }, { isSold: false });
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.MARKED_UNSOLD,
+  });
 });
 
 exports.markActive = catchAsync(async (req, res, next) => {
-	const result = await Car.findOne({ _id: req.params.id, active: false });
-	if (!result) {
-		return next(new AppError(ERRORS.INVALID.MARK_ACTIVE, STATUS_CODE.BAD_REQUEST));
-	}
-	await Car.updateOne({ _id: req.params.id }, { active: true });
-	res.status(STATUS_CODE.OK).json({
-		status: STATUS.SUCCESS,
-		message: SUCCESS_MSG.SUCCESS_MESSAGES.MARKED_ACTIVE,
-	});
+  const result = await Car.findOne({ _id: req.params.id, active: false });
+  if (!result) {
+    return next(new AppError(ERRORS.INVALID.MARK_ACTIVE, STATUS_CODE.BAD_REQUEST));
+  }
+  await Car.updateOne({ _id: req.params.id }, { active: true });
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.MARKED_ACTIVE,
+  });
 });
 
 exports.unmarkActive = catchAsync(async (req, res, next) => {
-	const result = await Car.findOne({ _id: req.params.id, active: true });
-	if (!result) {
-		return next(new AppError(ERRORS.INVALID.UNMARK_ACTIVE, STATUS_CODE.BAD_REQUEST));
-	}
-	await Car.updateOne({ _id: req.params.id }, { active: false });
-	res.status(STATUS_CODE.OK).json({
-		status: STATUS.SUCCESS,
-		message: SUCCESS_MSG.SUCCESS_MESSAGES.MARKED_INACTIVE,
-	});
+  const result = await Car.findOne({ _id: req.params.id, active: true });
+  if (!result) {
+    return next(new AppError(ERRORS.INVALID.UNMARK_ACTIVE, STATUS_CODE.BAD_REQUEST));
+  }
+  await Car.updateOne({ _id: req.params.id }, { active: false });
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.MARKED_INACTIVE,
+  });
 });
 
 exports.markbanned = catchAsync(async (req, res, next) => {
-	const result = await Car.findOne({ _id: req.params.id, banned: false });
-	if (!result) {
-		return next(new AppError(ERRORS.INVALID.MARK_BANNED, STATUS_CODE.BAD_REQUEST));
-	}
-	await Car.updateOne({ _id: req.params.id }, { banned: true });
-	res.status(STATUS_CODE.OK).json({
-		status: STATUS.SUCCESS,
-		message: SUCCESS_MSG.SUCCESS_MESSAGES.MARKED_BANNED,
-	});
+  const result = await Car.findOne({ _id: req.params.id, banned: false });
+  if (!result) {
+    return next(new AppError(ERRORS.INVALID.MARK_BANNED, STATUS_CODE.BAD_REQUEST));
+  }
+  await Car.updateOne({ _id: req.params.id }, { banned: true });
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.MARKED_BANNED,
+  });
 });
 
 exports.markunbanned = catchAsync(async (req, res, next) => {
-	const result = await Car.findOne({ _id: req.params.id, banned: true });
-	if (!result) {
-		return next(new AppError(ERRORS.INVALID.MARK_UBANNED, STATUS_CODE.BAD_REQUEST));
-	}
-	await Car.updateOne({ _id: req.params.id }, { banned: false });
-	res.status(STATUS_CODE.OK).json({
-		status: STATUS.SUCCESS,
-		message: SUCCESS_MSG.SUCCESS_MESSAGES.MARKED_UNBANNED,
-	});
+  const result = await Car.findOne({ _id: req.params.id, banned: true });
+  if (!result) {
+    return next(new AppError(ERRORS.INVALID.MARK_UBANNED, STATUS_CODE.BAD_REQUEST));
+  }
+  await Car.updateOne({ _id: req.params.id }, { banned: false });
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.MARKED_UNBANNED,
+  });
 });
 
-exports.carStats = stats(Car);
-exports.carDailyStats = dailyAggregate(Car);
+exports.carStats = stats(Car, 'TotalCars');
+exports.carDailyStats = dailyAggregate(Car, 'Cars');
