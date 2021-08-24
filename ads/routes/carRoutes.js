@@ -7,10 +7,8 @@ const { upload } = require('@utils/tdb_globalutils');
 const router = express.Router();
 //const { isCached } = require('../utils/redisCache');
 
+router.route('/cars').post(authenticate(User), upload('image').array('image', 10), carController.createOne);
 router.route('/cars').get(checkIsLoggedIn(User), carController.getAll);
-router
-	.route('/cars')
-	.post(authenticate(User), upload('image').array('image', 10), carController.createOne);
 router.route('/cars/myCars').get(authenticate(User), carController.getMine);
 
 //////////////////////////////FAVOURITES/////////////////////////////////////////
