@@ -2,8 +2,6 @@ const Car = require('../models/carModel');
 const { AppError, catchAsync, uploadS3, APIFeatures } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
 const { filter, stats, dailyAggregate } = require('./factoryHandler');
-// const redis = require('redis');
-// const { client } = require('../utils/redisCache');
 
 exports.createOne = catchAsync(async (req, res, next) => {
 	if (req.files) {
@@ -22,18 +20,13 @@ exports.createOne = catchAsync(async (req, res, next) => {
 	}
 	req.body.createdBy = req.user._id;
 	if (!req.body.image || req.body.image.length <= 0) {
-		return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
+		req.body.imageStatus = false;
+		//return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
+	} else {
+		req.body.imageStatus = true;
 	}
 	const result = await Car.create(req.body);
 	if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-
-	//   // Set during Post
-	//   client.setex(result.id, 60, JSON.stringify(result), (err, reply) => {
-	//     if (err) {
-	//       console.log('Error Storing Data');
-	//     }
-	//     console.log(reply);
-	//   });
 
 	res.status(STATUS_CODE.CREATED).json({
 		status: STATUS.SUCCESS,
@@ -45,11 +38,15 @@ exports.createOne = catchAsync(async (req, res, next) => {
 });
 
 exports.getAll = catchAsync(async (req, res, next) => {
-	const [result, totalCount] = await filter(Car.find(), req.query);
+	const [result, totalCount] = await filter(
+		Car.find(),
+		req.query
+	);
 
-	if (result.length === 0) {
+	if (result.length <= 0) {
 		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 	}
+	//current user fav status
 	if (req.user) {
 		for (var i = 0; i < result.length; i++) {
 			if (result[i].favOf) {
@@ -75,6 +72,7 @@ exports.getAll = catchAsync(async (req, res, next) => {
 exports.getOne = catchAsync(async (req, res, next) => {
 	const result = await Car.findById(req.params.id).populate('createdBy');
 	if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	//current user fav status
 	if (req.user) {
 		if (result.favOf.includes(req.user._id)) {
 			result.isFav = true;
@@ -112,8 +110,11 @@ exports.updateOne = catchAsync(async (req, res, next) => {
 			req.body.image = array;
 		}
 	}
-	if (req.body.image.length <= 0) {
-		return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
+	if (!req.body.image || req.body.image.length <= 0) {
+		//return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
+		req.body.imageStatus = false;
+	} else {
+		req.body.imageStatus = true;
 	}
 	const result = await Car.findByIdAndUpdate(req.params.id, req.body, {
 		runValidators: true,
@@ -142,7 +143,10 @@ exports.deleteOne = catchAsync(async (req, res, next) => {
 });
 
 exports.getMine = catchAsync(async (req, res, next) => {
-	const [result, totalCount] = await filter(Car.find({ createdBy: req.user._id }), req.query);
+	const [result, totalCount] = await filter(
+		Car.find({ createdBy: req.user._id }),
+		req.query
+	);
 
 	if (result.length === 0)
 		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
@@ -160,7 +164,8 @@ exports.getMine = catchAsync(async (req, res, next) => {
 
 exports.addtoFav = catchAsync(async (req, res, next) => {
 	const result = await Car.findOne({ _id: req.params.id, favOf: req.user._id });
-	if (result) return next(new AppError(ERRORS.INVALID.ALREADY_FAV, STATUS_CODE.BAD_REQUEST));
+	if (result)
+		return next(new AppError(ERRORS.INVALID.ALREADY_FAV, STATUS_CODE.BAD_REQUEST));
 	await Car.updateOne({ _id: req.params.id }, { $push: { favOf: req.user._id } });
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
