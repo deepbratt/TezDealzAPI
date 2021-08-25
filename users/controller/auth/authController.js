@@ -1,11 +1,12 @@
+const jwt = require('jsonwebtoken');
+// const { OAuth2Client } = require('google-auth-library');
+const Validator = require('email-validator');
 const User = require('../../model/userModel');
 const { AppError } = require('@utils/tdb_globalutils');
 const catchAsync = require('@utils/tdb_globalutils/errorHandling/catchAsync');
 const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
 const jwtManagement = require('../../utils/jwtManagement');
-const jwt = require('jsonwebtoken');
-// const { OAuth2Client } = require('google-auth-library');
-const Validator = require('email-validator');
+const { regex } = require('../../utils/regex');
 
 // const sendSMS = require('../../utils/sendSMS');
 // const {
@@ -15,44 +16,43 @@ const Validator = require('email-validator');
 
 // Sign Up
 exports.signup = catchAsync(async (req, res, next) => {
+	if (!req.body.data) {
+		return next(
+			new AppError(
+				`${ERRORS.REQUIRED.EMAIL_REQUIRED} / ${ERRORS.REQUIRED.PHONE_REQUIRED}`,
+				STATUS_CODE.BAD_REQUEST
+			)
+		);
+	}
 	let user;
 	if (Validator.validate(req.body.data)) {
 		user = await User.create({
 			firstName: req.body.firstName.trim(),
 			lastName: req.body.lastName.trim(),
 			email: req.body.data,
-			role: req.body.role,
 			username: req.body.username,
 			password: req.body.password,
 			passwordConfirm: req.body.passwordConfirm,
+			signedUpWithEmail: true,
 		});
-	} else {
+	} else if (regex.phone.test(req.body.data)) {
 		user = await User.create({
 			firstName: req.body.firstName.trim(),
 			lastName: req.body.lastName.trim(),
 			phone: req.body.data,
 			username: req.body.username,
-			role: req.body.role,
 			password: req.body.password,
 			passwordConfirm: req.body.passwordConfirm,
+			signedUpWithPhone: true,
 		});
-	}
-
-	if (!req.body.data) {
+	} else {
 		return next(
 			new AppError(
-				`${ERRORS.REQUIRED.EMAIL_REQUIRED} / ${ERRORS.REQUIRED.PHONE_REQUIRED}`,
-				STATUS_CODE.UNAUTHORIZED
+				`${ERRORS.INVALID.INVALID_EMAIL} / ${ERRORS.INVALID.INVALID_PHONE}`,
+				STATUS_CODE.BAD_REQUEST
 			)
 		);
 	}
-
-	if (Validator.validate(req.body.data)) {
-		user.signedUpWithEmail = true;
-	} else {
-		user.signedUpWithPhone = true;
-	}
-	await user.save();
 
 	res.status(STATUS_CODE.CREATED).json({
 		status: STATUS.SUCCESS,
@@ -65,9 +65,10 @@ exports.login = catchAsync(async (req, res, next) => {
 	const { data, password } = req.body;
 	if (!data || !password) {
 		// checking email or password empty?
-		return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
+		return next(
+			new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST)
+		);
 	}
-
 	// Finding user by username, phone or email
 	const user = await User.findOne({
 		$or: [
@@ -85,11 +86,12 @@ exports.login = catchAsync(async (req, res, next) => {
 
 	//user existance and password is correct
 	if (!user || !(await user.correctPassword(password, user.password))) {
-		return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.UNAUTHORIZED));
+		return next(
+			new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.UNAUTHORIZED)
+		);
 	}
-
 	// Check if user is banned , if banned then Throw Error
-	if (!user.ban === false) {
+	if (user.banned) {
 		return next(
 			new AppError(
 				'You have violated our Privacy Policy & Terms. For Further Information please contact our Customer Support Center. ',
@@ -97,13 +99,13 @@ exports.login = catchAsync(async (req, res, next) => {
 			)
 		);
 	}
-
 	// Check if user is active or not
-	if (!user.active === true) {
+	if (!user.active) {
 		// If no user and not active:true then return Error
-		return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.NOT_FOUND));
+		return next(
+			new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.NOT_FOUND)
+		);
 	}
-
 	jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
 });
 

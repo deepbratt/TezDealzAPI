@@ -98,39 +98,46 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 	}
 
 	// filter out fileds that cannot be updated e.g Role etc
-	const filteredBody = filterObj(
-		req.body,
-		'firstName',
-		'lastName',
-		'phone',
-		'email',
-		'image',
-		'gender',
-		'country',
-		'city',
-		'dateOfBirth'
-	);
+	let filteredBody;
+	if (req.user.signedUpWithEmail) {
+		filteredBody = filterObj(
+			req.body,
+			'firstName',
+			'lastName',
+			'phone',
+			'image',
+			'gender',
+			'country',
+			'city',
+			'dateOfBirth'
+		);
+	} else if (req.user.signedUpWithPhone) {
+		filteredBody = filterObj(
+			req.body,
+			'firstName',
+			'lastName',
+			'email',
+			'image',
+			'gender',
+			'country',
+			'city',
+			'dateOfBirth'
+		);
+	}
 
 	// Update User document
 	const user = await Users.findByIdAndUpdate(req.user.id, filteredBody, {
 		runValidators: true,
 		new: true,
 	});
-
-	// If User has phone and trying to update phone then ERROR
-	if (user.signedUpWithPhone === true && req.body.phone) {
-		return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
-	} else if (user.signedUpWithEmail === true && req.body.email) {
-		return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
-	} else {
-		res.status(STATUS_CODE.OK).json({
-			status: STATUS.SUCCESS,
-			message: SUCCESS_MSG.SUCCESS_MESSAGES.PROFILE_UPDATED_SUCCESSFULLY,
-			result: {
-				user,
-			},
-		});
-	}
+	
+	res.status(STATUS_CODE.OK).json({
+		status: STATUS.SUCCESS,
+		message: SUCCESS_MSG.SUCCESS_MESSAGES.PROFILE_UPDATED_SUCCESSFULLY,
+		result: {
+			user,
+		},
+	});
 });
 
 // User can also delete/inactive himself
@@ -147,7 +154,9 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
 exports.inactiveUser = catchAsync(async (req, res, next) => {
 	const result = await Users.findOne({ _id: req.params.id, active: true });
 	if (!result) {
-		return next(new AppError('User is already inactive or does not exist', STATUS_CODE.BAD_REQUEST));
+		return next(
+			new AppError('User is already inactive or does not exist', STATUS_CODE.BAD_REQUEST)
+		);
 	}
 	await Users.updateOne({ _id: req.params.id }, { active: false });
 	res.status(STATUS_CODE.OK).json({
@@ -160,7 +169,9 @@ exports.inactiveUser = catchAsync(async (req, res, next) => {
 exports.activeUser = catchAsync(async (req, res, next) => {
 	const result = await Users.findOne({ _id: req.params.id, active: false });
 	if (!result) {
-		return next(new AppError('User is already active or does not exist', STATUS_CODE.BAD_REQUEST));
+		return next(
+			new AppError('User is already active or does not exist', STATUS_CODE.BAD_REQUEST)
+		);
 	}
 	await Users.updateOne({ _id: req.params.id }, { active: true });
 	res.status(STATUS_CODE.OK).json({

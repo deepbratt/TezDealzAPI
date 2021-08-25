@@ -1,9 +1,18 @@
+const Validator = require('email-validator');
 const Users = require('../../model/userModel');
 const { AppError, catchAsync } = require('@utils/tdb_globalutils');
 const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
-const Validator = require('email-validator');
+const { regex } = require('../../utils/regex');
 
 exports.signupByAdmin = catchAsync(async (req, res, next) => {
+	if (!req.body.data) {
+		return next(
+			new AppError(
+				`${ERRORS.REQUIRED.EMAIL_REQUIRED} / ${ERRORS.REQUIRED.PHONE_REQUIRED}`,
+				STATUS_CODE.UNAUTHORIZED
+			)
+		);
+	}
 	let user;
 	if (Validator.validate(req.body.data)) {
 		user = await Users.create({
@@ -14,8 +23,9 @@ exports.signupByAdmin = catchAsync(async (req, res, next) => {
 			username: req.body.username,
 			password: req.body.password,
 			passwordConfirm: req.body.passwordConfirm,
+			signedUpWithEmail: true,
 		});
-	} else {
+	} else if (regex.phone.test(req.body.data)) {
 		user = await Users.create({
 			firstName: req.body.firstName.trim(),
 			lastName: req.body.lastName.trim(),
@@ -24,24 +34,17 @@ exports.signupByAdmin = catchAsync(async (req, res, next) => {
 			role: req.body.role,
 			password: req.body.password,
 			passwordConfirm: req.body.passwordConfirm,
-		});
-	}
+			signedUpWithPhone:true
 
-	if (!req.body.data) {
+		});
+	} else {
 		return next(
 			new AppError(
-				`${ERRORS.REQUIRED.EMAIL_REQUIRED} / ${ERRORS.REQUIRED.PHONE_REQUIRED}`,
-				STATUS_CODE.UNAUTHORIZED
+				`${ERRORS.INVALID.INVALID_EMAIL} / ${ERRORS.INVALID.INVALID_PHONE}`,
+				STATUS_CODE.BAD_REQUEST
 			)
 		);
 	}
-
-	if (Validator.validate(req.body.data)) {
-		user.signedUpWithEmail = true;
-	} else {
-		user.signedUpWithPhone = true;
-	}
-	await user.save();
 
 	res.status(STATUS_CODE.CREATED).json({
 		status: STATUS.SUCCESS,
@@ -75,11 +78,13 @@ exports.activeUser = catchAsync(async (req, res, next) => {
 });
 
 exports.unbanUser = catchAsync(async (req, res, next) => {
-	const result = await Users.findOne({ _id: req.params.id, ban: true });
+	const result = await Users.findOne({ _id: req.params.id, banned: true });
 	if (!result) {
-		return next(new AppError('User is already Unban or Does not Exist', STATUS_CODE.BAD_REQUEST));
+		return next(
+			new AppError('User is already Unban or Does not Exist', STATUS_CODE.BAD_REQUEST)
+		);
 	}
-	await Users.updateOne({ _id: req.params.id }, { ban: false });
+	await Users.updateOne({ _id: req.params.id }, { banned: false });
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: 'You have Unbanned User successfully.',
@@ -87,13 +92,13 @@ exports.unbanUser = catchAsync(async (req, res, next) => {
 });
 
 exports.banUser = catchAsync(async (req, res, next) => {
-	const result = await Users.findOne({ _id: req.params.id, ban: false });
+	const result = await Users.findOne({ _id: req.params.id, banned: false });
 	if (!result) {
 		return next(
 			new AppError('This User is already banned or Does not exist', STATUS_CODE.BAD_REQUEST)
 		);
 	}
-	await Users.updateOne({ _id: req.params.id }, { ban: true });
+	await Users.updateOne({ _id: req.params.id }, { banned: true });
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: 'You have successfully Banned this User',

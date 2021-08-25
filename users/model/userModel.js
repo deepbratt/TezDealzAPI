@@ -102,7 +102,7 @@ const userSchema = new mongoose.Schema(
 				message: 'Role Must be User, Moderator or Admin',
 			},
 		},
-		// isVerified: {
+		// isVerified: 
 		// 	type: Boolean,
 		// 	default: false,
 		// isEmailVerified: {
@@ -150,7 +150,7 @@ const userSchema = new mongoose.Schema(
 			type: Boolean,
 			default: true,
 		},
-		ban: {
+		banned: {
 			type: Boolean,
 			default: false,
 		},

@@ -9,6 +9,8 @@ const {
 	changePassword,
 	validationFunction,
 	signupRules,
+	adminAddUser,
+	updateMyPassword
 	//   signupEmailRules,
 	//   signupPhoneRules,
 	//   continueGoogleRules,
@@ -17,11 +19,18 @@ const {
 const { upload } = require('@utils/tdb_globalutils');
 
 const router = express.Router();
-router.post('/signup', validationFunction, authController.signup);
+router.post('/signup', signupRules, validationFunction, authController.signup);
 router.post('/login', authController.login);
 
 //Add User, Moderators or Admins by Admin
-router.post('/create-user', authenticate(User), restrictTo('Admin'), adminController.signupByAdmin);
+router.post(
+	'/create-user',
+	authenticate(User),
+	restrictTo('Admin'),
+	adminAddUser,
+	validationFunction,
+	adminController.signupByAdmin
+);
 
 // Google Authentication Route
 // router.post('/google-auth', continueGoogleRules, validationFunction, authController.continueGoogle);
@@ -43,7 +52,7 @@ router.post('/forgotPassword', authController.forgotPassword);
 //Reset Password
 router.patch(
 	'/resetPassword/:token',
-	//   changePassword,
+	changePassword,
 	validationFunction,
 	authController.resetPassword
 );
@@ -69,7 +78,7 @@ router.use(authenticate(User));
 // Update Current User's Password
 router.patch(
 	'/updateMyPassword',
-	//   changePassword,
+	updateMyPassword,
 	validationFunction,
 	authController.updatePassword
 );
@@ -80,16 +89,28 @@ router.patch('/updateMe', upload('image').single('image'), userController.update
 // Delete/Inactive Current User
 router.delete('/deleteMe', userController.deleteMe);
 // Active User
-router.patch('/active-user/:id', restrictTo('Admin', 'Moderator'), adminController.activeUser);
+router.patch(
+	'/active-user/:id',
+	restrictTo('Admin', 'Moderator'),
+	adminController.activeUser
+);
 
 // inctive User
-router.patch('/inactive-user/:id', restrictTo('Admin', 'Moderator'), adminController.inactiveUser);
+router.patch(
+	'/inactive-user/:id',
+	restrictTo('Admin', 'Moderator'),
+	adminController.inactiveUser
+);
 
 // Ban User By Admin
 router.patch('/ban-user/:id', restrictTo('Admin', 'Moderator'), adminController.banUser);
 
 // unBan User By Admin
-router.patch('/unban-user/:id', restrictTo('Admin', 'Moderator'), adminController.unbanUser);
+router.patch(
+	'/unban-user/:id',
+	restrictTo('Admin', 'Moderator'),
+	adminController.unbanUser
+);
 
 // Update Current User's Phone
 // router.patch('/addMyPhone', authController.addUserPhone);
