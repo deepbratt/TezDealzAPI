@@ -94,6 +94,7 @@ exports.banUser = catchAsync(async (req, res, next) => {
       new AppError('This User is already banned or Does not exist', STATUS_CODE.BAD_REQUEST),
     );
   }
+
   await Users.updateOne({ _id: req.params.id }, { ban: true });
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
