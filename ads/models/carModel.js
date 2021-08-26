@@ -6,7 +6,7 @@ const carsSchema = new mongoose.Schema(
 	{
 		country: {
 			type: String,
-			validate: [validator.isSt, `country ${ERRORS.REQUIRED.ONLY_APLHA_REQUIRED}`],
+			validate: [validator.isAlpha, `country ${ERRORS.REQUIRED.ONLY_APLHA_REQUIRED}`],
 		},
 		province: {
 			type: String,
