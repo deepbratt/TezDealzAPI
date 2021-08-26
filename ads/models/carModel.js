@@ -6,18 +6,15 @@ const carsSchema = new mongoose.Schema(
 	{
 		country: {
 			type: String,
-			validate: [validator.isAlpha, `country ${ERRORS.REQUIRED.ONLY_APLHA_REQUIRED}`],
+			required: [true, `Country name is Required`],
 		},
 		province: {
 			type: String,
-			validate: [
-				validator.isAlphaLocales,
-				`province ${ERRORS.REQUIRED.ONLY_APLHA_REQUIRED}`,
-			],
+			required: [true, `Province name is Required`],
 		},
 		city: {
 			type: String,
-			validate: [validator.isAlpha, `city ${ERRORS.REQUIRED.ONLY_APLHA_REQUIRED}`],
+			required: [true, `City name is Required`],
 		},
 		location: {
 			type: {
