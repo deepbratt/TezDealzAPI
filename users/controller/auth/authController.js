@@ -87,7 +87,7 @@ exports.login = catchAsync(async (req, res, next) => {
 	//user existance and password is correct
 	if (!user || !(await user.correctPassword(password, user.password))) {
 		return next(
-			new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.UNAUTHORIZED)
+			new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST)
 		);
 	}
 	// Check if user is banned , if banned then Throw Error

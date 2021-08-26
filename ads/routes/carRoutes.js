@@ -55,14 +55,14 @@ router
 	.patch(
 		authenticate(User),
 		restrictTo('Admin', 'Moderartor'),
-		carController.markActive
+		carController.markbanned
 	);
 router
 	.route('/cars/unban/:id')
 	.patch(
 		authenticate(User),
 		restrictTo('Admin', 'Moderartor'),
-		carController.unmarkActive
+		carController.markunbanned
 	);
 ///////////////////////////////////////////////////////////////////////////////////////
 router

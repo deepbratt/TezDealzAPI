@@ -39,7 +39,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
 
 exports.getAll = catchAsync(async (req, res, next) => {
 	const [result, totalCount] = await filter(
-		Car.find(),
+		Car.find({ active: true, banned: false, isSold: false }),
 		req.query
 	);
 
