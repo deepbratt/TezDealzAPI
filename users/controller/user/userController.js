@@ -98,18 +98,32 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   }
 
   // filter out fileds that cannot be updated e.g Role etc
-  const filteredBody = filterObj(
-    req.body,
-    'firstName',
-    'lastName',
-    'phone',
-    'email',
-    'image',
-    'gender',
-    'country',
-    'city',
-    'dateOfBirth',
-  );
+  let filteredBody;
+  if (req.user.signedUpWithEmail) {
+    filteredBody = filterObj(
+      req.body,
+      'firstName',
+      'lastName',
+      'phone',
+      'image',
+      'gender',
+      'country',
+      'city',
+      'dateOfBirth',
+    );
+  } else if (req.user.signedUpWithPhone) {
+    filteredBody = filterObj(
+      req.body,
+      'firstName',
+      'lastName',
+      'email',
+      'image',
+      'gender',
+      'country',
+      'city',
+      'dateOfBirth',
+    );
+  }
 
   // Update User document
   const user = await Users.findByIdAndUpdate(req.user.id, filteredBody, {
@@ -117,24 +131,13 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     new: true,
   });
 
-  if (req.body.role) {
-    return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
-  }
-
-  // If User has phone and trying to update phone then ERROR
-  if (user.signedUpWithPhone === true && req.body.phone) {
-    return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
-  } else if (user.signedUpWithEmail === true && req.body.email) {
-    return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
-  } else {
-    res.status(STATUS_CODE.OK).json({
-      status: STATUS.SUCCESS,
-      message: SUCCESS_MSG.SUCCESS_MESSAGES.PROFILE_UPDATED_SUCCESSFULLY,
-      result: {
-        user,
-      },
-    });
-  }
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.PROFILE_UPDATED_SUCCESSFULLY,
+    result: {
+      user,
+    },
+  });
 });
 
 // User can also delete/inactive himself

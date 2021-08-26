@@ -1,11 +1,11 @@
 const crypto = require('crypto');
+var validator = require('email-validator');
 const User = require('../../model/userModel');
 const { AppError, Email, catchAsync } = require('@utils/tdb_globalutils');
 const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
-var validator = require('email-validator');
 const sendSMS = require('../../utils/sendSMS');
 const jwtManagement = require('../../utils/jwtManagement');
-``;
+const { regex } = require('../../utils/regex');
 //Forgot Password Via Email/phone
 exports.forgotPassword = catchAsync(async (req, res, next) => {
 	if (!req.body.data) {
@@ -19,9 +19,10 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 	let user;
 	if (validator.validate(req.body.data)) {
 		user = await User.findOne({ email: req.body.data });
-	} else {
+	} else if (regex.phone.test(req.body.data)) {
 		user = await User.findOne({ phone: req.body.data });
 	}
+	
 	if (!user) {
 		return next(
 			new AppError(

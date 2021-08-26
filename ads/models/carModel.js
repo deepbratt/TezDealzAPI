@@ -122,7 +122,10 @@ const carsSchema = new mongoose.Schema(
 			type: String,
 			trim: true,
 			required: [true, `Registeration city ${ERRORS.REQUIRED.ONLY_APLHA_REQUIRED}`],
-			validate: [validator.isAlpha, `Registeration city ${ERRORS.REQUIRED.ONLY_APLHA_REQUIRED}`],
+			validate: [
+				validator.isAlpha,
+				`Registeration city ${ERRORS.REQUIRED.ONLY_APLHA_REQUIRED}`,
+			],
 		},
 		milage: {
 			type: Number,
@@ -170,6 +173,9 @@ const carsSchema = new mongoose.Schema(
 		banned: {
 			type: Boolean,
 			default: false,
+		},
+		imageStatus: {
+			type: Boolean,
 		},
 	},
 	{

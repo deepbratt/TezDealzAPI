@@ -1,8 +1,9 @@
+const Validator = require('email-validator');
 const Users = require('../../model/userModel');
 const moment = require('moment');
 const { AppError, catchAsync } = require('@utils/tdb_globalutils');
 const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
-const Validator = require('email-validator');
+const { regex } = require('../../utils/regex');
 
 exports.signupByAdmin = catchAsync(async (req, res, next) => {
   let user;
@@ -78,27 +79,25 @@ exports.activeUser = catchAsync(async (req, res, next) => {
 exports.unbanUser = catchAsync(async (req, res, next) => {
   const result = await Users.findOne({ _id: req.params.id, ban: true });
   if (!result) {
-    return next(new AppError('User is already Unban or Does not Exist', STATUS_CODE.BAD_REQUEST));
+    return next(new AppError(ERRORS.INVALID.UNBAN_USER, STATUS_CODE.BAD_REQUEST));
   }
   await Users.updateOne({ _id: req.params.id }, { ban: false });
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
-    message: 'You have Unbanned User successfully.',
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.UNBANNED_USER,
   });
 });
 
 exports.banUser = catchAsync(async (req, res, next) => {
   const result = await Users.findOne({ _id: req.params.id, ban: false });
   if (!result) {
-    return next(
-      new AppError('This User is already banned or Does not exist', STATUS_CODE.BAD_REQUEST),
-    );
+    return next(new AppError(ERRORS.INVALID.BAN_USER, STATUS_CODE.BAD_REQUEST));
   }
 
   await Users.updateOne({ _id: req.params.id }, { ban: true });
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
-    message: 'You have successfully Banned this User',
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.BANNED_USER,
   });
 });
 
@@ -109,21 +108,17 @@ exports.userStats = catchAsync(async (req, res, next) => {
       $group: {
         _id: { $toUpper: '$role' },
         // _id: null,
-        numUser: { $sum: 1 },
-        roles: { $push: '$role' },
+        total: { $sum: 1 },
+        Roles: { $push: '$role' },
       },
     },
     {
-      $project: { _id: 1, numUser: 1, roles: 1 },
+      $project: { _id: 1, total: 1 },
     },
     {
-      $sort: { numUser: 1 },
+      $sort: { total: 1 },
     },
   ]);
-
-  if (!stats) {
-    return next(new AppError('Error in Stats'));
-  }
 
   res.status(200).json({
     status: STATUS.SUCCESS,
@@ -146,9 +141,6 @@ exports.dailyUserAggregate = catchAsync(async (req, res, next) => {
       $group: {
         _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
         userCreated: { $sum: 1 },
-        userName: { $push: '$username' },
-        userEmail: { $push: '$email' },
-        userPhone: { $push: '$phone' },
       },
     },
     {
@@ -160,9 +152,6 @@ exports.dailyUserAggregate = catchAsync(async (req, res, next) => {
       $project: {
         _id: 1,
         userCreated: 1,
-        userName: 1,
-        userEmail: 1,
-        userPhone: 1,
       },
     },
     {
