@@ -128,11 +128,7 @@ const carsSchema = new mongoose.Schema(
 		registrationCity: {
 			type: String,
 			trim: true,
-			required: [true, `Registeration city ${ERRORS.REQUIRED.ONLY_APLHA_REQUIRED}`],
-			validate: [
-				validator.isAlpha,
-				`Registeration city ${ERRORS.REQUIRED.ONLY_APLHA_REQUIRED}`,
-			],
+			required: [true, `Registeration city is Required`],
 		},
 		milage: {
 			type: Number,
