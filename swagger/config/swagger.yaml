@@ -760,8 +760,6 @@ definitions:
         type: 'string'
       username:
         type: 'string'
-      role:
-        type: 'string'
       password:
         type: 'string'
       passwordConfirm:
