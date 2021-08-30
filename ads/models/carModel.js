@@ -197,7 +197,6 @@ carsSchema.index({
 	bodyColor: 'text',
 	engineType: 'text',
 	condition: 'text',
-	description: 'text',
 	bodyType: 'text',
 	assembly: 'text',
 	transmission: 'text',

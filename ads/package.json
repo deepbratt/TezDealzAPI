@@ -12,7 +12,7 @@
 	"dependencies": {
 		"@auth/tdb-auth": "^1.0.1",
 		"@constants/tdb-constants": "^1.0.31",
-		"@utils/tdb_globalutils": "^1.0.74",
+		"@utils/tdb_globalutils": "^1.0.88",
 		"axios": "^0.21.1",
 		"cookie-session": "^1.4.0",
 		"cors": "^2.8.5",
