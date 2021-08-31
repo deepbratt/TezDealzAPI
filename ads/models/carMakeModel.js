@@ -8,7 +8,6 @@ const carMakeModelSchema = new mongoose.Schema(
     },
     model: {
       type: [String],
-      required: true,
     },
     createdBy: {
       type: mongoose.Schema.ObjectId,

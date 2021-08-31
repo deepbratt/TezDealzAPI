@@ -912,6 +912,58 @@ paths:
         '200':
           description: 'Data in response'
 
+  /v1/ads/cars/add-model/:id:
+    patch:
+      tags:
+        - 'Add or Remove Car Model'
+      summary: 'Use to Add car  model'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'You can add car model and it should be a single string or array of strings '
+          schema:
+            $ref: '#/definitions/model-update'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'Updated Successfully'
+
+  /v1/ads/cars/remove-model/:id:
+    patch:
+      tags:
+        - 'Add or Remove Car Model'
+      summary: 'Use to remove car  model'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'You can remove car model and it should be a single string or array of strings '
+          schema:
+            $ref: '#/definitions/model-update'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'Updated Successfully'
+
 definitions:
   signup:
     type: 'object'
@@ -1060,5 +1112,10 @@ definitions:
     properties:
       make:
         type: 'string'
+      model:
+        type: 'string'
+  model-update:
+    type: 'object'
+    properties:
       model:
         type: 'string'
