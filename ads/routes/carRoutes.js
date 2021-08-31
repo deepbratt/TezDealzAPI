@@ -50,12 +50,13 @@ router
 ///////////////////////////////////////////////////////////////////////////////////////
 router.route('/cars/stats').get(authenticate(User), carController.carStats);
 router.route('/cars/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);
+router.route('/cars/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);
 router
   .route('/cars/ban/:id')
-  .patch(authenticate(User), restrictTo('Admin', 'Moderartor'), carController.markActive);
+  .patch(authenticate(User), restrictTo('Admin', 'Moderartor'), carController.markbanned);
 router
   .route('/cars/unban/:id')
-  .patch(authenticate(User), restrictTo('Admin', 'Moderartor'), carController.unmarkActive);
+  .patch(authenticate(User), restrictTo('Admin', 'Moderartor'), carController.markunbanned);
 ///////////////////////////////////////////////////////////////////////////////////////
 router
   .route('/cars/:id')

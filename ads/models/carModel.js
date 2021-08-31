@@ -6,15 +6,15 @@ const carsSchema = new mongoose.Schema(
 	{
 		country: {
 			type: String,
-			validate: [validator.isAlpha, `country ${ERRORS.REQUIRED.ONLY_APLHA_REQUIRED}`],
+			required: [true, `Country name is Required`],
 		},
 		province: {
 			type: String,
-			validate: [validator.isAlpha, `province ${ERRORS.REQUIRED.ONLY_APLHA_REQUIRED}`],
+			required: [true, `Province name is Required`],
 		},
 		city: {
 			type: String,
-			validate: [validator.isAlpha, `city ${ERRORS.REQUIRED.ONLY_APLHA_REQUIRED}`],
+			required: [true, `City name is Required`],
 		},
 		location: {
 			type: {
@@ -66,7 +66,7 @@ const carsSchema = new mongoose.Schema(
 			type: String,
 			required: [true, ERRORS.REQUIRED.ENGINE_TYPE_REQUIRED],
 			enum: {
-				values: ['Diesel', 'Petrol', 'CNG', 'LPG', 'Hybird', 'Electric'],
+				values: ['Diesel', 'Petrol', 'CNG', 'LPG', 'Hybrid', 'Electric'],
 				message: ERRORS.INVALID.INVALID_ENGINE_TYPE,
 			},
 		},
@@ -91,18 +91,25 @@ const carsSchema = new mongoose.Schema(
 			required: [true, ERRORS.REQUIRED.BODY_TYPE_REQUIRED],
 			enum: {
 				values: [
-					'Sedan',
-					'SUV',
-					'Sports',
-					'Convertible',
-					'Pick Up ',
-					'Coupe',
-					'Hatchback',
+					'Compact sedan',
+					'Compact SUV',
 					'Mini Van',
-					'MPV',
+					'Coupe',
+					'Convertible',
+					'Crossover',
+					'Double Cabin',
+					'High Roof',
 					'Micro Van',
 					'Mini Vehicles',
+					'MPV',
+					'Off-Road Vehicles',
+					'Pick Up',
+					'Sedan',
+					'Single Cabin',
 					'Station Wagon',
+					'Subcompact hatchback',
+					'SUV',
+					'Truck',
 					'Van',
 				],
 				message: ERRORS.INVALID.INVALID_BODY_TYPE,
@@ -121,11 +128,7 @@ const carsSchema = new mongoose.Schema(
 		registrationCity: {
 			type: String,
 			trim: true,
-			required: [true, `Registeration city ${ERRORS.REQUIRED.ONLY_APLHA_REQUIRED}`],
-			validate: [
-				validator.isAlpha,
-				`Registeration city ${ERRORS.REQUIRED.ONLY_APLHA_REQUIRED}`,
-			],
+			required: [true, `Registeration city is Required`],
 		},
 		milage: {
 			type: Number,
@@ -194,8 +197,9 @@ carsSchema.index({
 	bodyColor: 'text',
 	engineType: 'text',
 	condition: 'text',
-	description: 'text',
 	bodyType: 'text',
+	assembly: 'text',
+	transmission: 'text',
 });
 
 const Car = mongoose.model('Car', carsSchema);

@@ -38,7 +38,10 @@ exports.createOne = catchAsync(async (req, res, next) => {
 });
 
 exports.getAll = catchAsync(async (req, res, next) => {
-  const [result, totalCount] = await filter(Car.find(), req.query);
+  const [result, totalCount] = await filter(
+    Car.find({ active: true, banned: false, isSold: false }),
+    req.query,
+  );
 
   if (result.length <= 0) {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));

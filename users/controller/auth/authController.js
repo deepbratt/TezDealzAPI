@@ -84,7 +84,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
   //user existance and password is correct
   if (!user || !(await user.correctPassword(password, user.password))) {
-    return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.UNAUTHORIZED));
+    return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
   }
   // Check if user is banned , if banned then Throw Error
   if (user.banned) {
@@ -98,7 +98,7 @@ exports.login = catchAsync(async (req, res, next) => {
   // Check if user is active or not
   if (!user.active) {
     // If no user and not active:true then return Error
-    return next(new AppError(ERRORS.INVALID.INACTIVE_USER_LOGIN, STATUS_CODE.NOT_FOUND));
+    return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.NOT_FOUND));
   }
   jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
 });
