@@ -1,11 +1,24 @@
 const express = require('express');
 const User = require('../models/userModel');
 const carController = require('../contollers/carController');
+const carMakeModelController = require('../contollers/carMakeModelController');
 const { authenticate, checkIsLoggedIn, restrictTo } = require('@auth/tdb-auth');
 const { permessionCheck, favPermessionCheck } = require('../middleware/cars/index');
 const { upload } = require('@utils/tdb_globalutils');
 const router = express.Router();
 //const { isCached } = require('../utils/redisCache');
+
+router.get('/cars/models', carMakeModelController.getAllModels);
+
+router
+  .route('/cars/make-model')
+  .get(carMakeModelController.getAllMakesModels)
+  .post(carMakeModelController.createMakeModel);
+router
+  .route('/cars/make-model/:id')
+  .get(carMakeModelController.getMakeModel)
+  .patch(carMakeModelController.updateMakeModel)
+  .delete(carMakeModelController.deleteMakeModel);
 
 router
   .route('/cars')

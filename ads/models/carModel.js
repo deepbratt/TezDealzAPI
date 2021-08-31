@@ -164,7 +164,7 @@ const carsSchema = new mongoose.Schema(
 		},
 		sellerType: {
 			type: String,
-			required: [true, ERRORS.REQUIRED.SELLER_TYPE_REQUIRED],
+			required:	 [true, ERRORS.REQUIRED.SELLER_TYPE_REQUIRED],
 			enum: {
 				values: ['Dealer', 'Individual'],
 				message: ERRORS.INVALID.INVALID_SELLER_TYPE,
