@@ -24,9 +24,9 @@ app.use(morgan('dev'));
 app.use(express.json()); // body parser (reading data from body to req.body)
 //app.use(cookieParser()); // cookie parser (reading data from cookie to req.cookie)
 app.use(
-	session({
-		signed: false,
-	})
+  session({
+    signed: false,
+  }),
 );
 app.use(adsRoutes, adsRouter);
 
