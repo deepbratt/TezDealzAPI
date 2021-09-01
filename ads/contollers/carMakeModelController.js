@@ -2,7 +2,6 @@ const CarMakeModel = require('../models/carMakeModel');
 const { AppError, catchAsync } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
 const { filter } = require('./factoryHandler');
-const { model } = require('mongoose');
 
 exports.createMakeModel = catchAsync(async (req, res, next) => {
   await CarMakeModel.create(req.body);
@@ -84,17 +83,28 @@ exports.deleteMakeModel = catchAsync(async (req, res, next) => {
 exports.getAllModels = catchAsync(async (req, res, next) => {
   const result = await filter(CarMakeModel.find({ make: req.params.make }), req.query);
 
-  if (!result) {
+  if (result.length <= 0) {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
 
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-    total: result.length,
-    data: {
-      result,
-    },
+    result,
+  });
+});
+
+exports.getAllMakes = catchAsync(async (req, res, next) => {
+  const result = await filter(CarMakeModel.find({ make: req.params.make }), req.query);
+
+  if (result.length <= 0) {
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  }
+
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    result,
   });
 });
 
