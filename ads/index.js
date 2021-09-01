@@ -4,7 +4,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 const session = require('cookie-session');
 dotenv.config({ path: './config/config.env' }); // read config.env to environmental variables
-require('./utils/redisCache');
+//require('./utils/redisCache');
 require('./config/dbConnection')(); // db connection
 
 const { errorHandler, AppError } = require('@utils/tdb_globalutils');
@@ -24,9 +24,9 @@ app.use(morgan('dev'));
 app.use(express.json()); // body parser (reading data from body to req.body)
 //app.use(cookieParser()); // cookie parser (reading data from cookie to req.cookie)
 app.use(
-  session({
-    signed: false,
-  }),
+	session({
+		signed: false,
+	})
 );
 app.use(adsRoutes, adsRouter);
 

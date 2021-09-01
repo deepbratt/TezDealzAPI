@@ -1,7 +1,7 @@
-const Car = require('../models/carModel');
+const Car = require('../../models/carModel');
 const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
-const { filter, stats, dailyAggregate } = require('./factoryHandler');
+const { filter, stats, dailyAggregate } = require('../factory/factoryHandler');
 
 exports.createOne = catchAsync(async (req, res, next) => {
 	if (req.files) {
@@ -38,7 +38,10 @@ exports.createOne = catchAsync(async (req, res, next) => {
 });
 
 exports.getAll = catchAsync(async (req, res, next) => {
-	const [result, totalCount] = await filter(Car.find(), req.query);
+	const [result, totalCount] = await filter(
+		Car.find({ active: true, isSold: false, banned: false }),
+		req.query
+	);
 
 	if (result.length <= 0) {
 		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
@@ -140,10 +143,7 @@ exports.deleteOne = catchAsync(async (req, res, next) => {
 });
 
 exports.getMine = catchAsync(async (req, res, next) => {
-	const [result, totalCount] = await filter(
-		Car.find({ createdBy: req.user._id }),
-		req.query
-	);
+	const [result, totalCount] = await filter(Car.find({ createdBy: req.user._id }), req.query);
 
 	if (result.length === 0)
 		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
@@ -161,8 +161,7 @@ exports.getMine = catchAsync(async (req, res, next) => {
 
 exports.addtoFav = catchAsync(async (req, res, next) => {
 	const result = await Car.findOne({ _id: req.params.id, favOf: req.user._id });
-	if (result)
-		return next(new AppError(ERRORS.INVALID.ALREADY_FAV, STATUS_CODE.BAD_REQUEST));
+	if (result) return next(new AppError(ERRORS.INVALID.ALREADY_FAV, STATUS_CODE.BAD_REQUEST));
 	await Car.updateOne({ _id: req.params.id }, { $push: { favOf: req.user._id } });
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,

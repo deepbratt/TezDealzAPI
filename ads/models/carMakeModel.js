@@ -1,22 +1,18 @@
 const mongoose = require('mongoose');
 
 const carMakeModelSchema = new mongoose.Schema(
-  {
-    make: {
-      type: String,
-      required: true,
-    },
-    model: {
-      type: [String],
-    },
-    createdBy: {
-      type: mongoose.Schema.ObjectId,
-      ref: 'User',
-    },
-  },
-  {
-    timestamps: true,
-  },
+	{
+		make: {
+			type: String,
+			required: true,
+		},
+		model: {
+			type: [String],
+		},
+	},
+	{
+		timestamps: true,
+	}
 );
 
 const CarMakeModel = mongoose.model('CarMakeModel', carMakeModelSchema);

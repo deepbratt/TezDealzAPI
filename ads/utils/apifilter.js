@@ -1,53 +1,53 @@
 const sp = require('stopword');
 const { AppError, catchAsync, uploadS3, APIFeatures } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
-exports.APIFilter = (Model) => {
-	return catchAsync(async (req, res, next) => {
-		let array = [];
-		if (req.query.keyword) {
-			const oldString = req.query.keyword.split(' ');
-			console.log(oldString);
-			let newString = sp.removeStopwords(oldString);
-			let unique = [...new Set(newString)];
-			array.push({ $match: { $text: { $search: unique.join(' ') } } });
-			array.push({ $addFields: { score: { $meta: 'textScore' } } });
-			array.push({ $match: { score: { $gt: unique.length } } });
-		}
-		array.push({ $match: filter(req.query) });
-		if (req.query.sort) {
-			const sortArray = req.query.sort.split(',');
-			var obj = {};
-			for (let i = 0; i < sortArray.length; i++) {
-				if (sortArray[i].startsWith('-')) {
-					var s2 = sortArray[i].substring(1);
-					obj[s2] = -1;
-				} else {
-					obj[sortArray[i]] = 1;
-				}
-			}
-			array.push({ $sort: obj });
-		} else {
-			array.push({ $sort: { createAt: -1 } });
-		}
-		const page = req.query.page * 1 || 1;
-		const limit = req.query.limit * 1 || 100;
-		const skip = (page - 1) * limit;
-		array.push({
-			$facet: {
-				metadata: [{ $count: 'total' }, { $addFields: { page: page, limit: limit } }],
-				data: [{ $skip: skip }, { $limit: limit }], // add projection here wish you re-shape the docs
-			},
-		});
+// exports.APIFilter = (Model) => {
+// 	return catchAsync(async (req, res, next) => {
+// 		let array = [];
+// 		if (req.query.keyword) {
+// 			const oldString = req.query.keyword.split(' ');
+// 			console.log(oldString);
+// 			let newString = sp.removeStopwords(oldString);
+// 			let unique = [...new Set(newString)];
+// 			array.push({ $match: { $text: { $search: unique.join(' ') } } });
+// 			array.push({ $addFields: { score: { $meta: 'textScore' } } });
+// 			array.push({ $match: { score: { $gt: unique.length } } });
+// 		}
+// 		array.push({ $match: filter(req.query) });
+// 		if (req.query.sort) {
+// 			const sortArray = req.query.sort.split(',');
+// 			var obj = {};
+// 			for (let i = 0; i < sortArray.length; i++) {
+// 				if (sortArray[i].startsWith('-')) {
+// 					var s2 = sortArray[i].substring(1);
+// 					obj[s2] = -1;
+// 				} else {
+// 					obj[sortArray[i]] = 1;
+// 				}
+// 			}
+// 			array.push({ $sort: obj });
+// 		} else {
+// 			array.push({ $sort: { createAt: -1 } });
+// 		}
+// 		const page = req.query.page * 1 || 1;
+// 		const limit = req.query.limit * 1 || 100;
+// 		const skip = (page - 1) * limit;
+// 		array.push({
+// 			$facet: {
+// 				metadata: [{ $count: 'total' }, { $addFields: { page: page, limit: limit } }],
+// 				data: [{ $skip: skip }, { $limit: limit }], // add projection here wish you re-shape the docs
+// 			},
+// 		});
 
-		const data = await Model.aggregate(array);
-		res.status(200).json({
-			status: STATUS.SUCCESS,
-			data,
-		});
-	});
-};
+// 		const data = await Model.aggregate(array);
+// 		res.status(200).json({
+// 			status: STATUS.SUCCESS,
+// 			data,
+// 		});
+// 	});
+// };
 
-function filter(query) {
+exports.filter = (query) => {
 	//QUERY FILTER
 	const queryParams = { ...query };
 	const excludedFields = ['limit', 'page', 'sort', 'fields', 'keyword'];
@@ -86,19 +86,16 @@ function filter(query) {
 	console.log(newObj);
 	// FILTER MONGOOSE OPERATORS
 	let queryStr = JSON.stringify(newObj);
-	queryStr = queryStr.replace(
-		/\b(gte|gt|lte|lt|regex|options)\b/g,
-		(match) => `$${match}`
-	);
+	queryStr = queryStr.replace(/\b(gte|gt|lte|lt|regex|options)\b/g, (match) => `$${match}`);
 
 	console.log(JSON.parse(queryStr));
 
-	let obj = JSON.parse(queryStr);
-	Object.keys(obj.price).forEach((key) => {
-		obj.price[key] = parseInt(obj.price[key]);
-	});
-	console.log(obj);
+	// let obj = JSON.parse(queryStr);
+	// Object.keys(obj.price).forEach((key) => {
+	// 	obj.price[key] = parseInt(obj.price[key]);
+	// });
+	//console.log(obj);
 	// QUERY BUILDING
 
-	return obj;
-}
+	return JSON.parse(queryStr);
+};

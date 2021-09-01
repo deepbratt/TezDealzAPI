@@ -15,46 +15,52 @@ client.hget = util.promisify(client.hget);
 const exec = mongoose.Query.prototype.exec;
 
 // create new cache function on prototype
-mongoose.Query.prototype.cache = function (options = { expire: 60 }) {
-	this.useCache = true;
-	this.expire = options.expire;
-	this.hashKey = JSON.stringify(options.key || this.mongooseCollection.name);
-
+mongoose.Query.prototype.cache = function (time = 60 * 60) {
+	this.cacheMe = true;
+	// we will talk about cacheTime later;
+	this.cacheTime = time;
 	return this;
 };
 
 // override exec function to first check cache for data
 mongoose.Query.prototype.exec = async function () {
-	if (!this.useCache) {
-		return await exec.apply(this, arguments);
-	}
+	const collectionName = this.mongooseCollection.name;
 
-	const key = JSON.stringify({
-		...this.getQuery(),
-		collection: this.mongooseCollection.name,
-	});
+	if (this.cacheMe) {
+		// You can't insert json straight to redis needs to be a string
 
-	// get cached value from redis
-	const cacheValue = await client.hget(this.hashKey, key);
+		const key = JSON.stringify({
+			...this.getOptions(),
+			collectionName: collectionName,
+			op: this.op,
+		});
+		const cachedResults = await redis.HGET(collectionName, key);
 
-	// if cache value is not found, fetch data from mongodb and cache it
-	if (!cacheValue) {
+		// getOptions() returns the query and this.op is the method which in our case is "find"
+
+		if (cachedResults) {
+			// if you found cached results return it;
+			const result = JSON.parse(cachedResults);
+			return result;
+		}
+		//else
+		// get results from Database then cache it
 		const result = await exec.apply(this, arguments);
-		client.hset(this.hashKey, key, JSON.stringify(result));
-		client.expire(this.hashKey, this.expire);
 
-		console.log('Return data from MongoDB');
+		redis.HSET(collectionName, key, JSON.stringify(result), 'EX', this.cacheTime);
+		//Blogs - > {op: "find" , ... the original query} -> result we got from database
 		return result;
 	}
 
-	// return found cachedValue
-	const doc = JSON.parse(cacheValue);
-	console.log('Return data from Redis');
-	return Array.isArray(doc) ? doc.map((d) => new this.model(d)) : new this.model(doc);
+	clearCachedData(collectionName, this.op);
+	return exec.apply(this, arguments);
 };
 
-module.exports = {
-	clearHash(hashKey) {
-		client.del(JSON.stringify(hashKey));
-	},
-};
+async function clearCachedData(collectionName, op) {
+	const allowedCacheOps = ['find', 'findById', 'findOne'];
+	// if operation is insert or delete or update for any collection that exists and has cached values
+	// delete its childern
+	if (!allowedCacheOps.includes(op) && (await redis.EXISTS(collectionName))) {
+		redis.DEL(collectionName);
+	}
+}
