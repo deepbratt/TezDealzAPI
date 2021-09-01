@@ -57,12 +57,7 @@ exports.updateMakeModel = catchAsync(async (req, res, next) => {
   }
 
   if (req.body.model) {
-    return next(
-      new AppError(
-        `Please Visit '/v1/ads/cars/update-model/:id' to update 'model' `,
-        STATUS_CODE.BAD_REQUEST,
-      ),
-    );
+    return next(new AppError(ERRORS.INVALID.MODEL_UPDATE, STATUS_CODE.BAD_REQUEST));
   }
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
@@ -96,6 +91,7 @@ exports.getAllModels = catchAsync(async (req, res, next) => {
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    total: result.length,
     data: {
       result,
     },
@@ -108,12 +104,7 @@ exports.addToModel = catchAsync(async (req, res, next) => {
   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
   if (req.body.make) {
-    return next(
-      new AppError(
-        `Please Visit '/v1/ads/cars/make-model/:id' to Update 'Make'`,
-        STATUS_CODE.BAD_REQUEST,
-      ),
-    );
+    return next(new AppError(ERRORS.INVALID.MAKE_UPDATE, STATUS_CODE.BAD_REQUEST));
   }
   const newValue = await CarMakeModel.updateOne(
     { _id: req.params.id },
@@ -134,7 +125,7 @@ exports.removeFromModel = catchAsync(async (req, res, next) => {
   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
   if (req.body.make) {
-    return next(new AppError(`You cannot remove make`, STATUS_CODE.BAD_REQUEST));
+    return next(new AppError(ERRORS.INVALID.MAKE_REMOVE, STATUS_CODE.BAD_REQUEST));
   }
   const newValue = await CarMakeModel.updateOne(
     { _id: req.params.id },

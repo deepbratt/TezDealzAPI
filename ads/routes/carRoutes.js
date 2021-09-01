@@ -8,12 +8,15 @@ const { upload } = require('@utils/tdb_globalutils');
 const router = express.Router();
 //const { isCached } = require('../utils/redisCache');
 
+////////////////////////////// CAR MAKE MODEL ////////////////////////////////////////
+
 // To Get all models of specific Make
 router.get('/cars/models', carMakeModelController.getAllModels);
 
 // To add Model in models array by finding with Id.
 router.patch('/cars/add-model/:id', carMakeModelController.addToModel);
 
+// To remove Model in models array by finding with Id.
 router.patch('/cars/remove-model/:id', carMakeModelController.removeFromModel);
 
 router
@@ -25,6 +28,8 @@ router
   .get(carMakeModelController.getMakeModel)
   .patch(carMakeModelController.updateMakeModel)
   .delete(carMakeModelController.deleteMakeModel);
+
+////////////////////////////////////////////////////////////////////////////////////////////
 
 router
   .route('/cars')
