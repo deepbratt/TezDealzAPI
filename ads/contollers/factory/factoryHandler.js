@@ -107,10 +107,12 @@ exports.citiesByProvince = (Model) => {
 		if (req.query.province) {
 			array.unshift({ $match: filter(req.query) });
 		}
-		const stats = await Model.aggregate(array);
+		const result = await Model.aggregate(array);
 		res.status(200).json({
 			status: STATUS.SUCCESS,
-			data: stats,
+			data: {
+				result,
+			},
 		});
 	});
 };
