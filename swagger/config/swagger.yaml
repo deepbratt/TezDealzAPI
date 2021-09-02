@@ -959,6 +959,21 @@ paths:
           description: 'Not Found'
         '200':
           description: 'Updated Successfully'
+  /v1/ads/cars/filter/cities-with-cars?province=Punjab:
+    get:
+      tags:
+        - 'Cities With Cars Based on Province'
+      summary: ''
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'Data in response'        
 
 definitions:
   signup:

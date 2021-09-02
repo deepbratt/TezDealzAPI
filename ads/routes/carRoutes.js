@@ -1,7 +1,8 @@
 const express = require('express');
 const User = require('../models/userModel');
-const carController = require('../contollers/carController');
-const carMakeModelController = require('../contollers/carMakeModelController');
+const carController = require('../contollers/cars/carController');
+const carMakeModelController = require('../contollers/cars/carMakeModelController');
+const carFilters = require('../contollers/cars/carFilters');
 const { authenticate, checkIsLoggedIn, restrictTo } = require('@auth/tdb-auth');
 const { permessionCheck, favPermessionCheck } = require('../middleware/cars/index');
 const { upload } = require('@utils/tdb_globalutils');
@@ -38,10 +39,14 @@ router
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-router
-  .route('/cars')
-  .post(authenticate(User), upload('image').array('image', 10), carController.createOne);
-router.route('/cars').get(checkIsLoggedIn(User), carController.getAll);
+// router
+//   .route('/cars')
+//   .post(authenticate(User), upload('image').array('image', 20), carController.createOne);
+// router.route('/cars').get(checkIsLoggedIn(User), carController.getAll);
+// router.route('/cars/myCars').get(authenticate(User), carController.getMine);
+
+router.route('/cars').post(upload('image').array('image', 20), carController.createOne);
+router.route('/cars').get(carController.getAll);
 router.route('/cars/myCars').get(authenticate(User), carController.getMine);
 
 //////////////////////////////FAVOURITES/////////////////////////////////////////
@@ -75,16 +80,20 @@ router
 router
   .route('/cars/unban/:id')
   .patch(authenticate(User), restrictTo('Admin', 'Moderartor'), carController.markunbanned);
-///////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
 router
   .route('/cars/:id')
   .get(checkIsLoggedIn(User), carController.getOne)
   .patch(
     authenticate(User),
     permessionCheck,
-    upload('image').array('image', 10),
+    upload('image').array('image', 20),
     carController.updateOne,
   )
   .delete(authenticate(User), permessionCheck, carController.deleteOne);
+/////////////////////////////////////////////////////////////////////////////////////////////
+//city filter
+////////////////////////////////////////////////////////////////////////////////////////////
+router.route('/cars/filter/cities-with-cars').get(carFilters.getCitiesByProvince);
 
 module.exports = router;

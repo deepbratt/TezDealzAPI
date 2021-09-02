@@ -1,6 +1,7 @@
 const moment = require('moment');
 const { APIFeatures, catchAsync } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
+const { filter } = require('../../utils/apifilter');
 
 exports.filter = async (query, queryParams) => {
   const results = new APIFeatures(query, queryParams).filter().search().sort().limitFields();
@@ -78,9 +79,38 @@ exports.dailyAggregate = (Model) => {
     ]);
     res.status(200).json({
       status: STATUS.SUCCESS,
-      data: {
-        stats,
+      data: stats,
+    });
+  });
+};
+
+exports.citiesByProvince = (Model) => {
+  return catchAsync(async (req, res, next) => {
+    let array = [
+      {
+        $group: {
+          _id: '$city',
+          count: { $sum: 1 },
+        },
       },
+      {
+        $addFields: {
+          city: '$_id',
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+    ];
+    if (req.query.province) {
+      array.unshift({ $match: filter(req.query) });
+    }
+    const stats = await Model.aggregate(array);
+    res.status(200).json({
+      status: STATUS.SUCCESS,
+      data: stats,
     });
   });
 };
