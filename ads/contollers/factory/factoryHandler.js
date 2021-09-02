@@ -99,6 +99,11 @@ exports.citiesByProvince = (Model) => {
 				},
 			},
 			{
+				$sort: {
+					count: -1,
+				},
+			},
+			{
 				$project: {
 					_id: 0,
 				},
