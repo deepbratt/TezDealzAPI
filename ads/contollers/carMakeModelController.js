@@ -13,7 +13,7 @@ exports.createMakeModel = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllMakesModels = catchAsync(async (req, res, next) => {
-  const result = await CarMakeModel.find();
+  const [result, totalCount] = await filter(CarMakeModel.find(), req.query);
 
   if (!result) {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
@@ -22,8 +22,8 @@ exports.getAllMakesModels = catchAsync(async (req, res, next) => {
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    totalCount: totalCount,
     data: {
-      total: result.length,
       result,
     },
   });
@@ -81,9 +81,12 @@ exports.deleteMakeModel = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllModels = catchAsync(async (req, res, next) => {
-  const result = await filter(CarMakeModel.find({ make: req.params.make }), req.query);
+  const result = await filter(
+    CarMakeModel.find({ make: req.params.make, fields: req.params.fields }),
+    req.query,
+  );
 
-  if (result.length <= 0) {
+  if (!result) {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
 
@@ -95,17 +98,8 @@ exports.getAllModels = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllMakes = catchAsync(async (req, res, next) => {
-  const result = await filter(CarMakeModel.find({ make: req.params.make }), req.query);
-
-  if (result.length <= 0) {
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-  }
-
-  res.status(STATUS_CODE.OK).json({
-    status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-    result,
-  });
+  req.query.fields = 'make';
+  next();
 });
 
 exports.addToModel = catchAsync(async (req, res, next) => {

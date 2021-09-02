@@ -13,6 +13,13 @@ const router = express.Router();
 // To Get all models of specific Make
 router.get('/cars/models', carMakeModelController.getAllModels);
 
+// To Get all models of specific Make
+router.get(
+  '/cars/makes',
+  carMakeModelController.getAllMakes,
+  carMakeModelController.getAllMakesModels,
+);
+
 // To add Model in models array by finding with Id.
 router.patch('/cars/add-model/:id', carMakeModelController.addToModel);
 

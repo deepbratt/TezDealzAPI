@@ -9,10 +9,6 @@ const carMakeModelSchema = new mongoose.Schema(
     model: {
       type: [String],
     },
-    createdBy: {
-      type: mongoose.Schema.ObjectId,
-      ref: 'User',
-    },
   },
   {
     timestamps: true,

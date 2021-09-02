@@ -902,10 +902,6 @@ paths:
         - 'application/json'
       produces:
         - 'application/json'
-      parameters:
-        - in: 'path'
-          name: 'id'
-          required: true
       responses:
         '404':
           description: 'Not Found'
