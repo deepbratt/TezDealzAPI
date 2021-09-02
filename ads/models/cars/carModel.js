@@ -33,6 +33,9 @@ const carsSchema = new mongoose.Schema(
 			ref: 'User',
 		},
 		image: [String],
+		version: {
+			type: String,
+		},
 		regNumber: {
 			type: String,
 			unique: true,
@@ -167,7 +170,7 @@ const carsSchema = new mongoose.Schema(
 		},
 		sellerType: {
 			type: String,
-			required:	 [true, ERRORS.REQUIRED.SELLER_TYPE_REQUIRED],
+			required: [true, ERRORS.REQUIRED.SELLER_TYPE_REQUIRED],
 			enum: {
 				values: ['Dealer', 'Individual'],
 				message: ERRORS.INVALID.INVALID_SELLER_TYPE,
