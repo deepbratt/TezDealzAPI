@@ -22,10 +22,10 @@ exports.favPermessionCheck = catchAsync(async (req, res, next) => {
 	next();
 });
 
-exports.phoneVerifyCheck = catchAsync(async (req, res, next) => {
-	if (!req.user.isPhoneVerified) {
+exports.phoneCheck = catchAsync(async (req, res, next) => {
+	if (!req.user.phone) {
 		return next(
-			new AppError('Please Verify Your Phone Number First To Proceed Next', STATUS_CODE.UNAUTHORIZED)
+			new AppError('Please Add Your Phone Number First To Proceed Next', STATUS_CODE.UNAUTHORIZED)
 		);
 	}
 	next();

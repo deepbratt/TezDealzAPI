@@ -3,8 +3,8 @@ const dotenv = require('dotenv');
 const morgan = require('morgan');
 const cors = require('cors');
 const session = require('cookie-session');
+const compression = require('compression');
 dotenv.config({ path: './config/config.env' }); // read config.env to environmental variables
-//require('./utils/redisCache');
 require('./config/dbConnection')(); // db connection
 
 const { errorHandler, AppError } = require('@utils/tdb_globalutils');
@@ -28,8 +28,10 @@ app.use(
 		signed: false,
 	})
 );
-app.use(adsRoutes, adsRouter);
 
+app.use(compression());
+//routes
+app.use(adsRoutes, adsRouter);
 app.all('*', (req, res, next) => {
 	next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
 });
