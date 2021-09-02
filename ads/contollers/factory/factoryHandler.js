@@ -13,7 +13,7 @@ exports.filter = async (query, queryParams) => {
     .sort()
     .limitFields()
     .pagination();
-  const doc = await freatures.query;
+  const doc = await freatures.query.cache();
 
   return [doc, totalCount];
 };
@@ -99,6 +99,11 @@ exports.citiesByProvince = (Model) => {
         },
       },
       {
+        $sort: {
+          count: -1,
+        },
+      },
+      {
         $project: {
           _id: 0,
         },
@@ -107,10 +112,12 @@ exports.citiesByProvince = (Model) => {
     if (req.query.province) {
       array.unshift({ $match: filter(req.query) });
     }
-    const stats = await Model.aggregate(array);
+    const result = await Model.aggregate(array);
     res.status(200).json({
       status: STATUS.SUCCESS,
-      data: stats,
+      data: {
+        result,
+      },
     });
   });
 };

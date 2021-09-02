@@ -789,34 +789,11 @@ paths:
           description: 'Not Found'
         '200':
           description: 'successfull'
-
-  /v1/ads/cars/make-model:
-    post:
-      tags:
-        - 'Cars Make Model'
-      summary: 'use to Create cars Make and Model'
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      parameters:
-        - in: 'body'
-          name: 'body'
-          description: 'You have to add make as string and models as array of string'
-          required: true
-          schema:
-            $ref: '#/definitions/make-model'
-      responses:
-        '404':
-          description: 'Not Found'
-        '201':
-          description: 'created Successfully'
-    /v1/ads/cars/make-model:
+  /v1/ads/cars/makes:
     get:
       tags:
         - 'Cars Make Model'
-      summary: 'use to get All cars makes and models'
+      summary: 'use to get All cars makes'
       description: ''
       consumes:
         - 'application/json'
@@ -824,77 +801,28 @@ paths:
         - 'application/json'
       responses:
         '404':
-          description: 'No User Found'
+          description: 'Not Found'
         '200':
-          description: 'List of all make and models'
-  /v1/ads/cars/make-model/:{id}:
+          description: 'List of all makes'
+  /v1/ads/cars/models/?make_id=41:
     get:
       tags:
         - 'Cars Make Model'
-      summary: 'Use to get  car make model'
+      summary: 'Use to get models for specific make'
       description: ''
       consumes:
         - 'application/json'
       produces:
         - 'application/json'
-      parameters:
-        - in: 'path'
-          name: 'id'
-          required: true
       responses:
         '404':
           description: 'Not Found'
         '200':
           description: 'Data in response'
-  /v1/ads/cars/make-model/:id:
-    patch:
-      tags:
-        - 'Cars Make Model'
-      summary: 'Use to Update car make model'
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      parameters:
-        - in: 'path'
-          name: 'id'
-          required: true
-          type: 'string'
-        - in: 'body'
-          name: 'body'
-          description: 'You have to add make as string and models as array of string'
-          schema:
-            $ref: '#/definitions/make-model'
-      responses:
-        '404':
-          description: 'Not Found'
-        '200':
-          description: 'update Successfully'
-    /v1/ads/cars/make-model/:{id}:
-    delete:
-      tags:
-        - 'Cars Make Model'
-      summary: 'Use to Delete car make model'
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      parameters:
-        - in: 'path'
-          name: 'id'
-          required: true
-          type: 'string'
-      responses:
-        '404':
-          description: 'Not Found'
-        '200':
-          description: 'Deleted Successfully'
-
-  /v1/ads/cars/models?make=Honda:
+  /v1/ads/cars/versions?model_id=984:
     get:
       tags:
+<<<<<<< HEAD
         - 'Cars Models'
       summary: 'Use to get all models of a specific make'
       description: ''
@@ -939,26 +867,20 @@ paths:
       tags:
         - 'Add or Remove Car Model'
       summary: 'Use to remove car  model'
+=======
+        - 'Cars Make Model'
+      summary: 'Use to get car version'
+>>>>>>> 0f0d560a0715b407835cdaf2f640705b7a77dcfa
       description: ''
       consumes:
         - 'application/json'
       produces:
         - 'application/json'
-      parameters:
-        - in: 'path'
-          name: 'id'
-          required: true
-          type: 'string'
-        - in: 'body'
-          name: 'body'
-          description: 'You can remove car model and it should be a single string or array of strings '
-          schema:
-            $ref: '#/definitions/model-update'
       responses:
         '404':
           description: 'Not Found'
         '200':
-          description: 'Updated Successfully'
+          description: 'versions'
   /v1/ads/cars/filter/cities-with-cars?province=Punjab:
     get:
       tags:
