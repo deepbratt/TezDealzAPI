@@ -1,4 +1,4 @@
-const Car = require('../../models/carModel');
+const Car = require('../../models/cars/carModel');
 
 const { citiesByProvince } = require('../factory/factoryHandler');
 

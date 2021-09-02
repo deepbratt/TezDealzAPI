@@ -1,7 +1,7 @@
 const express = require('express');
-const User = require('../models/userModel');
+const User = require('../models/user/userModel');
 const carController = require('../contollers/cars/carController');
-const carMakeModelController = require('../contollers/cars/carMakeModelController');
+const carMakeModelController = require('../contollers/cars/makeModelController');
 const carFilters = require('../contollers/cars/carFilters');
 const { authenticate, checkIsLoggedIn, restrictTo } = require('@auth/tdb-auth');
 const { permessionCheck, favPermessionCheck } = require('../middleware/cars/index');
@@ -11,24 +11,26 @@ const router = express.Router();
 
 ////////////////////////////// CAR MAKE MODEL ////////////////////////////////////////
 
-// To Get all models of specific Make
-router.get('/cars/models', carMakeModelController.getAllModels);
+// To Get all makes of specific Make
+router.get('/cars/makes', carMakeModelController.getAllMakes);
 
-// To add Model in models array by finding with Id.
-router.patch('/cars/add-model/:id', carMakeModelController.addToModel);
+// models with specific make.
+router.get('/cars/models', carMakeModelController.getModels);
+
+router.get('/cars/versions', carMakeModelController.getVersions);
 
 // To remove Model in models array by finding with Id.
-router.patch('/cars/remove-model/:id', carMakeModelController.removeFromModel);
+// router.patch('/cars/remove-model/:id', carMakeModelController.removeFromModel);
 
-router
-	.route('/cars/make-model')
-	.get(carMakeModelController.getAllMakesModels)
-	.post(carMakeModelController.createMakeModel);
-router
-	.route('/cars/make-model/:id')
-	.get(carMakeModelController.getMakeModel)
-	.patch(carMakeModelController.updateMakeModel)
-	.delete(carMakeModelController.deleteMakeModel);
+// router
+// 	.route('/cars/make-model')
+// 	.get(carMakeModelController.getAllMakesModels)
+// 	.post(carMakeModelController.createMakeModel);
+// router
+// 	.route('/cars/make-model/:id')
+// 	.get(carMakeModelController.getMakeModel)
+// 	.patch(carMakeModelController.updateMakeModel)
+// 	.delete(carMakeModelController.deleteMakeModel);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
