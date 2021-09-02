@@ -40,8 +40,10 @@ router.get('/cars/versions', carMakeModelController.getVersions);
 // router.route('/cars').get(checkIsLoggedIn(User), carController.getAll);
 // router.route('/cars/myCars').get(authenticate(User), carController.getMine);
 
-router.route('/cars').post(upload('image').array('image', 20), carController.createOne);
-router.route('/cars').get(carController.getAll);
+router
+  .route('/cars')
+  .post(authenticate(User), upload('image').array('image', 20), carController.createOne);
+router.route('/cars').get(authenticate(User), carController.getAll);
 router.route('/cars/myCars').get(authenticate(User), carController.getMine);
 
 //////////////////////////////FAVOURITES/////////////////////////////////////////
