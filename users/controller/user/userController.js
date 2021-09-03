@@ -2,6 +2,7 @@ const Users = require('../../model/userModel');
 const { AppError, catchAsync } = require('@utils/tdb_globalutils');
 const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
 const { uploadS3 } = require('@utils/tdb_globalutils');
+const { clearKey } = require('../../utils/upstash-redis');
 
 // To filter unwanted fields from req.body
 const filterObj = (obj, ...allowedFields) => {
@@ -13,7 +14,7 @@ const filterObj = (obj, ...allowedFields) => {
 };
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const result = await Users.find();
+  const result = await Users.find().cache({ time: 10 });
 
   if (!result) {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));

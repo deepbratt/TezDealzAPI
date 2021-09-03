@@ -13,7 +13,7 @@ exports.filter = async (query, queryParams) => {
     .sort()
     .limitFields()
     .pagination();
-  const doc = await freatures.query.cache();
+  const doc = await freatures.query;
 
   return [doc, totalCount];
 };
