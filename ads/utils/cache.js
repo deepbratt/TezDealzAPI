@@ -35,7 +35,7 @@ module.exports = (duration) => async (req, res, next) => {
 
 	if (cachedResponse) {
 		console.log(`Cache hit for ${key}`);
-		res.json(JSON.stringify(cachedResponse));
+		res.json(JSON.parse(cachedResponse));
 	} else {
 		console.log(`Cache miss for ${key}`);
 		res.originalSend = res.json;
