@@ -1,10 +1,26 @@
-const NodeCache = require('node-cache');
+//const NodeCache = require('node-cache');
+const redis = require('redis');
+const { promisify } = require('util');
+const client = redis.createClient({
+	host: 'apn1-true-goldfish-30968.upstash.io',
+	port: '30968',
+	password: '587a34e03bac4832b086883b34a85b47',
+	tls: {},
+});
+client.on('error', function (err) {
+	console.log(err);
+});
 
-const cache = new NodeCache();
+const GET_ASYNC = promisify(client.get).bind(client);
+const SET_ASYNC = promisify(client.set).bind(client);
 
-module.exports = (duration) => (req, res, next) => {
+//const cache = new NodeCache();
+
+module.exports = (duration) => async (req, res, next) => {
 	if (req.method !== 'GET') {
-		cache.flushAll();
+		client.flushdb(function (err, succeeded) {
+			console.log(succeeded); // will be true if successfull
+		});
 		return next();
 	}
 	let key;
@@ -15,7 +31,7 @@ module.exports = (duration) => (req, res, next) => {
 	}
 	console.log(key);
 
-	const cachedResponse = cache.get(key);
+	const cachedResponse = await GET_ASYNC(key);
 
 	if (cachedResponse) {
 		console.log(`Cache hit for ${key}`);
@@ -23,9 +39,10 @@ module.exports = (duration) => (req, res, next) => {
 	} else {
 		console.log(`Cache miss for ${key}`);
 		res.originalSend = res.json;
-		res.json = (body) => {
+		res.json = async (body) => {
 			res.originalSend(body);
-			cache.set(key, body, duration);
+			await SET_ASYNC(key, JSON.stringify(body), 'EX', duration);
+			//cache.set(key, body, duration);
 		};
 		next();
 	}
