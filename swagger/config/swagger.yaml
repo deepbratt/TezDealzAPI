@@ -973,6 +973,8 @@ definitions:
         type: number
       price:
         type: number
+      version:
+        type: string  
       condition:
         type: string
       description:
