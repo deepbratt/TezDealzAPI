@@ -2,9 +2,9 @@
 const redis = require('redis');
 const { promisify } = require('util');
 const client = redis.createClient({
-	host: 'apn1-true-goldfish-30968.upstash.io',
-	port: '30968',
-	password: '587a34e03bac4832b086883b34a85b47',
+	host: 'us1-teaching-pangolin-34803.upstash.io',
+	port: '34803',
+	password: '4c2ed042334b40c2acd625acc56d012a',
 	tls: {},
 });
 client.on('error', function (err) {
