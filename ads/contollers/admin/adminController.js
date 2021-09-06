@@ -14,7 +14,7 @@ exports.totalOwners = catchAsync(async (req, res, next) => {
       $project: { _id: 0, totalOwners: 0 },
     },
     {
-      $count: 'Owners',
+      $count: 'totalOwners',
     },
 
     // {
@@ -35,19 +35,13 @@ exports.totalCars = catchAsync(async (req, res, next) => {
     {
       $group: {
         _id: '$createdAt',
-        totalCars: { $sum: 1 },
       },
     },
     {
-      $project: { _id: 1, totalCars: 1 },
+      $project: { _id: 0, totalOwners: 0 },
     },
     {
-      $sort: { totalCars: 1 },
-    },
-    {
-      $facet: {
-        Owners: [{ $count: 'total' }],
-      },
+      $count: 'totalCars',
     },
   ]);
 
@@ -73,11 +67,8 @@ exports.carsMonthlyStats = catchAsync(async (req, res, next) => {
         carCreated: { $sum: 1 },
       },
     },
-
     {
-      $sort: {
-        _id: 1,
-      },
+      $count: 'carsAddedThisMonth',
     },
     // {
     //   $facet: { metadat: [{ $count: 'Total' }] },
