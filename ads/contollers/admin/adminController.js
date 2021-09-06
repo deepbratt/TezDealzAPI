@@ -34,7 +34,7 @@ exports.totalCars = catchAsync(async (req, res, next) => {
   const result = await Ads.aggregate([
     {
       $group: {
-        _id: '$createdAt',
+        _id: '$_id',
       },
     },
     {
@@ -74,6 +74,8 @@ exports.carsMonthlyStats = catchAsync(async (req, res, next) => {
     //   $facet: { metadat: [{ $count: 'Total' }] },
     // },
   ]);
+
+  if (result <= 0) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
   res.status(200).json({
     status: STATUS.SUCCESS,

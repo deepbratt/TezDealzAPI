@@ -14,15 +14,9 @@ const router = express.Router();
 
 /////////////////////////////////// Admin Routes ////////////////////////////
 
-router
-  .route('/owners')
-  .get(authenticate(User), restrictTo('Admin', 'Moderartor'), adminController.totalOwners);
-router
-  .route('/total-cars')
-  .get(authenticate(User), restrictTo('Admin', 'Moderartor'), adminController.totalCars);
-router
-  .route('/cars-monthly-stats')
-  .get(authenticate(User), restrictTo('Admin', 'Moderartor'), adminController.carsMonthlyStats);
+router.route('/owners').get(adminController.totalOwners);
+router.route('/total-cars').get(adminController.totalCars);
+router.route('/cars-monthly-stats').get(adminController.carsMonthlyStats);
 
 ////////////////////////////// CAR MAKE MODEL ////////////////////////////////////////
 
