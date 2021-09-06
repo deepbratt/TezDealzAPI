@@ -14,7 +14,7 @@ exports.totalOwners = catchAsync(async (req, res, next) => {
 			$project: { _id: 0, totalOwners: 0 },
 		},
 		{
-			$count: 'totalOwners',
+			$count: 'count',
 		},
 	]);
 	res.status(200).json({
@@ -34,7 +34,7 @@ exports.totalCars = catchAsync(async (req, res, next) => {
 			$project: { _id: 0, totalOwners: 0 },
 		},
 		{
-			$count: 'totalCars',
+			$count: 'count',
 		},
 	]);
 
@@ -61,7 +61,7 @@ exports.carsMonthlyStats = catchAsync(async (req, res, next) => {
 			},
 		},
 		{
-			$count: 'carsAddedThisMonth',
+			$count: 'count',
 		},
 	]);
 
@@ -94,9 +94,12 @@ exports.carsOwnersMonthlyStats = catchAsync(async (req, res, next) => {
 		},
 		{
 			$group: {
-				_id: null,
-				ownerCreated: { $sum: 1 },
+				_id: '$user_doc._id',
+				owners: { $sum: 1 },
 			},
+		},
+		{
+			$count: 'count',
 		},
 	]);
 
@@ -119,8 +122,8 @@ exports.carsAddedToday = catchAsync(async (req, res, next) => {
 		},
 		{
 			$group: {
-				_id: '$createdAt',
-				carCreated: { $sum: 1 },
+				_id: '$_id',
+				cars: { $sum: 1 },
 			},
 		},
 		{
@@ -158,7 +161,7 @@ exports.ownersJoinedToday = catchAsync(async (req, res, next) => {
 		{
 			$group: {
 				_id: '$user_doc._id',
-				carCreated: { $sum: 1 },
+				owners: { $sum: 1 },
 			},
 		},
 		{
