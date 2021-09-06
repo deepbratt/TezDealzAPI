@@ -110,7 +110,7 @@ exports.carsAddedToday = catchAsync(async (req, res, next) => {
 				$expr: {
 					$eq: [{ $year: '$createdAt' }, { $year: new Date() }],
 					$eq: [{ $month: '$createdAt' }, { $month: new Date() }],
-					$eq: [{ $day: '$createdAt' }, { $day: new Date() }],
+					$eq: [{ $dayOfMonth: '$createdAt' }, { $dayOfMonth: new Date() }],
 				},
 			},
 		},
@@ -130,7 +130,6 @@ exports.carsAddedToday = catchAsync(async (req, res, next) => {
 	});
 });
 
-
 exports.ownersJoinedToday = catchAsync(async (req, res, next) => {
 	const result = await Car.aggregate([
 		{
@@ -146,7 +145,7 @@ exports.ownersJoinedToday = catchAsync(async (req, res, next) => {
 				$expr: {
 					$eq: [{ $year: '$user_doc.createdAt' }, { $year: new Date() }],
 					$eq: [{ $month: '$user_doc.createdAt' }, { $month: new Date() }],
-					$eq: [{ $day: '$user_doc.createdAt' }, { $day: new Date() }],
+					$eq: [{ $dayOfMonth: '$user_doc.createdAt' }, { $dayOfMonth: new Date() }],
 				},
 			},
 		},
