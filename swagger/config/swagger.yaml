@@ -822,8 +822,55 @@ paths:
   /v1/ads/cars/versions?model_id=984:
     get:
       tags:
+<<<<<<< HEAD
+        - 'Cars Models'
+      summary: 'Use to get all models of a specific make'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'Data in response'
+
+  /v1/ads/cars/add-model/:id:
+    patch:
+      tags:
+        - 'Add or Remove Car Model'
+      summary: 'Use to Add car  model'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'You can add car model and it should be a single string or array of strings '
+          schema:
+            $ref: '#/definitions/model-update'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'Updated Successfully'
+
+  /v1/ads/cars/remove-model/:id:
+    patch:
+      tags:
+        - 'Add or Remove Car Model'
+      summary: 'Use to remove car  model'
+=======
         - 'Cars Make Model'
       summary: 'Use to get car version'
+>>>>>>> 0f0d560a0715b407835cdaf2f640705b7a77dcfa
       description: ''
       consumes:
         - 'application/json'

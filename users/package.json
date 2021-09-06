@@ -1,6 +1,6 @@
 {
 	"name": "users",
-	"version": "1.0.57",
+	"version": "1.0.60",
 	"description": "users service",
 	"main": "index.js",
 	"scripts": {
@@ -36,6 +36,7 @@
 		"morgan": "^1.10.0",
 		"nodemailer": "^6.6.3",
 		"phone": "^3.1.4",
+		"redis": "^3.1.2",
 		"twilio": "^3.66.0",
 		"xss-clean": "^0.1.1"
 	},
