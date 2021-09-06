@@ -15,15 +15,27 @@ const router = express.Router();
 /////////////////////////////////// Admin Routes ////////////////////////////
 
 router
-  .route('/owners')
-  .get(authenticate(User), restrictTo('Admin', 'Moderartor'), adminController.totalOwners);
+	.route('/total-owners')
+	.get(authenticate(User), restrictTo('Admin', 'Moderartor'), adminController.totalOwners);
 router
-  .route('/total-cars')
-  .get(authenticate(User), restrictTo('Admin', 'Moderartor'), adminController.totalCars);
+	.route('/owners-added-today')
+	.get(authenticate(User), restrictTo('Admin', 'Moderartor'), adminController.ownersJoinedToday);
 router
-  .route('/cars-monthly-stats')
-  .get(authenticate(User), restrictTo('Admin', 'Moderartor'), adminController.carsMonthlyStats);
-
+	.route('/owners-monthly-stats')
+	.get(
+		authenticate(User),
+		restrictTo('Admin', 'Moderartor'),
+		adminController.carsOwnersMonthlyStats
+	);
+router
+	.route('/total-cars')
+	.get(authenticate(User), restrictTo('Admin', 'Moderartor'), adminController.totalCars);
+router
+	.route('/cars-monthly-stats')
+	.get(authenticate(User), restrictTo('Admin', 'Moderartor'), adminController.carsMonthlyStats);
+router
+	.route('/cars-added-today')
+	.get(authenticate(User), restrictTo('Admin', 'Moderartor'), adminController.carsAddedToday);
 ////////////////////////////// CAR MAKE MODEL ////////////////////////////////////////
 
 // To Get all makes of specific Make
@@ -56,13 +68,8 @@ router.get('/versions', cache(cacheExp), carMakeModelController.getVersions);
 // router.route('/cars/myCars').get(authenticate(User), carController.getMine);
 
 router
-  .route('/')
-  .post(
-    authenticate(User),
-    phoneCheck,
-    upload('image').array('image', 20),
-    carController.createOne,
-  );
+	.route('/')
+	.post(authenticate(User), phoneCheck, upload('image').array('image', 20), carController.createOne);
 router.route('/').get(checkIsLoggedIn(User), cache(cacheExp), carController.getAll);
 router.route('/myCars').get(authenticate(User), cache(cacheExp), carController.getMine);
 
@@ -70,45 +77,45 @@ router.route('/myCars').get(authenticate(User), cache(cacheExp), carController.g
 router.route('/favourites').get(authenticate(User), cache(cacheExp), carController.favorites);
 
 router
-  .route('/add-to-fav/:id')
-  .patch(authenticate(User), favPermessionCheck, carController.addtoFav);
+	.route('/add-to-fav/:id')
+	.patch(authenticate(User), favPermessionCheck, carController.addtoFav);
 router.route('/remove-from-fav/:id').patch(authenticate(User), carController.removeFromFav);
 
 ///////////////////////MARK ACTIVE/SOLD////////////////////////////////////
 router
-  .route('/mark-sold/:id')
-  .patch(authenticate(User), cache(cacheExp), permessionCheck, carController.markSold);
+	.route('/mark-sold/:id')
+	.patch(authenticate(User), cache(cacheExp), permessionCheck, carController.markSold);
 router
-  .route('/mark-unsold/:id')
-  .patch(authenticate(User), cache(cacheExp), permessionCheck, carController.unmarkSold);
+	.route('/mark-unsold/:id')
+	.patch(authenticate(User), cache(cacheExp), permessionCheck, carController.unmarkSold);
 router
-  .route('/mark-active/:id')
-  .patch(authenticate(User), cache(cacheExp), permessionCheck, carController.markActive);
+	.route('/mark-active/:id')
+	.patch(authenticate(User), cache(cacheExp), permessionCheck, carController.markActive);
 router
-  .route('/mark-inactive/:id')
-  .patch(authenticate(User), cache(cacheExp), permessionCheck, carController.unmarkActive);
+	.route('/mark-inactive/:id')
+	.patch(authenticate(User), cache(cacheExp), permessionCheck, carController.unmarkActive);
 ///////////////////////////////////////////////////////////////////////////////////////
 router.route('/stats').get(authenticate(User), carController.carStats);
 router.route('/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);
 //router.route('/cars/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);
 router
-  .route('/ban/:id')
-  .patch(authenticate(User), restrictTo('Admin', 'Moderartor'), carController.markbanned);
+	.route('/ban/:id')
+	.patch(authenticate(User), restrictTo('Admin', 'Moderartor'), carController.markbanned);
 router
-  .route('/unban/:id')
-  .patch(authenticate(User), restrictTo('Admin', 'Moderartor'), carController.markunbanned);
+	.route('/unban/:id')
+	.patch(authenticate(User), restrictTo('Admin', 'Moderartor'), carController.markunbanned);
 /////////////////////////////////////////////////////////////////////////////////////////////
 router
-  .route('/:id')
-  .get(checkIsLoggedIn(User), cache(cacheExp), carController.getOne)
-  .patch(
-    authenticate(User),
-    phoneCheck,
-    permessionCheck,
-    upload('image').array('image', 20),
-    carController.updateOne,
-  )
-  .delete(authenticate(User), permessionCheck, carController.deleteOne);
+	.route('/:id')
+	.get(checkIsLoggedIn(User), cache(cacheExp), carController.getOne)
+	.patch(
+		authenticate(User),
+		phoneCheck,
+		permessionCheck,
+		upload('image').array('image', 20),
+		carController.updateOne
+	)
+	.delete(authenticate(User), permessionCheck, carController.deleteOne);
 /////////////////////////////////////////////////////////////////////////////////////////////
 //city filter
 ////////////////////////////////////////////////////////////////////////////////////////////
