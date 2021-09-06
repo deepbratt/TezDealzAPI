@@ -157,7 +157,7 @@ exports.ownersJoinedToday = catchAsync(async (req, res, next) => {
 		// },
 		{
 			$group: {
-				_id: '$user_doc.createdAt',
+				_id: '$user_doc._id',
 				carCreated: { $sum: 1 },
 			},
 		},
