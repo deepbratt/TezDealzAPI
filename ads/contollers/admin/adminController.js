@@ -16,14 +16,7 @@ exports.totalOwners = catchAsync(async (req, res, next) => {
     {
       $count: 'Owners',
     },
-
-    // {
-    //   $facet: {
-    //     Owners: [{ $count: 'total' }],
-    //   },
-    // },
   ]);
-
   res.status(200).json({
     status: STATUS.SUCCESS,
     result,
