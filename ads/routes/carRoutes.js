@@ -2,6 +2,7 @@ const express = require('express');
 const User = require('../models/user/userModel');
 const carController = require('../contollers/cars/carController');
 const carMakeModelController = require('../contollers/cars/makeModelController');
+const adminController = require('../contollers/admin/adminController');
 const carFilters = require('../contollers/cars/carFilters');
 const { authenticate, checkIsLoggedIn, restrictTo } = require('@auth/tdb-auth');
 const { permessionCheck, favPermessionCheck, phoneCheck } = require('../middleware/cars/index');
@@ -10,6 +11,18 @@ const cache = require('../utils/cache');
 const cacheExp = 30;
 const router = express.Router();
 // const { isCached } = require('../utils/redisCache');
+
+/////////////////////////////////// Admin Routes ////////////////////////////
+
+router
+  .route('/owners')
+  .get(authenticate(User), restrictTo('Admin', 'Moderartor'), adminController.totalOwners);
+router
+  .route('/total-cars')
+  .get(authenticate(User), restrictTo('Admin', 'Moderartor'), adminController.totalCars);
+router
+  .route('/cars-monthly-stats')
+  .get(authenticate(User), restrictTo('Admin', 'Moderartor'), adminController.carsMonthlyStats);
 
 ////////////////////////////// CAR MAKE MODEL ////////////////////////////////////////
 
