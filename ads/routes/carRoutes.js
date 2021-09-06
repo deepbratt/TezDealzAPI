@@ -16,26 +16,25 @@ const router = express.Router();
 
 router
 	.route('/total-owners')
-	.get(authenticate(User), restrictTo('Admin', 'Moderartor'), adminController.totalOwners);
+	.get(authenticate(User), adminController.totalOwners);
 router
 	.route('/owners-added-today')
-	.get(authenticate(User), restrictTo('Admin', 'Moderartor'), adminController.ownersJoinedToday);
+	.get(authenticate(User), adminController.ownersJoinedToday);
 router
 	.route('/owners-monthly-stats')
 	.get(
 		authenticate(User),
-		restrictTo('Admin', 'Moderartor'),
 		adminController.carsOwnersMonthlyStats
 	);
 router
 	.route('/total-cars')
-	.get(authenticate(User), restrictTo('Admin', 'Moderartor'), adminController.totalCars);
+	.get(authenticate(User), adminController.totalCars);
 router
 	.route('/cars-monthly-stats')
-	.get(authenticate(User), restrictTo('Admin', 'Moderartor'), adminController.carsMonthlyStats);
+	.get(authenticate(User), adminController.carsMonthlyStats);
 router
 	.route('/cars-added-today')
-	.get(authenticate(User), restrictTo('Admin', 'Moderartor'), adminController.carsAddedToday);
+	.get(authenticate(User), adminController.carsAddedToday);
 ////////////////////////////// CAR MAKE MODEL ////////////////////////////////////////
 
 // To Get all makes of specific Make
