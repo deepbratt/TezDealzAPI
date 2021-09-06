@@ -91,7 +91,7 @@ exports.carsOwnersMonthlyStats = catchAsync(async (req, res, next) => {
     },
     {
       $group: {
-        _id: '$user_doc.createdAt',
+        _id: null,
         ownerCreated: { $sum: 1 },
       },
     },
