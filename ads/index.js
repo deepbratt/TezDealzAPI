@@ -12,9 +12,6 @@ const { errorHandler, AppError } = require('@utils/tdb_globalutils');
 const adsRoutes = require('./constants/consts').routeConsts.carRoutes;
 const adsRouter = require('./routes/carRoutes');
 
-const adminRoutes = require('./constants/consts').routeConsts.adminRoutes;
-const adminRouter = require('./routes/adminRoutes');
-
 const PORT = 3003; // port
 const app = express();
 
@@ -35,7 +32,6 @@ app.use(
 app.use(compression());
 //routes
 app.use(adsRoutes, adsRouter);
-app.use(adminRoutes, adminRouter);
 app.all('*', (req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
 });
