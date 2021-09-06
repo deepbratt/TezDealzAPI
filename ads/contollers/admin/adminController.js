@@ -146,15 +146,15 @@ exports.ownersJoinedToday = catchAsync(async (req, res, next) => {
 		{
 			$unwind: '$user_doc',
 		},
-		// {
-		// 	$match: {
-		// 		$expr: {
-		// 			$eq: [{ $year: '$user_doc.createdAt' }, { $year: new Date() }],
-		// 			$eq: [{ $month: '$user_doc.createdAt' }, { $month: new Date() }],
-		// 			$eq: [{ $dayOfMonth: '$user_doc.createdAt' }, { $dayOfMonth: new Date() }],
-		// 		},
-		// 	},
-		// },
+		{
+			$match: {
+				$expr: {
+					$eq: [{ $year: '$user_doc.createdAt' }, { $year: new Date() }],
+					$eq: [{ $month: '$user_doc.createdAt' }, { $month: new Date() }],
+					$eq: [{ $dayOfMonth: '$user_doc.createdAt' }, { $dayOfMonth: new Date() }],
+				},
+			},
+		},
 		{
 			$group: {
 				_id: '$user_doc._id',
