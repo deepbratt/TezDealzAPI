@@ -1,10 +1,10 @@
-const Ads = require('../../models/cars/carModel');
+const Car = require('../../models/cars/carModel');
 const moment = require('moment');
 const { AppError, catchAsync } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
 
 exports.totalOwners = catchAsync(async (req, res, next) => {
-  const result = await Ads.aggregate([
+  const result = await Car.aggregate([
     {
       $group: {
         _id: '$createdBy',
@@ -16,14 +16,7 @@ exports.totalOwners = catchAsync(async (req, res, next) => {
     {
       $count: 'totalOwners',
     },
-
-    // {
-    //   $facet: {
-    //     Owners: [{ $count: 'total' }],
-    //   },
-    // },
   ]);
-
   res.status(200).json({
     status: STATUS.SUCCESS,
     result,
@@ -31,7 +24,7 @@ exports.totalOwners = catchAsync(async (req, res, next) => {
 });
 
 exports.totalCars = catchAsync(async (req, res, next) => {
-  const result = await Ads.aggregate([
+  const result = await Car.aggregate([
     {
       $group: {
         _id: '$_id',
@@ -52,7 +45,7 @@ exports.totalCars = catchAsync(async (req, res, next) => {
 });
 
 exports.carsMonthlyStats = catchAsync(async (req, res, next) => {
-  const result = await Ads.aggregate([
+  const result = await Car.aggregate([
     {
       $match: {
         $expr: {
@@ -70,13 +63,102 @@ exports.carsMonthlyStats = catchAsync(async (req, res, next) => {
     {
       $count: 'carsAddedThisMonth',
     },
-    // {
-    //   $facet: { metadat: [{ $count: 'Total' }] },
-    // },
   ]);
 
-  if (result <= 0) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  res.status(200).json({
+    status: STATUS.SUCCESS,
+    result,
+  });
+});
 
+exports.carsOwnersMonthlyStats = catchAsync(async (req, res, next) => {
+  const result = await Car.aggregate([
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'createdBy',
+        foreignField: '_id',
+        as: 'user_doc',
+      },
+    },
+    {
+      $match: {
+        $expr: {
+          $eq: [{ $year: '$user_doc.createdAt' }, { $year: new Date() }],
+          $eq: [{ $month: '$user_doc.createdAt' }, { $month: new Date() }],
+        },
+      },
+    },
+    {
+      $group: {
+        _id: '$user_doc.createdAt',
+        ownerCreated: { $sum: 1 },
+      },
+    },
+  ]);
+
+  res.status(200).json({
+    status: STATUS.SUCCESS,
+    result,
+  });
+});
+
+exports.carsAddedToday = catchAsync(async (req, res, next) => {
+  const result = await Car.aggregate([
+    {
+      $match: {
+        $expr: {
+          $eq: [{ $year: '$createdAt' }, { $year: new Date() }],
+          $eq: [{ $month: '$createdAt' }, { $month: new Date() }],
+          $eq: [{ $dayOfMonth: '$createdAt' }, { $dayOfMonth: new Date() }],
+        },
+      },
+    },
+    {
+      $group: {
+        _id: '$createdAt',
+        carCreated: { $sum: 1 },
+      },
+    },
+    {
+      $count: 'count',
+    },
+  ]);
+  res.status(200).json({
+    status: STATUS.SUCCESS,
+    result,
+  });
+});
+
+exports.ownersJoinedToday = catchAsync(async (req, res, next) => {
+  const result = await Car.aggregate([
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'createdBy',
+        foreignField: '_id',
+        as: 'user_doc',
+      },
+    },
+    {
+      $match: {
+        $expr: {
+          $eq: [{ $year: '$user_doc.createdAt' }, { $year: new Date() }],
+          $eq: [{ $month: '$user_doc.createdAt' }, { $month: new Date() }],
+          $eq: [{ $dayOfMonth: '$user_doc.createdAt' }, { $dayOfMonth: new Date() }],
+        },
+      },
+    },
+    {
+      $group: {
+        _id: '$user_doc.createdAt',
+        carCreated: { $sum: 1 },
+      },
+    },
+    {
+      $count: 'count',
+    },
+  ]);
   res.status(200).json({
     status: STATUS.SUCCESS,
     result,

@@ -751,7 +751,7 @@ paths:
         '200':
           description: 'successfull'
 
-  /v1/ads/cars/owners:
+  /v1/ads/cars/total-owners:
     get:
       tags:
         - 'Admin/Moderator authorities for ads'
@@ -798,7 +798,51 @@ paths:
           description: 'Not Found'
         '200':
           description: 'Total cars in our Platform'
-
+  /v1/ads/cars/owners-monthly-stats:
+    get:
+      tags:
+        - 'Admin/Moderator authorities for ads'
+      summary: ''
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'Total Owners in response'
+  /v1/ads/cars/owners-added-today:
+    get:
+      tags:
+        - 'Admin/Moderator authorities for ads'
+      summary: ''
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'Total Owners in response'
+  /v1/ads/cars/cars-added-today:
+    get:
+      tags:
+        - 'Admin/Moderator authorities for ads'
+      summary: ''
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'Total Owners in response'                
   /v1/ads/cars/makes:
     get:
       tags:

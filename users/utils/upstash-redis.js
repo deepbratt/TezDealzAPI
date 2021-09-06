@@ -1,57 +1,48 @@
-// const mongoose = require('mongoose');
-// const redis = require('redis');
-// const util = require('util');
+const redis = require('redis');
+const { promisify } = require('util');
+const client = redis.createClient({
+	host: 'us1-teaching-pangolin-34803.upstash.io',
+	port: '34803',
+	password: '4c2ed042334b40c2acd625acc56d012a',
+	tls: {},
+});
+client.on('error', function (err) {
+	console.log(err);
+});
 
-// const client = redis.createClient({
-//   host: process.env.REDIS_HOST,
-//   port: process.env.REDIS_PORT,
-//   password: process.env.REDIS_PASSWORD,
-//   tls: {},
-// });
+const GET_ASYNC = promisify(client.get).bind(client);
+const SET_ASYNC = promisify(client.set).bind(client);
 
-// client.hget = util.promisify(client.hget);
+//const cache = new NodeCache();
 
-// // create reference for .exec
-// const exec = mongoose.Query.prototype.exec;
+module.exports = (duration) => async (req, res, next) => {
+	if (req.method !== 'GET') {
+		client.flushdb(function (err, succeeded) {
+			console.log(succeeded); // will be true if successfull
+		});
+		return next();
+	}
+	let key;
+	if (req.user) {
+		key = `${req.originalUrl}_${req.user._id}`;
+	} else {
+		key = req.originalUrl;
+	}
+	console.log(key);
 
-// // create new cache function on prototype
-// mongoose.Query.prototype.cache = function (options = { time: 10 }) {
-//   this.useCache = true;
-//   this.time = options.time;
-//   this.hashKey = JSON.stringify(options.key || this.mongooseCollection.name);
+	const cachedResponse = await GET_ASYNC(key);
 
-//   return this;
-// };
-
-// mongoose.Query.prototype.exec = async function () {
-//   if (!this.useCache) {
-//     return await exec.apply(this, arguments);
-//   }
-
-//   const key = JSON.stringify({
-//     ...this.getQuery(),
-//   });
-
-//   const cacheValue = await client.hget(this.hashKey, key);
-
-//   if (cacheValue) {
-//     const doc = JSON.parse(cacheValue);
-
-//     console.log('Response from Redis');
-//     return Array.isArray(doc) ? doc.map((d) => new this.model(d)) : new this.model(doc);
-//   }
-
-//   const result = await exec.apply(this, arguments);
-//   console.log(this.time);
-//   client.hset(this.hashKey, key, JSON.stringify(result));
-//   client.expire(this.hashKey, this.time);
-
-//   console.log('Response from MongoDB');
-//   return result;
-// };
-
-// module.exports = {
-//   clearKey(hashKey) {
-//     client.del(JSON.stringify(hashKey));
-//   },
-// };
+	if (cachedResponse) {
+		console.log(`Cache hit for ${key}`);
+		res.json(JSON.parse(cachedResponse));
+	} else {
+		console.log(`Cache miss for ${key}`);
+		res.originalSend = res.json;
+		res.json = async (body) => {
+			res.originalSend(body);
+			await SET_ASYNC(key, JSON.stringify(body), 'EX', duration);
+			//cache.set(key, body, duration);
+		};
+		next();
+	}
+};
