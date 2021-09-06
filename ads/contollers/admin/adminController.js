@@ -1,5 +1,5 @@
 const Car = require('../../models/cars/carModel');
-const moment = require('moment');
+// const moment = require('moment');
 const { AppError, catchAsync } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
 
@@ -82,6 +82,9 @@ exports.carsOwnersMonthlyStats = catchAsync(async (req, res, next) => {
       },
     },
     {
+      $unwind: '$user_doc',
+    },
+    {
       $match: {
         $expr: {
           $eq: [{ $year: '$user_doc.createdAt' }, { $year: new Date() }],
@@ -139,6 +142,9 @@ exports.ownersJoinedToday = catchAsync(async (req, res, next) => {
         foreignField: '_id',
         as: 'user_doc',
       },
+    },
+    {
+      $unwind: '$user_doc',
     },
     {
       $match: {
