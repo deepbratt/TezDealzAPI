@@ -82,6 +82,9 @@ exports.carsOwnersMonthlyStats = catchAsync(async (req, res, next) => {
 			},
 		},
 		{
+			$unwind: '$user_doc',
+		},
+		{
 			$match: {
 				$expr: {
 					$eq: [{ $year: '$user_doc.createdAt' }, { $year: new Date() }],
@@ -139,6 +142,9 @@ exports.ownersJoinedToday = catchAsync(async (req, res, next) => {
 				foreignField: '_id',
 				as: 'user_doc',
 			},
+		},
+		{
+			$unwind: '$user_doc',
 		},
 		{
 			$match: {
