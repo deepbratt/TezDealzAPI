@@ -5,6 +5,6 @@ const adminController = require('../contollers/admin/adminController');
 
 router.route('/owners').get(adminController.totalOwners);
 router.route('/total-cars').get(adminController.totalCars);
-router.route('/owners-monthly-stats').get(adminController.ownersMonthlyStats);
+router.route('/cars-monthly-stats').get(adminController.carsMonthlyStats);
 
 module.exports = router;

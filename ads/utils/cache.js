@@ -1,34 +1,51 @@
-const NodeCache = require('node-cache');
+//const NodeCache = require('node-cache');
+const redis = require('redis');
+const { promisify } = require('util');
+const client = redis.createClient({
+  host: 'us1-teaching-pangolin-34803.upstash.io',
+  port: '34803',
+  password: '4c2ed042334b40c2acd625acc56d012a',
+  tls: {},
+});
+client.on('error', function (err) {
+  console.log(err);
+});
 
-const cache = new NodeCache();
+const GET_ASYNC = promisify(client.get).bind(client);
+const SET_ASYNC = promisify(client.set).bind(client);
 
-module.exports = (duration) => (req, res, next) => {
-	if (req.method !== 'GET') {
-		cache.flushAll();
-		return next();
-	}
-	let key;
-	if (req.user) {
-		key = `${req.originalUrl}_${req.user._id}`;
-	} else {
-		key = req.originalUrl;
-	}
-	console.log(key);
+//const cache = new NodeCache();
 
-	const cachedResponse = cache.get(key);
+module.exports = (duration) => async (req, res, next) => {
+  if (req.method !== 'GET') {
+    client.flushdb(function (err, succeeded) {
+      console.log(succeeded); // will be true if successfull
+    });
+    return next();
+  }
+  let key;
+  if (req.user) {
+    key = `${req.originalUrl}_${req.user._id}`;
+  } else {
+    key = req.originalUrl;
+  }
+  console.log(key);
 
-	if (cachedResponse) {
-		console.log(`Cache hit for ${key}`);
-		res.json(cachedResponse);
-	} else {
-		console.log(`Cache miss for ${key}`);
-		res.originalSend = res.json;
-		res.json = (body) => {
-			res.originalSend(body);
-			cache.set(key, body, duration);
-		};
-		next();
-	}
+  const cachedResponse = await GET_ASYNC(key);
+
+  if (cachedResponse) {
+    console.log(`Cache hit for ${key}`);
+    res.json(JSON.parse(cachedResponse));
+  } else {
+    console.log(`Cache miss for ${key}`);
+    res.originalSend = res.json;
+    res.json = async (body) => {
+      res.originalSend(body);
+      await SET_ASYNC(key, JSON.stringify(body), 'EX', duration);
+      //cache.set(key, body, duration);
+    };
+    next();
+  }
 };
 // const client = redis.createClient({
 // 	host: process.env.REDIS_HOST,

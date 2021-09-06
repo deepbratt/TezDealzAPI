@@ -8,20 +8,20 @@ exports.totalOwners = catchAsync(async (req, res, next) => {
     {
       $group: {
         _id: '$createdBy',
-        totalOwners: { $sum: 1 },
       },
     },
     {
-      $project: { _id: 1, totalOwners: 1 },
+      $project: { _id: 0, totalOwners: 0 },
     },
     {
-      $sort: { totalOwners: 1 },
+      $count: 'Owners',
     },
-    {
-      $facet: {
-        Owners: [{ $count: 'total' }],
-      },
-    },
+
+    // {
+    //   $facet: {
+    //     Owners: [{ $count: 'total' }],
+    //   },
+    // },
   ]);
 
   res.status(200).json({
@@ -57,48 +57,32 @@ exports.totalCars = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.ownersMonthlyStats = catchAsync(async (req, res, next) => {
-  const { max, min } = req.params;
-
+exports.carsMonthlyStats = catchAsync(async (req, res, next) => {
   const result = await Ads.aggregate([
     {
       $match: {
-        createdAt: { $lte: moment(max).toDate(), $gte: moment(min).toDate() },
+        $expr: {
+          $eq: [{ $year: '$createdAt' }, { $year: new Date() }],
+          $eq: [{ $month: '$createdAt' }, { $month: new Date() }],
+        },
       },
     },
     {
       $group: {
-        _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-        count: { $sum: 1 },
-        // ownersID: { $push: '$createdBy' },
+        _id: '$createdAt',
+        carCreated: { $sum: 1 },
       },
     },
-    {
-      $addFields: {
-        date: '$_id',
-      },
-    },
-    {
-      $project: {
-        _id: 1,
-        count: 1,
-        // ownersID: 1,
-      },
-    },
+
     {
       $sort: {
-        _id: -1,
+        _id: 1,
       },
     },
-    {
-      $facet: { metadat: [{ $count: 'Total' }] },
-    },
+    // {
+    //   $facet: { metadat: [{ $count: 'Total' }] },
+    // },
   ]);
-
-  //     { $project: { month_joined: { $month: '$createdAt' } } },
-  //     { $group: { _id: { joinedInMonth: '$month_joined' }, number: { $sum: 1 } } },
-  //     { $sort: { '_id.month_joined': 1 } },
-  //   ]);
 
   res.status(200).json({
     status: STATUS.SUCCESS,

@@ -14,22 +14,22 @@ const router = express.Router();
 ////////////////////////////// CAR MAKE MODEL ////////////////////////////////////////
 
 // To Get all makes of specific Make
-router.get('/cars/makes', cache(cacheExp), carMakeModelController.getAllMakes);
+router.get('/makes', cache(cacheExp), carMakeModelController.getAllMakes);
 
 // models with specific make.
-router.get('/cars/models', cache(cacheExp), carMakeModelController.getModels);
+router.get('/models', cache(cacheExp), carMakeModelController.getModels);
 
-router.get('/cars/versions', cache(cacheExp), carMakeModelController.getVersions);
+router.get('/versions', cache(cacheExp), carMakeModelController.getVersions);
 
 // To remove Model in models array by finding with Id.
-// router.patch('/cars/remove-model/:id', carMakeModelController.removeFromModel);
+// router.patch('/remove-model/:id', carMakeModelController.removeFromModel);
 
 // router
-// 	.route('/cars/make-model')
+// 	.route('/make-model')
 // 	.get(carMakeModelController.getAllMakesModels)
 // 	.post(carMakeModelController.createMakeModel);
 // router
-// 	.route('/cars/make-model/:id')
+// 	.route('/make-model/:id')
 // 	.get(carMakeModelController.getMakeModel)
 // 	.patch(carMakeModelController.updateMakeModel)
 // 	.delete(carMakeModelController.deleteMakeModel);
@@ -43,50 +43,50 @@ router.get('/cars/versions', cache(cacheExp), carMakeModelController.getVersions
 // router.route('/cars/myCars').get(authenticate(User), carController.getMine);
 
 router
-  .route('/cars')
+  .route('/')
   .post(
     authenticate(User),
     phoneCheck,
     upload('image').array('image', 20),
     carController.createOne,
   );
-router.route('/cars').get(checkIsLoggedIn(User), cache(cacheExp), carController.getAll);
-router.route('/cars/myCars').get(authenticate(User), cache(cacheExp), carController.getMine);
+router.route('/').get(checkIsLoggedIn(User), cache(cacheExp), carController.getAll);
+router.route('/myCars').get(authenticate(User), cache(cacheExp), carController.getMine);
 
 //////////////////////////////FAVOURITES/////////////////////////////////////////
-router.route('/cars/favourites').get(authenticate(User), cache(cacheExp), carController.favorites);
+router.route('/favourites').get(authenticate(User), cache(cacheExp), carController.favorites);
 
 router
-  .route('/cars/add-to-fav/:id')
+  .route('/add-to-fav/:id')
   .patch(authenticate(User), favPermessionCheck, carController.addtoFav);
-router.route('/cars/remove-from-fav/:id').patch(authenticate(User), carController.removeFromFav);
+router.route('/remove-from-fav/:id').patch(authenticate(User), carController.removeFromFav);
 
 ///////////////////////MARK ACTIVE/SOLD////////////////////////////////////
 router
-  .route('/cars/mark-sold/:id')
+  .route('/mark-sold/:id')
   .patch(authenticate(User), cache(cacheExp), permessionCheck, carController.markSold);
 router
-  .route('/cars/mark-unsold/:id')
+  .route('/mark-unsold/:id')
   .patch(authenticate(User), cache(cacheExp), permessionCheck, carController.unmarkSold);
 router
-  .route('/cars/mark-active/:id')
+  .route('/mark-active/:id')
   .patch(authenticate(User), cache(cacheExp), permessionCheck, carController.markActive);
 router
-  .route('/cars/mark-inactive/:id')
+  .route('/mark-inactive/:id')
   .patch(authenticate(User), cache(cacheExp), permessionCheck, carController.unmarkActive);
 ///////////////////////////////////////////////////////////////////////////////////////
-router.route('/cars/stats').get(authenticate(User), carController.carStats);
-router.route('/cars/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);
+router.route('/stats').get(authenticate(User), carController.carStats);
+router.route('/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);
 //router.route('/cars/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);
 router
-  .route('/cars/ban/:id')
+  .route('/ban/:id')
   .patch(authenticate(User), restrictTo('Admin', 'Moderartor'), carController.markbanned);
 router
-  .route('/cars/unban/:id')
+  .route('/unban/:id')
   .patch(authenticate(User), restrictTo('Admin', 'Moderartor'), carController.markunbanned);
 /////////////////////////////////////////////////////////////////////////////////////////////
 router
-  .route('/cars/:id')
+  .route('/:id')
   .get(checkIsLoggedIn(User), cache(cacheExp), carController.getOne)
   .patch(
     authenticate(User),
@@ -99,6 +99,6 @@ router
 /////////////////////////////////////////////////////////////////////////////////////////////
 //city filter
 ////////////////////////////////////////////////////////////////////////////////////////////
-router.route('/cars/filter/cities-with-cars').get(cache(cacheExp), carFilters.getCitiesByProvince);
+router.route('/filter/cities-with-cars').get(cache(cacheExp), carFilters.getCitiesByProvince);
 
 module.exports = router;

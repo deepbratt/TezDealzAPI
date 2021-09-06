@@ -1,5 +1,5 @@
 exports.routeConsts = {
-  carRoutes: '/v1/ads',
+  carRoutes: '/v1/ads/cars',
   adminRoutes: '/v1/admin-panel',
 };
 
