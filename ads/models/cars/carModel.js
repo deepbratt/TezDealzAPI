@@ -156,6 +156,9 @@ const carsSchema = new mongoose.Schema(
 				ref: 'User',
 			},
 		],
+		soldByUs: {
+			type: Boolean,
+		},
 		isFav: {
 			type: Boolean,
 			default: undefined,

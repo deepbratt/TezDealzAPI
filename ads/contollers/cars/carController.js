@@ -203,7 +203,10 @@ exports.markSold = catchAsync(async (req, res, next) => {
 	if (!result) {
 		return next(new AppError(ERRORS.INVALID.MARK_SOLD, STATUS_CODE.BAD_REQUEST));
 	}
-	await Car.updateOne({ _id: req.params.id }, { isSold: true });
+	if (!req.body.soldByUs){
+		return next(new AppError('Please Confirm: Is it sold through TezDealz?', STATUS_CODE.BAD_REQUEST));
+	}
+	await Car.updateOne({ _id: req.params.id }, { isSold: true, soldByUs: req.body.soldByUs });
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.MARKED_SOLD,
@@ -215,7 +218,7 @@ exports.unmarkSold = catchAsync(async (req, res, next) => {
 	if (!result) {
 		return next(new AppError(ERRORS.INVALID.UNMARK_SOLD, STATUS_CODE.BAD_REQUEST));
 	}
-	await Car.updateOne({ _id: req.params.id }, { isSold: false });
+	await Car.updateOne({ _id: req.params.id }, { isSold: false, soldByUs: undefined });
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.MARKED_UNSOLD,
