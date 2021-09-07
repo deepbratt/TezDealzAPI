@@ -16,25 +16,22 @@ const router = express.Router();
 
 router
 	.route('/total-owners')
-	.get(authenticate(User), adminController.totalOwners);
+	.get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.totalOwners);
 router
 	.route('/owners-added-today')
-	.get(authenticate(User), adminController.ownersJoinedToday);
+	.get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.ownersJoinedToday);
 router
 	.route('/owners-monthly-stats')
-	.get(
-		authenticate(User),
-		adminController.carsOwnersMonthlyStats
-	);
+	.get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.carsOwnersMonthlyStats);
 router
 	.route('/total-cars')
-	.get(authenticate(User), adminController.totalCars);
+	.get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.totalCars);
 router
 	.route('/cars-monthly-stats')
-	.get(authenticate(User), adminController.carsMonthlyStats);
+	.get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.carsMonthlyStats);
 router
 	.route('/cars-added-today')
-	.get(authenticate(User), adminController.carsAddedToday);
+	.get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.carsAddedToday);
 ////////////////////////////// CAR MAKE MODEL ////////////////////////////////////////
 
 // To Get all makes of specific Make
@@ -94,8 +91,8 @@ router
 	.route('/mark-inactive/:id')
 	.patch(authenticate(User), cache(cacheExp), permessionCheck, carController.unmarkActive);
 ///////////////////////////////////////////////////////////////////////////////////////
-router.route('/stats').get(authenticate(User), carController.carStats);
-router.route('/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);
+//router.route('/stats').get(authenticate(User), carController.carStats);
+//router.route('/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);
 //router.route('/cars/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);
 router
 	.route('/ban/:id')
