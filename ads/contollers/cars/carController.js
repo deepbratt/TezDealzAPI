@@ -203,9 +203,6 @@ exports.markSold = catchAsync(async (req, res, next) => {
 	if (!result) {
 		return next(new AppError(ERRORS.INVALID.MARK_SOLD, STATUS_CODE.BAD_REQUEST));
 	}
-	if (!req.body.soldByUs){
-		return next(new AppError('Please Confirm: Is it sold through TezDealz?', STATUS_CODE.BAD_REQUEST));
-	}
 	await Car.updateOne({ _id: req.params.id }, { isSold: true, soldByUs: req.body.soldByUs });
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
