@@ -645,6 +645,12 @@ paths:
           name: 'id'
           required: true
           type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'mark car as sold'
+          required: true
+          schema:
+            $ref: '#/definitions/mark-sold'  
       responses:
         '404':
           description: 'Not Found'
@@ -1061,3 +1067,8 @@ definitions:
     properties:
       model:
         type: 'string'
+  mark-sold:
+    type: 'object'
+    properties:
+      soldByUs:
+        type: 'boolean'      
