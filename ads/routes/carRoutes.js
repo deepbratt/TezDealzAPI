@@ -1,9 +1,10 @@
 const express = require('express');
 const User = require('../models/user/userModel');
 const carController = require('../contollers/cars/carController');
-const carMakeModelController = require('../contollers/cars/makeModelController');
+const carModelVersionController = require('../contollers/cars/model_version_controller');
 const adminController = require('../contollers/admin/adminController');
 const bodyTypeController = require('../contollers/cars/bodyTypesController');
+const carMakeController = require('../contollers/cars/carMakeContoller');
 const carFilters = require('../contollers/cars/carFilters');
 const { authenticate, checkIsLoggedIn, restrictTo } = require('@auth/tdb-auth');
 const { permessionCheck, favPermessionCheck, phoneCheck } = require('../middleware/cars/index');
@@ -50,13 +51,32 @@ router
   .get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.carsAddedToday);
 ////////////////////////////// CAR MAKE MODEL ////////////////////////////////////////
 
-// To Get all makes of specific Make
-router.get('/makes', cache(cacheExp), carMakeModelController.getAllMakes);
+// Car Makes
+router
+  .route('/makes')
+  .get(cache(cacheExp), carMakeController.getAllMakes)
+  .post(carMakeController.createMake);
+router
+  .route('/makes/:id')
+  .get(cache(cacheExp), carMakeController.getOneMake)
+  .patch(carMakeController.updateMake)
+  .delete(carMakeController.deleteMake);
 
 // models with specific make.
-router.get('/models', cache(cacheExp), carMakeModelController.getModels);
+router
+  .route('/models')
+  .get(cache(cacheExp), carModelVersionController.getAllModels)
+  .post(carModelVersionController.createModel);
+router
+  .route('/models/:id')
+  .get(cache(cacheExp), carModelVersionController.getOneModel)
+  .patch(carModelVersionController.updateModel)
+  .delete(carModelVersionController.deleteModel);
 
-router.get('/versions', cache(cacheExp), carMakeModelController.getVersions);
+// Versions
+router.get('/versions', cache(cacheExp), carModelVersionController.getVersions);
+router.patch('/add-versions/:id', carModelVersionController.addVersion);
+router.patch('/remove-versions/:id', carModelVersionController.removeVersion);
 
 // To remove Model in models array by finding with Id.
 // router.patch('/remove-model/:id', carMakeModelController.removeFromModel);

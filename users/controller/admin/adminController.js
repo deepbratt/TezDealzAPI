@@ -1,24 +1,33 @@
 const Validator = require('email-validator');
-const Users = require('../../model/userModel');
+const User = require('../../model/userModel');
 const moment = require('moment');
 const { AppError, catchAsync } = require('@utils/tdb_globalutils');
 const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
 const { regex } = require('../../utils/regex');
 
 exports.signupByAdmin = catchAsync(async (req, res, next) => {
+  if (!req.body.data) {
+    return next(
+      new AppError(
+        `${ERRORS.REQUIRED.EMAIL_REQUIRED} / ${ERRORS.REQUIRED.PHONE_REQUIRED}`,
+        STATUS_CODE.BAD_REQUEST,
+      ),
+    );
+  }
   let user;
   if (Validator.validate(req.body.data)) {
-    user = await Users.create({
+    user = await User.create({
       firstName: req.body.firstName.trim(),
       lastName: req.body.lastName.trim(),
       email: req.body.data,
-      role: req.body.role,
       username: req.body.username,
+      role: req.body.role,
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
+      signedUpWithEmail: true,
     });
-  } else {
-    user = await Users.create({
+  } else if (regex.phone.test(req.body.data)) {
+    user = await User.create({
       firstName: req.body.firstName.trim(),
       lastName: req.body.lastName.trim(),
       phone: req.body.data,
@@ -26,24 +35,16 @@ exports.signupByAdmin = catchAsync(async (req, res, next) => {
       role: req.body.role,
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
+      signedUpWithPhone: true,
     });
-  }
-
-  if (!req.body.data) {
+  } else {
     return next(
       new AppError(
-        `${ERRORS.REQUIRED.EMAIL_REQUIRED} / ${ERRORS.REQUIRED.PHONE_REQUIRED}`,
-        STATUS_CODE.UNAUTHORIZED,
+        `${ERRORS.INVALID.INVALID_EMAIL} / ${ERRORS.INVALID.INVALID_PHONE}`,
+        STATUS_CODE.BAD_REQUEST,
       ),
     );
   }
-
-  if (Validator.validate(req.body.data)) {
-    user.signedUpWithEmail = true;
-  } else {
-    user.signedUpWithPhone = true;
-  }
-  await user.save();
 
   res.status(STATUS_CODE.CREATED).json({
     status: STATUS.SUCCESS,
@@ -52,11 +53,11 @@ exports.signupByAdmin = catchAsync(async (req, res, next) => {
 });
 
 exports.inactiveUser = catchAsync(async (req, res, next) => {
-  const result = await Users.findOne({ _id: req.params.id, active: true });
+  const result = await User.findOne({ _id: req.params.id, active: true });
   if (!result) {
     return next(new AppError(ERRORS.INVALID.INACTIVE_USER, STATUS_CODE.BAD_REQUEST));
   }
-  await Users.updateOne({ _id: req.params.id }, { active: false });
+  await User.updateOne({ _id: req.params.id }, { active: false });
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.USER_INACTIVATED,
@@ -65,11 +66,11 @@ exports.inactiveUser = catchAsync(async (req, res, next) => {
 
 // Active User By Admin or Moderator
 exports.activeUser = catchAsync(async (req, res, next) => {
-  const result = await Users.findOne({ _id: req.params.id, active: false });
+  const result = await User.findOne({ _id: req.params.id, active: false });
   if (!result) {
     return next(new AppError(ERRORS.INVALID.ACTIVE_USER, STATUS_CODE.BAD_REQUEST));
   }
-  await Users.updateOne({ _id: req.params.id }, { active: true });
+  await User.updateOne({ _id: req.params.id }, { active: true });
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.USER_ACTIVATED,
@@ -77,11 +78,11 @@ exports.activeUser = catchAsync(async (req, res, next) => {
 });
 
 exports.unbanUser = catchAsync(async (req, res, next) => {
-  const result = await Users.findOne({ _id: req.params.id, ban: true });
+  const result = await User.findOne({ _id: req.params.id, ban: true });
   if (!result) {
     return next(new AppError(ERRORS.INVALID.UNBAN_USER, STATUS_CODE.BAD_REQUEST));
   }
-  await Users.updateOne({ _id: req.params.id }, { ban: false });
+  await User.updateOne({ _id: req.params.id }, { ban: false });
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.UNBANNED_USER,
@@ -89,12 +90,12 @@ exports.unbanUser = catchAsync(async (req, res, next) => {
 });
 
 exports.banUser = catchAsync(async (req, res, next) => {
-  const result = await Users.findOne({ _id: req.params.id, ban: false });
+  const result = await User.findOne({ _id: req.params.id, ban: false });
   if (!result) {
     return next(new AppError(ERRORS.INVALID.BAN_USER, STATUS_CODE.BAD_REQUEST));
   }
 
-  await Users.updateOne({ _id: req.params.id }, { ban: true });
+  await User.updateOne({ _id: req.params.id }, { ban: true });
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.BANNED_USER,
@@ -103,7 +104,7 @@ exports.banUser = catchAsync(async (req, res, next) => {
 
 // User Statistics
 exports.userStats = catchAsync(async (req, res, next) => {
-  const stats = await Users.aggregate([
+  const stats = await User.aggregate([
     {
       $group: {
         _id: { $toUpper: '$role' },
@@ -131,7 +132,7 @@ exports.userStats = catchAsync(async (req, res, next) => {
 // Stats of Users from one date to another
 exports.dailyUserAggregate = catchAsync(async (req, res, next) => {
   const { min, max } = req.params;
-  const stats = await Users.aggregate([
+  const stats = await User.aggregate([
     {
       $match: {
         createdAt: { $lte: moment(max).toDate(), $gte: moment(min).toDate() },
