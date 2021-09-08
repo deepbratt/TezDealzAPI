@@ -650,7 +650,7 @@ paths:
           description: 'mark car as sold'
           required: true
           schema:
-            $ref: '#/definitions/mark-sold'  
+            $ref: '#/definitions/mark-sold'
       responses:
         '404':
           description: 'Not Found'
@@ -848,7 +848,7 @@ paths:
         '404':
           description: 'Not Found'
         '200':
-          description: 'Total Owners in response'                
+          description: 'Total Owners in response'
   /v1/ads/cars/makes:
     get:
       tags:
@@ -909,6 +909,118 @@ paths:
           description: 'Not Found'
         '200':
           description: 'Data in response'
+  /v1/ads/cars/body-types:
+    post:
+      tags:
+        - 'Cars Body Types'
+      summary: 'used to Post Car body type'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'body type data'
+          required: true
+          schema:
+            $ref: '#/definitions/bodyTypes'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Car body type Posted Successfully'
+  /v1/ads/cars/body-types/:
+    get:
+      tags:
+        - 'Cars Body Types'
+      summary: 'used to get all body type'
+      description: 'Return all body types'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'List of all body types'
+  /v1/ads/cars/body-types/{id}:
+    get:
+      tags:
+        - 'Cars Body Types'
+      summary: 'used to get one body type'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Return result againt id'
+  /v1/ads/cars/body-types/:id:
+    patch:
+      tags:
+        - 'Cars Body Types'
+      summary: 'used to updated Car body type'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+        - in: 'body'
+          name: 'body'
+          description: 'body type data'
+          required: true
+          schema:
+            $ref: '#/definitions/bodyTypes'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car body type updated Successfully'
+  /v1/ads/cars/body-types/id:
+    delete:
+      tags:
+        - 'Cars Body Types'
+      summary: 'used to delete Car body type'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car body type deleted Successfully'
+  /v1/ads/cars/body-types:
+    get:
+      tags:
+        - 'Cars Body Types'
+      summary: 'used to get all body type'
+      description: 'Return all body types'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'List of all body types'
 
 definitions:
   signup:
@@ -1071,4 +1183,9 @@ definitions:
     type: 'object'
     properties:
       soldByUs:
-        type: 'boolean'      
+        type: 'boolean'
+  bodyTypes:
+    type: 'object'
+    properties:
+      bodyType:
+        type: 'string'
