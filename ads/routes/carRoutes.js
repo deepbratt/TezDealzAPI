@@ -26,14 +26,28 @@ router
 
 /////////////////////////////////// Admin Routes ////////////////////////////
 
-router.route('/total-owners').get(authenticate(User), adminController.totalOwners);
-router.route('/owners-added-today').get(authenticate(User), adminController.ownersJoinedToday);
+router
+  .route('/total-owners')
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.totalOwners);
+router
+  .route('/owners-added-today')
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.ownersJoinedToday);
 router
   .route('/owners-monthly-stats')
-  .get(authenticate(User), adminController.carsOwnersMonthlyStats);
-router.route('/total-cars').get(authenticate(User), adminController.totalCars);
-router.route('/cars-monthly-stats').get(authenticate(User), adminController.carsMonthlyStats);
-router.route('/cars-added-today').get(authenticate(User), adminController.carsAddedToday);
+  .get(
+    authenticate(User),
+    restrictTo('Admin', 'Moderator'),
+    adminController.carsOwnersMonthlyStats,
+  );
+router
+  .route('/total-cars')
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.totalCars);
+router
+  .route('/cars-monthly-stats')
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.carsMonthlyStats);
+router
+  .route('/cars-added-today')
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.carsAddedToday);
 ////////////////////////////// CAR MAKE MODEL ////////////////////////////////////////
 
 // To Get all makes of specific Make
