@@ -68,7 +68,7 @@ router
   .route('/:id')
   .get(userController.getUser)
   .patch(userController.updateUser)
-  .delete(restrictTo('Admin'), userController.deleteUser);
+  .delete(userController.deleteUser);
 
 // Google Authentication Route
 // router.post('/google-auth', continueGoogleRules, validationFunction, authController.continueGoogle);

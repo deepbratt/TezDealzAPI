@@ -98,8 +98,8 @@ router
   .route('/mark-inactive/:id')
   .patch(authenticate(User), cache(cacheExp), permessionCheck, carController.unmarkActive);
 ///////////////////////////////////////////////////////////////////////////////////////
-router.route('/stats').get(authenticate(User), carController.carStats);
-router.route('/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);
+//router.route('/stats').get(authenticate(User), carController.carStats);
+//router.route('/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);
 //router.route('/cars/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);
 router
   .route('/ban/:id')
