@@ -396,7 +396,7 @@ paths:
   /v1/Users/stats:
     get:
       tags:
-        - 'User Statistics For Admin/Moderator'
+        - 'Stats for Admin/Moderator'
       summary: 'User Stats'
       description: ''
       consumes:
@@ -412,7 +412,7 @@ paths:
   /v1/Users/daily-stats/:min/:max:
     get:
       tags:
-        - 'User Statistics For Admin/Moderator'
+        - 'Stats for Admin/Moderator'
       summary: 'User Stats from one date to another date'
       description: ''
       consumes:
@@ -785,7 +785,7 @@ paths:
   /v1/ads/cars/car-owners-stats:
     get:
       tags:
-        - 'Admin/Moderator authorities for ads'
+        - 'Stats for Admin/Moderator'
       summary: ''
       description: ''
       consumes:
@@ -800,7 +800,7 @@ paths:
   /v1/ads/cars/cars-stats:
     get:
       tags:
-        - 'Admin/Moderator authorities for ads'
+        - 'Stats for Admin/Moderator'
       summary: ''
       description: ''
       consumes:
