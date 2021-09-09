@@ -20,6 +20,14 @@ exports.authenticate = (User) => {
 		if (!currentUser) {
 			return next(new AppError(`User ${ERRORS.INVALID.NOT_FOUND}`, STATUS_CODE.NOT_FOUND));
 		}
+		if (!currentUser.active || currentUser.banned) {
+			return next(
+				new AppError(
+					`Your account is Banned or Inactive, Please contact the customer support`,
+					STATUS_CODE.NOT_FOUND
+				)
+			);
+		}
 		//check if user changed password after the token was issued
 		if (currentUser.changedPasswordAfter(decoded.iat)) {
 			return next(new AppError(ERRORS.UNAUTHORIZED.INVALID_JWT, STATUS_CODE.UNAUTHORIZED));
@@ -48,6 +56,9 @@ exports.checkIsLoggedIn = (User) => {
 				if (!currentUser) {
 					return next();
 				}
+				if (!currentUser.active || currentUser.banned) {
+					return next();
+				}
 				//check if user changed password after the token was issued
 				if (currentUser.changedPasswordAfter(decoded.iat)) {
 					return next();
@@ -62,7 +73,6 @@ exports.checkIsLoggedIn = (User) => {
 		next();
 	};
 };
-
 
 exports.restrictTo = (...role) => {
 	return (req, res, next) => {

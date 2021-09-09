@@ -10,9 +10,10 @@
 	"author": "Magnit",
 	"license": "ISC",
 	"dependencies": {
-		"@auth/tdb-auth": "^1.0.1",
+		"@auth/tdb-auth": "^1.0.2",
 		"@constants/tdb-constants": "^1.0.35",
 		"@utils/tdb_globalutils": "^1.0.98",
+		"amqplib": "^0.8.0",
 		"axios": "^0.21.1",
 		"compression": "^1.7.4",
 		"cookie-session": "^1.4.0",
