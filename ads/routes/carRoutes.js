@@ -55,18 +55,18 @@ router
 // models with specific make.
 router
   .route('/models')
-  .get(cache(cacheExp), carModelVersionController.getAllModels)
+  .get(carModelVersionController.getAllModels)
   .post(carModelVersionController.createModel);
 router
   .route('/models/:id')
-  .get(cache(cacheExp), carModelVersionController.getOneModel)
+  .get(carModelVersionController.getOneModel)
   .patch(carModelVersionController.updateModel)
   .delete(carModelVersionController.deleteModel);
 
 // Versions
-router.get('/versions', cache(cacheExp), carModelVersionController.getVersions);
-router.patch('/add-versions/:id', carModelVersionController.addVersion);
-router.patch('/remove-versions/:id', carModelVersionController.removeVersion);
+router.get('/versions', carModelVersionController.getVersions);
+router.patch('/add-versions', carModelVersionController.addVersion);
+router.patch('/remove-versions', carModelVersionController.removeVersion);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
+const { v4: uuidv4 } = require('uuid');
 
 const carModels = new mongoose.Schema({
   model_id: {
     type: Number,
-    unique: [true, 'Please provide a unique model id'],
-    required: true,
+    unique: true,
   },
   make_id: {
     type: Number,
@@ -18,5 +18,18 @@ const carModels = new mongoose.Schema({
   versions: [Object],
 });
 
-const CarModel = mongoose.model('CarModels', carModels);
+carModels.pre('save', async function (next) {
+  let randomNumber;
+  do {
+    randomNumber = Math.floor(Math.random() * (999 - 10) + 10);
+  } while (
+    await CarModel.findOne({
+      model_id: randomNumber,
+    })
+  );
+  this.model_id = randomNumber;
+  return randomNumber;
+});
+
+const CarModel = mongoose.model('CarModel', carModels);
 module.exports = CarModel;

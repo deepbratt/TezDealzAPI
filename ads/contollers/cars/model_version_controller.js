@@ -55,6 +55,10 @@ exports.updateModel = catchAsync(async (req, res, next) => {
     runValidators: true,
   });
 
+  if (req.body.model_id) {
+    return next(new AppError('Model ID cannot be Updated', STATUS_CODE.BAD_REQUEST));
+  }
+
   if (!result) {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
@@ -99,11 +103,11 @@ exports.getVersions = catchAsync(async (req, res, next) => {
 
 exports.addVersion = catchAsync(async (req, res, next) => {
   let result;
-  result = await CarModel.findOne({ _id: req.params.id });
+  result = await CarModel.findOne({ model_id: req.query.model_id }, req.query);
   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
   const newValue = await CarModel.updateOne(
-    { _id: req.params.id },
+    { model_id: req.query.model_id },
     { $push: { versions: req.body.versions } },
   );
   res.status(STATUS_CODE.OK).json({
@@ -115,11 +119,11 @@ exports.addVersion = catchAsync(async (req, res, next) => {
 
 exports.removeVersion = catchAsync(async (req, res, next) => {
   let result;
-  result = await CarModel.findOne({ _id: req.params.id });
+  result = await CarModel.findOne({ model_id: req.query.model_id }, req.query);
   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
   const newValue = await CarModel.updateOne(
-    { _id: req.params.id },
+    { model_id: req.query.model_id },
     { $pull: { versions: req.body.versions } },
   );
   res.status(STATUS_CODE.OK).json({

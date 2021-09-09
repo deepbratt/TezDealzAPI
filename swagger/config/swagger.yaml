@@ -156,12 +156,12 @@ paths:
           description: 'Users details required'
           required: true
           schema:
-            $ref: '#/definitions/resetPassword'  
+            $ref: '#/definitions/resetPassword'
       responses:
         '404':
           description: 'No User Found'
         '200':
-          description: 'User details'        
+          description: 'User details'
 
   /v1/Users/:id:
     patch:
@@ -1088,7 +1088,7 @@ paths:
           description: 'Invalid input'
         '201':
           description: 'Car model created Successfully'
-  /v1/ads/cars/models?make_id=41:
+  /v1/ads/cars/models?make_id=51:
     get:
       tags:
         - 'Car Models'
@@ -1162,7 +1162,7 @@ paths:
           description: 'Invalid input'
         '200':
           description: 'Car model deleted Successfully'
-  /v1/ads/cars/versions?model_id=984:
+  /v1/ads/cars/versions?model_id=1044:
     get:
       tags:
         - 'Car Versions'
@@ -1177,7 +1177,7 @@ paths:
           description: 'Not Found'
         '200':
           description: 'versions'
-  /v1/ads/cars/add-versions/:id:
+  /v1/ads/cars/add-versions?model_id=749:
     patch:
       tags:
         - 'Car Versions'
@@ -1201,7 +1201,7 @@ paths:
           description: 'Not Found'
         '200':
           description: 'Car version added Successfully'
-  /v1/ads/cars/remove-versions/:id:
+  /v1/ads/cars/remove-versions?model_id=749:
     patch:
       tags:
         - 'Car Versions'
@@ -1396,16 +1396,12 @@ definitions:
   car-make:
     type: 'object'
     properties:
-      make_id:
-        type: 'number'
       name:
         type: 'string'
   car-model-version:
     type: 'object'
     properties:
       make_id:
-        type: 'number'
-      model_id:
         type: 'number'
       name:
         type: 'string'
