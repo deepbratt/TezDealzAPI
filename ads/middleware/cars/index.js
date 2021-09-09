@@ -26,7 +26,7 @@ exports.favPermessionCheck = catchAsync(async (req, res, next) => {
 exports.phoneCheckOnCreate = catchAsync(async (req, res, next) => {
 	if (req.user.role !== 'User') {
 		if (!req.body.createdBy) {
-			return next(new AppError('User Id Is Required', STATUS_CODE.BAD_REQUEST));
+			return next(new AppError('User Id Is Required-phone check', STATUS_CODE.BAD_REQUEST));
 		} else {
 			const user = await User.findById(req.body.createdBy);
 			if (!user.phone) {
