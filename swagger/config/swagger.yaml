@@ -2,8 +2,31 @@ swagger: '2.0'
 info:
   description: 'TezDeals Api Documentation'
   version: '1.0.0'
-  title: 'TezDeals'
+  title: 'TezDeals'  
 paths:
+  /v1/Users/admin-panel-login:
+    post:
+      tags:
+        - 'login'
+      summary: 'use foradmin-panel-login email or Phone or username'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'User can login with email or phone or username'
+          required: true
+          schema:
+            $ref: '#/definitions/login'
+      responses:
+        '400':
+          description: 'email or phone or username or password incorrect'
+        '200':
+          description: 'logged In Successfully'
+
   /v1/Users/login:
     post:
       tags:

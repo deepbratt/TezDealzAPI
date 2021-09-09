@@ -6,7 +6,7 @@ exports.permessionCheck = catchAsync(async (req, res, next) => {
 	const currentUserId = req.user._id;
 	const result = await Car.findById(req.params.id);
 	if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-	if (!currentUserId.equals(result.createdBy)) {
+	if (!currentUserId.equals(result.createdBy) && req.user.role === 'User') {
 		return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
 	}
 	next();

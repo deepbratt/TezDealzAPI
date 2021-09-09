@@ -38,16 +38,24 @@ exports.createOne = catchAsync(async (req, res, next) => {
 });
 
 exports.getAll = catchAsync(async (req, res, next) => {
-  const [result, totalCount] = await filter(
-    Car.find({ active: true, isSold: false, banned: false }),
-    req.query,
-  );
+  let data;
+  if (req.user) {
+    if (req.user.role !== 'User') {
+      data = await filter(Car.find(), req.query);
+    } else {
+      data = await filter(Car.find({ active: true, isSold: false, banned: false }), req.query);
+    }
+  } else {
+    data = await filter(Car.find({ active: true, isSold: false, banned: false }), req.query);
+  }
+
+  const [result, totalCount] = data;
 
   if (result.length <= 0) {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
   //current user fav status
-  if (req.user) {
+  if (req.user && req.user.role === 'User') {
     for (var i = 0; i < result.length; i++) {
       if (result[i].favOf) {
         if (result[i].favOf.length > 0 && result[i].favOf.includes(req.user._id)) {
