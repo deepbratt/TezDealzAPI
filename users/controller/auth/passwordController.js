@@ -22,7 +22,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 	} else if (regex.phone.test(req.body.data)) {
 		user = await User.findOne({ phone: req.body.data });
 	}
-	
+
 	if (!user) {
 		return next(
 			new AppError(

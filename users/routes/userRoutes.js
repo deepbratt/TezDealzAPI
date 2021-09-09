@@ -20,7 +20,7 @@ const { upload } = require('@utils/tdb_globalutils');
 const router = express.Router();
 router.post('/signup', signupRules, validationFunction, authController.signup);
 router.post('/login', authController.login);
-
+router.post('/admin-panel-login', authController.adminPanellogin);
 router.post('/forgotPassword', authController.forgotPassword);
 
 router.patch(

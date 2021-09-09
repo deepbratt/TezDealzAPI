@@ -11,6 +11,7 @@ const {
 	isLoggedIn,
 	login,
 	restrictTo,
+	adminPanellogin
 	// signupEmail,
 	// signupPhone,
 	// loginEmail,
@@ -29,7 +30,7 @@ module.exports = {
 	updatePassword,
 	signup,
 	login,
-	restrictTo,
+	adminPanellogin
 	// phoneVerification,
 	// emailVerification,
 	// sendVerificationCodetoEmail,
