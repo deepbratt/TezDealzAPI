@@ -234,6 +234,7 @@ exports.banUser = catchAsync(async (req, res, next) => {
 		return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
 	}
 	await User.updateOne({ _id: req.params.id }, { ban: true });
+	send('inactive_user', JSON.stringify({ createdBy: req.params.id }));
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.BANNED_USER,

@@ -47,8 +47,8 @@ router
 	.route('/')
 	.post(
 		authenticate(User),
-		phoneCheckOnCreate,
 		upload('image').array('image', 20),
+		phoneCheckOnCreate,
 		carController.createOne
 	);
 router.route('/').get(checkIsLoggedIn(User), cache(cacheExp), carController.getAll);
@@ -81,9 +81,9 @@ router
 	.get(checkIsLoggedIn(User), cache(cacheExp), carController.getOne)
 	.patch(
 		authenticate(User),
-		phoneCheckOnupdate,
 		permessionCheck,
 		upload('image').array('image', 20),
+		phoneCheckOnupdate,
 		carController.updateOne
 	)
 	.delete(authenticate(User), permessionCheck, carController.deleteOne);

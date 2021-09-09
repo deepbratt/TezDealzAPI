@@ -27,7 +27,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
 	}
 	if (!req.body.image || req.body.image.length <= 0) {
 		req.body.imageStatus = false;
-		//return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
+		return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
 	} else {
 		req.body.imageStatus = true;
 	}
@@ -87,7 +87,17 @@ exports.getOne = catchAsync(async (req, res, next) => {
 	const result = await Car.findById(req.params.id).populate('createdBy');
 	if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 	//current user fav status
-	if (req.user) {
+	if (!result.active || result.banned) {
+		if (req.user) {
+			const currentUser = req.user._id;
+			if (req.user.role === 'User' && !currentUser.equals(result.createdBy)) {
+				return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+			}
+		} else {
+			return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+		}
+	}
+	if (req.user && req.user.role === 'User') {
 		if (result.favOf.includes(req.user._id)) {
 			result.isFav = true;
 		} else {
