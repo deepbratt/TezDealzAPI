@@ -103,7 +103,7 @@ paths:
   /v1/Users/:
     get:
       tags:
-        - 'users'
+        - 'Admin/Moderator'
       summary: 'use to get All Users'
       description: ''
       consumes:
@@ -119,7 +119,7 @@ paths:
   /v1/Users/{id}:
     get:
       tags:
-        - 'users'
+        - 'Admin/Moderator'
       summary: 'use to get One User'
       description: ''
       consumes:
@@ -136,11 +136,37 @@ paths:
           description: 'No User Found'
         '200':
           description: 'User details'
+  /v1/Users/updateUserPassword/{id}:
+    patch:
+      tags:
+        - 'Admin/Moderator'
+      summary: 'update User pawssord'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'Users details required'
+          required: true
+          schema:
+            $ref: '#/definitions/resetPassword'  
+      responses:
+        '404':
+          description: 'No User Found'
+        '200':
+          description: 'User details'        
 
   /v1/Users/:id:
     patch:
       tags:
-        - 'users'
+        - 'Admin/Moderator'
       summary: 'use to update One User'
       description: ''
       consumes:
@@ -157,7 +183,7 @@ paths:
           description: 'Users details required'
           required: true
           schema:
-            $ref: '#/definitions/Users'
+            $ref: '#/definitions/UpdateMyDetails'
       responses:
         '404':
           description: 'No User Found'
@@ -167,7 +193,7 @@ paths:
   /v1/Users/id:
     delete:
       tags:
-        - 'users'
+        - 'Admin/Moderator'
       summary: 'use to delete One User'
       description: ''
       consumes:
@@ -187,7 +213,7 @@ paths:
   /v1/Users/currentUser:
     get:
       tags:
-        - 'users'
+        - 'currentUser'
       summary: 'use to get Current User'
       description: ''
       consumes:
@@ -344,10 +370,10 @@ paths:
         '200':
           description: 'User Unbanned Successfully'
 
-  /v1/Users/create-user:
+  /v1/Users:
     post:
       tags:
-        - 'Create User By Admin'
+        - 'Admin/Moderator'
       summary: 'Admin can create User, Moderator and Admin'
       description: ''
       consumes:
@@ -360,7 +386,7 @@ paths:
           description: 'use for signup With Email or Phone and username is Required'
           required: true
           schema:
-            $ref: '#/definitions/signupByAdmin'
+            $ref: '#/definitions/createUser'
       responses:
         '400':
           description: 'Invalid input'
@@ -756,8 +782,7 @@ paths:
           description: 'Not Found'
         '200':
           description: 'successfull'
-
-  /v1/ads/cars/total-owners:
+  /v1/ads/cars/car-owners-stats:
     get:
       tags:
         - 'Admin/Moderator authorities for ads'
@@ -772,69 +797,7 @@ paths:
           description: 'Not Found'
         '200':
           description: 'Total Owners in response'
-
-  /v1/ads/cars/cars-monthly-stats:
-    get:
-      tags:
-        - 'Admin/Moderator authorities for ads'
-      summary: ''
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      responses:
-        '404':
-          description: 'Not Found'
-        '200':
-          description: 'Total cars added in current month in response'
-
-  /v1/ads/cars/total-cars:
-    get:
-      tags:
-        - 'Admin/Moderator authorities for ads'
-      summary: ''
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      responses:
-        '404':
-          description: 'Not Found'
-        '200':
-          description: 'Total cars in our Platform'
-  /v1/ads/cars/owners-monthly-stats:
-    get:
-      tags:
-        - 'Admin/Moderator authorities for ads'
-      summary: ''
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      responses:
-        '404':
-          description: 'Not Found'
-        '200':
-          description: 'Total Owners in response'
-  /v1/ads/cars/owners-added-today:
-    get:
-      tags:
-        - 'Admin/Moderator authorities for ads'
-      summary: ''
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      responses:
-        '404':
-          description: 'Not Found'
-        '200':
-          description: 'Total Owners in response'
-  /v1/ads/cars/cars-added-today:
+  /v1/ads/cars/cars-stats:
     get:
       tags:
         - 'Admin/Moderator authorities for ads'
@@ -1381,7 +1344,7 @@ definitions:
       city:
         type: 'string'
       dateOfBirth:
-        type: 'date'
+        type: 'string'
   UpdateMyPassword:
     type: object
     properties:
@@ -1391,7 +1354,7 @@ definitions:
         type: 'string'
       passwordConfirm:
         type: 'string'
-  signupByAdmin:
+  createUser:
     type: 'object'
     properties:
       firstName:

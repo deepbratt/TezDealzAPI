@@ -6,13 +6,14 @@ const userController = require('../controller/user/userController');
 const adminController = require('../controller/admin/adminController');
 
 const {
-  changePassword,
-  validationFunction,
-  signupRules,
-  //   signupEmailRules,
-  //   signupPhoneRules,
-  //   continueGoogleRules,
-  //   continueFaceBookRules,
+	changePassword,
+	validationFunction,
+	signupRules,
+	addUser,
+	//   signupEmailRules,
+	//   signupPhoneRules,
+	//   continueGoogleRules,
+	//   continueFaceBookRules,
 } = require('../utils/validations');
 const { upload } = require('@utils/tdb_globalutils');
 
@@ -22,13 +23,18 @@ router.post('/login', authController.login);
 
 router.post('/forgotPassword', authController.forgotPassword);
 
-router.patch('/resetPassword/:token', validationFunction, authController.resetPassword);
+router.patch(
+	'/resetPassword/:token',
+	changePassword,
+	validationFunction,
+	authController.resetPassword
+);
 
 // authenticate route
 router.use(authenticate(User));
 
 //Add User, Moderators or Admins by Admin
-router.post('/create-user', restrictTo('Admin'), adminController.signupByAdmin);
+//router.post('/create-user', restrictTo('Admin', 'Moderator'), adminController.signupByAdmin);
 
 // Update Current User's Password
 router.patch('/updateMyPassword', validationFunction, authController.updatePassword);
@@ -57,18 +63,24 @@ router.route('/currentUser').get(authController.isLoggedIn);
 // Statistcs of Users
 router.route('/stats').get(restrictTo('Admin', 'Moderator'), adminController.userStats);
 router
-  .route('/daily-stats/:min/:max')
-  .get(restrictTo('Admin', 'Moderator'), adminController.dailyUserAggregate);
+	.route('/daily-stats/:min/:max')
+	.get(restrictTo('Admin', 'Moderator'), adminController.dailyUserAggregate);
 
 // Only accessibe by Admin and Moderator
 router.use(restrictTo('Admin', 'Moderator'));
 
-router.route('/').get(userController.getAllUsers).post(userController.createUser);
 router
-  .route('/:id')
-  .get(userController.getUser)
-  .patch(userController.updateUser)
-  .delete(userController.deleteUser);
+	.route('/')
+	.get(adminController.getAllUsers)
+	.post(addUser, validationFunction, adminController.createUser);
+router
+	.route('/:id')
+	.get(adminController.getUser)
+	.patch(adminController.updateUserProfile)
+	.delete(adminController.deleteUser);
+router
+	.route('/updateUserPassword/:id')
+	.patch(changePassword, validationFunction, adminController.updatePassword);
 
 // Google Authentication Route
 // router.post('/google-auth', continueGoogleRules, validationFunction, authController.continueGoogle);

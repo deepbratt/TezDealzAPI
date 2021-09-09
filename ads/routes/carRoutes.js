@@ -28,27 +28,17 @@ router
 /////////////////////////////////// Admin Routes ////////////////////////////
 
 router
-  .route('/total-owners')
-  .get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.totalOwners);
+  .route('/car-owners-stats')
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.carOwners);
 router
-  .route('/owners-added-today')
-  .get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.ownersJoinedToday);
+  .route('/cars-stats')
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.cars);
 router
-  .route('/owners-monthly-stats')
-  .get(
-    authenticate(User),
-    restrictTo('Admin', 'Moderator'),
-    adminController.carsOwnersMonthlyStats,
-  );
+  .route('/ban/:id')
+  .patch(authenticate(User), restrictTo('Admin', 'Moderator'), carController.markbanned);
 router
-  .route('/total-cars')
-  .get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.totalCars);
-router
-  .route('/cars-monthly-stats')
-  .get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.carsMonthlyStats);
-router
-  .route('/cars-added-today')
-  .get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.carsAddedToday);
+  .route('/unban/:id')
+  .patch(authenticate(User), restrictTo('Admin', 'Moderator'), carController.markunbanned);
 ////////////////////////////// CAR MAKE MODEL ////////////////////////////////////////
 
 // Car Makes
@@ -78,26 +68,7 @@ router.get('/versions', cache(cacheExp), carModelVersionController.getVersions);
 router.patch('/add-versions/:id', carModelVersionController.addVersion);
 router.patch('/remove-versions/:id', carModelVersionController.removeVersion);
 
-// To remove Model in models array by finding with Id.
-// router.patch('/remove-model/:id', carMakeModelController.removeFromModel);
-
-// router
-// 	.route('/make-model')
-// 	.get(carMakeModelController.getAllMakesModels)
-// 	.post(carMakeModelController.createMakeModel);
-// router
-// 	.route('/make-model/:id')
-// 	.get(carMakeModelController.getMakeModel)
-// 	.patch(carMakeModelController.updateMakeModel)
-// 	.delete(carMakeModelController.deleteMakeModel);
-
-////////////////////////////////////////////////////////////////////////////////////////////
-
-// router
-//   .route('/cars')
-//   .post(authenticate(User), upload('image').array('image', 20), carController.createOne);
-// router.route('/cars').get(checkIsLoggedIn(User), carController.getAll);
-// router.route('/cars/myCars').get(authenticate(User), carController.getMine);
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 router
   .route('/')
@@ -131,16 +102,6 @@ router
 router
   .route('/mark-inactive/:id')
   .patch(authenticate(User), cache(cacheExp), permessionCheck, carController.unmarkActive);
-///////////////////////////////////////////////////////////////////////////////////////
-//router.route('/stats').get(authenticate(User), carController.carStats);
-//router.route('/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);
-//router.route('/cars/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);
-router
-  .route('/ban/:id')
-  .patch(authenticate(User), restrictTo('Admin', 'Moderartor'), carController.markbanned);
-router
-  .route('/unban/:id')
-  .patch(authenticate(User), restrictTo('Admin', 'Moderartor'), carController.markunbanned);
 /////////////////////////////////////////////////////////////////////////////////////////////
 router
   .route('/:id')
@@ -159,3 +120,28 @@ router
 router.route('/filter/cities-with-cars').get(cache(cacheExp), carFilters.getCitiesByProvince);
 
 module.exports = router;
+
+// To remove Model in models array by finding with Id.
+// router.patch('/remove-model/:id', carMakeModelController.removeFromModel);
+
+// router
+// 	.route('/make-model')
+// 	.get(carMakeModelController.getAllMakesModels)
+// 	.post(carMakeModelController.createMakeModel);
+// router
+// 	.route('/make-model/:id')
+// 	.get(carMakeModelController.getMakeModel)
+// 	.patch(carMakeModelController.updateMakeModel)
+// 	.delete(carMakeModelController.deleteMakeModel);
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+// router
+//   .route('/cars')
+//   .post(authenticate(User), upload('image').array('image', 20), carController.createOne);
+// router.route('/cars').get(checkIsLoggedIn(User), carController.getAll);
+// router.route('/cars/myCars').get(authenticate(User), carController.getMine);
+
+//router.route('/stats').get(authenticate(User), carController.carStats);
+//router.route('/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);
+//router.route('/cars/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);

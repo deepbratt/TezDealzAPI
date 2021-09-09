@@ -9,7 +9,7 @@ exports.validationFunction = async (req, res, next) => {
 	}
 	next();
 };
-exports.adminAddUser = [
+exports.addUser = [
 	check('firstName', ERRORS.REQUIRED.FIRSTNAME_REQUIRED)
 		.not()
 		.isEmpty()
