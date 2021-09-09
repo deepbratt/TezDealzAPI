@@ -18,7 +18,13 @@ exports.createOne = catchAsync(async (req, res, next) => {
 		}
 		req.body.image = array;
 	}
-	req.body.createdBy = req.user._id;
+	if (req.user.role !== 'User') {
+		if (!req.body.createdBy) {
+			return next(new AppError('User Id Is Required', STATUS_CODE.BAD_REQUEST));
+		}
+	} else {
+		req.body.createdBy = req.user._id;
+	}
 	if (!req.body.image || req.body.image.length <= 0) {
 		req.body.imageStatus = false;
 		//return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));

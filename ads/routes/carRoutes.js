@@ -5,7 +5,12 @@ const carMakeModelController = require('../contollers/cars/makeModelController')
 const adminController = require('../contollers/admin/adminController');
 const carFilters = require('../contollers/cars/carFilters');
 const { authenticate, checkIsLoggedIn, restrictTo } = require('@auth/tdb-auth');
-const { permessionCheck, favPermessionCheck, phoneCheck } = require('../middleware/cars/index');
+const {
+	permessionCheck,
+	favPermessionCheck,
+	phoneCheckOnCreate,
+	phoneCheckOnupdate,
+} = require('../middleware/cars/index');
 const { upload } = require('@utils/tdb_globalutils');
 const cache = require('../utils/cache');
 const cacheExp = 30;
@@ -19,7 +24,7 @@ router
 	.get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.carOwners);
 router
 	.route('/cars-stats')
-	.get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.cars); 
+	.get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.cars);
 router
 	.route('/ban/:id')
 	.patch(authenticate(User), restrictTo('Admin', 'Moderator'), carController.markbanned);
@@ -40,7 +45,12 @@ router.get('/versions', cache(cacheExp), carMakeModelController.getVersions);
 
 router
 	.route('/')
-	.post(authenticate(User), phoneCheck, upload('image').array('image', 20), carController.createOne);
+	.post(
+		authenticate(User),
+		phoneCheckOnCreate,
+		upload('image').array('image', 20),
+		carController.createOne
+	);
 router.route('/').get(checkIsLoggedIn(User), cache(cacheExp), carController.getAll);
 router.route('/myCars').get(authenticate(User), cache(cacheExp), carController.getMine);
 
@@ -71,7 +81,7 @@ router
 	.get(checkIsLoggedIn(User), cache(cacheExp), carController.getOne)
 	.patch(
 		authenticate(User),
-		phoneCheck,
+		phoneCheckOnupdate,
 		permessionCheck,
 		upload('image').array('image', 20),
 		carController.updateOne

@@ -1,4 +1,5 @@
 const Car = require('../../models/cars/carModel');
+const User = require('../../models/user/userModel');
 const { AppError, catchAsync, uploadS3, APIFeatures } = require('@utils/tdb_globalutils');
 const { ERRORS, STATUS, STATUS_CODE, SUCCESS_MSG } = require('@constants/tdb-constants');
 
@@ -22,11 +23,38 @@ exports.favPermessionCheck = catchAsync(async (req, res, next) => {
 	next();
 });
 
-exports.phoneCheck = catchAsync(async (req, res, next) => {
-	if (!req.user.phone) {
-		return next(
-			new AppError('Please Add Your Phone Number First To Proceed Next', STATUS_CODE.UNAUTHORIZED)
-		);
+exports.phoneCheckOnCreate = catchAsync(async (req, res, next) => {
+	if (req.user.role !== 'User') {
+		if (!req.body.createdBy) {
+			return next(new AppError('User Id Is Required', STATUS_CODE.BAD_REQUEST));
+		} else {
+			const user = await User.findById(req.body.createdBy);
+			if (!user.phone) {
+				return next(new AppError('User phone number is not added ', STATUS_CODE.FORBIDDEN));
+			}
+		}
+	} else {
+		if (!req.user.phone) {
+			return next(
+				new AppError('Please Add Your Phone Number First To Proceed Next', STATUS_CODE.UNAUTHORIZED)
+			);
+		}
+	}
+	next();
+});
+
+exports.phoneCheckOnupdate = catchAsync(async (req, res, next) => {
+	if (req.user.role !== 'User') {
+		const result = await Car.findById(req.params.id).populate('createdBy');
+		if (!result.createdBy.phone) {
+			return next(new AppError('User phone number is not added ', STATUS_CODE.FORBIDDEN));
+		}
+	} else {
+		if (!req.user.phone) {
+			return next(
+				new AppError('Please Add Your Phone Number First To Proceed Next', STATUS_CODE.UNAUTHORIZED)
+			);
+		}
 	}
 	next();
 });
