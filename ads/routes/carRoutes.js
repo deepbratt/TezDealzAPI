@@ -19,6 +19,9 @@ const cacheExp = 30;
 const router = express.Router();
 // const { isCached } = require('../utils/redisCache');
 
+router.get('/sold-cars-stats', adminController.totalSoldCars);
+router.get('/sold-cars-by-platform-stats', adminController.carsSoldByPlatform);
+
 //       CAR BODYTYPES //
 router
   .route('/body-types')
