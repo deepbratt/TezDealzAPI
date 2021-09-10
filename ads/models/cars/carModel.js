@@ -3,12 +3,17 @@ const validator = require('validator');
 const { ERRORS } = require('@constants/tdb-constants');
 const BodyType = require('../../models/cars/bodyTypes/bodyTypes');
 
-// let carBodyType = async function () {
-//   const result = await BodyType.find().select('-_id');
-//   return result;
-// };
+// let bodytypes;
+// BodyType.find()
+// 	.select('-_id -__v')
+// 	.then((data) => {
+// 		console.log(data);
+// 	})
+// 	.catch((err) => {
+// 		console.log(err);
+// 	});
 
-// console.log(carBodyType);
+//console.log(bodytypes);
 
 const carsSchema = new mongoose.Schema(
 	{

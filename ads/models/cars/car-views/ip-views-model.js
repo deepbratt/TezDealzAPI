@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const carViews = new mongoose.Schema({
 	ip: {
-		type: string,
+		type: String,
 		required: true,
 	},
 	car_id: {
