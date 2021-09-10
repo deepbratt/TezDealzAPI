@@ -17,6 +17,7 @@ const { regex } = require('../../utils/regex');
 // Sign Up
 exports.signup = catchAsync(async (req, res, next) => {
   if (!req.body.data) {
+    console.log('First condition');
     return next(
       new AppError(
         `${ERRORS.REQUIRED.EMAIL_REQUIRED} / ${ERRORS.REQUIRED.PHONE_REQUIRED}`,
@@ -46,6 +47,7 @@ exports.signup = catchAsync(async (req, res, next) => {
       signedUpWithPhone: true,
     });
   } else {
+    console.log('second condition');
     return next(
       new AppError(
         `${ERRORS.INVALID.INVALID_EMAIL} / ${ERRORS.INVALID.INVALID_PHONE}`,
