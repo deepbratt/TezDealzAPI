@@ -23,19 +23,23 @@ const router = express.Router();
  * Total cars sold and sold in this month.
  * Total cars Sold by our platform and  total cars sold by platform in this month.
  */
-router.route('/sold-cars-stats').get(adminController.totalSoldCars);
-router.route('/sold-cars-by-platform-stats').get(adminController.carsSoldByPlatform);
+router
+  .route('/sold-cars-stats')
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.totalSoldCars);
+router
+  .route('/sold-cars-by-platform-stats')
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.carsSoldByPlatform);
 
 //       CAR BODYTYPES //
 router
   .route('/body-types')
-  .get(bodyTypeController.getAllBodyTypes)
-  .post(bodyTypeController.createBodyType);
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), bodyTypeController.getAllBodyTypes)
+  .post(authenticate(User), restrictTo('Admin', 'Moderator'), bodyTypeController.createBodyType);
 router
   .route('/body-types/:id')
-  .get(bodyTypeController.getOneBodyType)
-  .patch(bodyTypeController.updateBodyType)
-  .delete(bodyTypeController.deleteBodyType);
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), bodyTypeController.getOneBodyType)
+  .patch(authenticate(User), restrictTo('Admin', 'Moderator'), bodyTypeController.updateBodyType)
+  .delete(authenticate(User), restrictTo('Admin', 'Moderator'), bodyTypeController.deleteBodyType);
 
 /////////////////////////////////// Admin Routes ////////////////////////////
 
@@ -59,29 +63,66 @@ router
 // Car Makes
 router
   .route('/makes')
-  .get(cache(cacheExp), carMakeController.getAllMakes)
-  .post(carMakeController.createMake);
+  .get(
+    authenticate(User),
+    restrictTo('Admin', 'Moderator'),
+    cache(cacheExp),
+    carMakeController.getAllMakes,
+  )
+  .post(authenticate(User), restrictTo('Admin', 'Moderator'), carMakeController.createMake);
 router
   .route('/makes/:id')
-  .get(cache(cacheExp), carMakeController.getOneMake)
-  .patch(carMakeController.updateMake)
-  .delete(carMakeController.deleteMake);
+  .get(
+    authenticate(User),
+    restrictTo('Admin', 'Moderator'),
+    cache(cacheExp),
+    carMakeController.getOneMake,
+  )
+  .patch(authenticate(User), restrictTo('Admin', 'Moderator'), carMakeController.updateMake)
+  .delete(authenticate(User), restrictTo('Admin', 'Moderator'), carMakeController.deleteMake);
 
 // models with specific make.
 router
   .route('/models')
-  .get(carModelVersionController.getAllModels)
-  .post(carModelVersionController.createModel);
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), carModelVersionController.getAllModels)
+  .post(
+    authenticate(User),
+    restrictTo('Admin', 'Moderator'),
+    carModelVersionController.createModel,
+  );
 router
   .route('/models/:id')
-  .get(carModelVersionController.getOneModel)
-  .patch(carModelVersionController.updateModel)
-  .delete(carModelVersionController.deleteModel);
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), carModelVersionController.getOneModel)
+  .patch(
+    authenticate(User),
+    restrictTo('Admin', 'Moderator'),
+    carModelVersionController.updateModel,
+  )
+  .delete(
+    authenticate(User),
+    restrictTo('Admin', 'Moderator'),
+    carModelVersionController.deleteModel,
+  );
 
 // Versions
-router.get('/versions', carModelVersionController.getVersions);
-router.patch('/add-versions', carModelVersionController.addVersion);
-router.patch('/remove-versions', carModelVersionController.removeVersion);
+router.get(
+  '/versions',
+  authenticate(User),
+  restrictTo('Admin', 'Moderator'),
+  carModelVersionController.getVersions,
+);
+router.patch(
+  '/add-versions',
+  authenticate(User),
+  restrictTo('Admin', 'Moderator'),
+  carModelVersionController.addVersion,
+);
+router.patch(
+  '/remove-versions',
+  authenticate(User),
+  restrictTo('Admin', 'Moderator'),
+  carModelVersionController.removeVersion,
+);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
