@@ -835,6 +835,21 @@ paths:
           description: 'Not Found'
         '200':
           description: 'Total Owners in response'
+  /v1/ads/cars/top-viewed:
+    get:
+      tags:
+        - 'Stats for Admin/Moderator'
+      summary: ''
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'top viewed cars in response'        
   # /v1/ads/cars/makes:
   #   get:
   #     tags:
@@ -998,7 +1013,7 @@ paths:
           description: 'Invalid input'
         '200':
           description: 'Car body type deleted Successfully'
-  /v1/ads/cars/makes//:
+  /v1/ads/cars/makes:
     post:
       tags:
         - 'Car Makes'
