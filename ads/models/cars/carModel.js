@@ -186,6 +186,10 @@ const carsSchema = new mongoose.Schema(
 		imageStatus: {
 			type: Boolean,
 		},
+		views: {
+			type: Number,
+			default: 0,
+		},
 	},
 	{
 		timestamps: true,

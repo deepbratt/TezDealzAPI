@@ -1,4 +1,6 @@
+const RequestIp = require('@supercharge/request-ip');
 const Car = require('../../models/cars/carModel');
+const CarView = require('../../models/cars/car-views/ip-views-model');
 const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
 const { filter, stats, dailyAggregate } = require('../factory/factoryHandler');
@@ -86,6 +88,7 @@ exports.getAll = catchAsync(async (req, res, next) => {
 exports.getOne = catchAsync(async (req, res, next) => {
 	const result = await Car.findById(req.params.id).populate('createdBy');
 	if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	const ip = RequestIp.getClientIp(req);
 	//current user fav status
 	if (!result.active || result.banned) {
 		if (req.user) {
@@ -104,7 +107,10 @@ exports.getOne = catchAsync(async (req, res, next) => {
 			result.isFav = false;
 		}
 	}
-
+	if (!(await CarView.findOne({ ip: ip, car_id: req.params.id }))) {
+		await CarView.create({ ip: ip, car_id: req.params.id });
+		await Car.findByIdAndUpdate(req.params.id, { $inc: { views: 1 } });
+	}
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
