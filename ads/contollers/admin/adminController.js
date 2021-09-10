@@ -220,3 +220,133 @@ exports.views = catchAsync(async (req, res, next) => {
 		},
 	});
 });
+
+// Total and montly cars sold percentage
+exports.totalSoldCars = catchAsync(async (req, res, next) => {
+  const count = await Car.aggregate([
+    {
+      $facet: {
+        total: [
+          {
+            $group: {
+              _id: null,
+              totalCars: { $sum: 1 },
+              totalSold: { $sum: { $cond: ['$isSold', 1, 0] } },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              percentage: { $multiply: [{ $divide: ['$totalSold', '$totalCars'] }, 100] },
+            },
+          },
+          {
+            $addFields: {
+              roundedPercentage: { $round: ['$percentage', 1] },
+            },
+          },
+        ],
+        monthly: [
+          {
+            $match: {
+              $expr: {
+                $eq: [{ $year: '$createdAt' }, { $year: new Date() }],
+                $eq: [{ $month: '$createdAt' }, { $month: new Date() }],
+              },
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              totalCars: { $sum: 1 },
+              totalSold: { $sum: { $cond: ['$isSold', 1, 0] } },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              percentage: { $multiply: [{ $divide: ['$totalSold', '$totalCars'] }, 100] },
+            },
+          },
+          {
+            $addFields: {
+              roundedPercentage: { $round: ['$percentage', 1] },
+            },
+          },
+        ],
+      },
+    },
+  ]);
+  res.status(200).json({
+    status: STATUS.SUCCESS,
+    result: {
+      total: count[0].total.length > 0 ? count[0].total[0] : 0,
+      monthly: count[0].monthly.length > 0 ? count[0].monthly[0] : 0,
+    },
+  });
+});
+
+// Total and montly cars sold by platform percentage
+exports.carsSoldByPlatform = catchAsync(async (req, res, next) => {
+  const percentage = await Car.aggregate([
+    {
+      $facet: {
+        total: [
+          {
+            $group: {
+              _id: null,
+              totalCars: { $sum: 1 },
+              totalSoldByPlatform: { $sum: { $cond: ['$soldByUs', 1, 0] } },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              percentage: { $multiply: [{ $divide: ['$totalSoldByPlatform', '$totalCars'] }, 100] },
+            },
+          },
+          {
+            $addFields: {
+              roundedPercentage: { $round: ['$percentage', 1] },
+            },
+          },
+        ],
+        monthly: [
+          {
+            $match: {
+              $expr: {
+                $eq: [{ $year: '$createdAt' }, { $year: new Date() }],
+                $eq: [{ $month: '$createdAt' }, { $month: new Date() }],
+              },
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              totalCars: { $sum: 1 },
+              totalSoldByPlatform: { $sum: { $cond: ['$soldByUs', 1, 0] } },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              percentage: { $multiply: [{ $divide: ['$totalSoldByPlatform', '$totalCars'] }, 100] },
+            },
+          },
+          {
+            $addFields: {
+              roundedPercentage: { $round: ['$percentage', 1] },
+            },
+          },
+        ],
+      },
+    },
+  ]);
+  res.status(200).json({
+    status: STATUS.SUCCESS,
+    result: {
+      total: percentage[0].total.length > 0 ? percentage[0].total[0] : 0,
+      monthly: percentage[0].monthly.length > 0 ? percentage[0].monthly[0] : 0,
+    },
+  });
+});

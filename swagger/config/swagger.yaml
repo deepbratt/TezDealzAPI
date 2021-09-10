@@ -2,7 +2,7 @@ swagger: '2.0'
 info:
   description: 'TezDeals Api Documentation'
   version: '1.0.0'
-  title: 'TezDeals'  
+  title: 'TezDeals'
 paths:
   /v1/Users/admin-panel-login:
     post:
@@ -1285,6 +1285,38 @@ paths:
           description: 'Invalid input'
         '200':
           description: 'Car version removed Successfully'
+
+  /v1/ads/cars/sold-cars-stats:
+    get:
+      tags:
+        - 'Total and Monthly Cars sold Statistics'
+      summary: 'Used to get all cars sold and cars sold in current month'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Return statistics of total and monthly sold cars'
+
+  /v1/ads/cars/sold-cars-by-platform-stats:
+    get:
+      tags:
+        - 'Cars sold through Platform Total and Monthly Statistics'
+      summary: 'Used to get all cars sold through our platform and cars sold in current month by our platfrom'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Return statistics of total and monthly sold cars by our platform'
 
 definitions:
   signup:
