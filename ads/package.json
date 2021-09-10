@@ -12,6 +12,7 @@
 	"dependencies": {
 		"@auth/tdb-auth": "^1.0.2",
 		"@constants/tdb-constants": "^1.0.35",
+		"@supercharge/request-ip": "^1.1.2",
 		"@utils/tdb_globalutils": "^1.0.98",
 		"amqplib": "^0.8.0",
 		"axios": "^0.21.1",

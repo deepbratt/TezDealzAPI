@@ -945,6 +945,8 @@ paths:
       parameters:
         - in: 'path'
           name: 'id'
+          required: true
+          type: 'string'
       responses:
         '400':
           description: 'Invalid input'
@@ -963,6 +965,8 @@ paths:
       parameters:
         - in: 'path'
           name: 'id'
+          required: true
+          type: 'string'
         - in: 'body'
           name: 'body'
           description: 'body type data'
@@ -987,6 +991,8 @@ paths:
       parameters:
         - in: 'path'
           name: 'id'
+          required: true
+          type: 'string'
       responses:
         '400':
           description: 'Invalid input'
@@ -1041,6 +1047,8 @@ paths:
       parameters:
         - in: 'path'
           name: 'id'
+          required: true
+          type: 'string'
       responses:
         '400':
           description: 'Invalid input'
@@ -1059,6 +1067,8 @@ paths:
       parameters:
         - in: 'path'
           name: 'id'
+          required: true
+          type: 'string'
         - in: 'body'
           name: 'body'
           description: 'car make data'
@@ -1083,6 +1093,8 @@ paths:
       parameters:
         - in: 'path'
           name: 'id'
+          required: true
+          type: 'string'
       responses:
         '400':
           description: 'Invalid input'
@@ -1138,6 +1150,8 @@ paths:
       parameters:
         - in: 'path'
           name: 'id'
+          required: true
+          type: 'string'
       responses:
         '400':
           description: 'Invalid input'
@@ -1156,6 +1170,8 @@ paths:
       parameters:
         - in: 'path'
           name: 'id'
+          required: true
+          type: 'string'
         - in: 'body'
           name: 'body'
           description: 'car models data'
@@ -1180,6 +1196,8 @@ paths:
       parameters:
         - in: 'path'
           name: 'id'
+          required: true
+          type: 'string'
       responses:
         '400':
           description: 'Invalid input'
@@ -1213,6 +1231,8 @@ paths:
       parameters:
         - in: 'path'
           name: 'id'
+          required: true
+          type: 'string'
         - in: 'body'
           name: 'body'
           description: 'car version '
@@ -1237,6 +1257,8 @@ paths:
       parameters:
         - in: 'path'
           name: 'id'
+          required: true
+          type: 'string'
         - in: 'body'
           name: 'body'
           description: 'car version data'
