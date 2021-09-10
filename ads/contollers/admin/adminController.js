@@ -184,6 +184,7 @@ exports.totalSoldCars = catchAsync(async (req, res, next) => {
           },
           {
             $project: {
+              _id: 0,
               percentage: { $multiply: [{ $divide: ['$totalSold', '$totalCars'] }, 100] },
             },
           },
@@ -211,6 +212,7 @@ exports.totalSoldCars = catchAsync(async (req, res, next) => {
           },
           {
             $project: {
+              _id: 0,
               percentage: { $multiply: [{ $divide: ['$totalSold', '$totalCars'] }, 100] },
             },
           },
@@ -247,8 +249,7 @@ exports.carsSoldByPlatform = catchAsync(async (req, res, next) => {
           },
           {
             $project: {
-              totalCars: 1,
-              totalSoldByPlatform: 1,
+              _id: 0,
               percentage: { $multiply: [{ $divide: ['$totalSoldByPlatform', '$totalCars'] }, 100] },
             },
           },
@@ -276,8 +277,7 @@ exports.carsSoldByPlatform = catchAsync(async (req, res, next) => {
           },
           {
             $project: {
-              totalCars: 1,
-              totalSoldByPlatform: 1,
+              _id: 0,
               percentage: { $multiply: [{ $divide: ['$totalSoldByPlatform', '$totalCars'] }, 100] },
             },
           },
