@@ -179,12 +179,12 @@ paths:
           description: 'Users details required'
           required: true
           schema:
-            $ref: '#/definitions/resetPassword'  
+            $ref: '#/definitions/resetPassword'
       responses:
         '404':
           description: 'No User Found'
         '200':
-          description: 'User details'        
+          description: 'User details'
 
   /v1/Users/:id:
     patch:
@@ -699,7 +699,7 @@ paths:
           description: 'mark car as sold'
           required: true
           schema:
-            $ref: '#/definitions/mark-sold'  
+            $ref: '#/definitions/mark-sold'
       responses:
         '404':
           description: 'Not Found'
@@ -834,52 +834,52 @@ paths:
         '404':
           description: 'Not Found'
         '200':
-          description: 'Total Owners in response'                
-  /v1/ads/cars/makes:
-    get:
-      tags:
-        - 'Cars Make Model'
-      summary: 'use to get All cars makes'
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      responses:
-        '404':
-          description: 'Not Found'
-        '200':
-          description: 'List of all makes'
-  /v1/ads/cars/models/?make_id=41:
-    get:
-      tags:
-        - 'Cars Make Model'
-      summary: 'Use to get models for specific make'
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      responses:
-        '404':
-          description: 'Not Found'
-        '200':
-          description: 'Data in response'
-  /v1/ads/cars/versions?model_id=984:
-    get:
-      tags:
-        - 'Cars Make Model'
-      summary: 'Use to get car version'
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      responses:
-        '404':
-          description: 'Not Found'
-        '200':
-          description: 'versions'
+          description: 'Total Owners in response'
+  # /v1/ads/cars/makes:
+  #   get:
+  #     tags:
+  #       - 'Cars Make Model'
+  #     summary: 'use to get All cars makes'
+  #     description: ''
+  #     consumes:
+  #       - 'application/json'
+  #     produces:
+  #       - 'application/json'
+  #     responses:
+  #       '404':
+  #         description: 'Not Found'
+  #       '200':
+  #         description: 'List of all makes'
+  # /v1/ads/cars/models/?make_id=41:
+  #   get:
+  #     tags:
+  #       - 'Cars Make Model'
+  #     summary: 'Use to get models for specific make'
+  #     description: ''
+  #     consumes:
+  #       - 'application/json'
+  #     produces:
+  #       - 'application/json'
+  #     responses:
+  #       '404':
+  #         description: 'Not Found'
+  #       '200':
+  #         description: 'Data in response'
+  # /v1/ads/cars/versions?model_id=984:
+  #   get:
+  #     tags:
+  #       - 'Cars Make Model'
+  #     summary: 'Use to get car version'
+  #     description: ''
+  #     consumes:
+  #       - 'application/json'
+  #     produces:
+  #       - 'application/json'
+  #     responses:
+  #       '404':
+  #         description: 'Not Found'
+  #       '200':
+  #         description: 'versions'
   /v1/ads/cars/filter/cities-with-cars?province=Punjab:
     get:
       tags:
@@ -895,6 +895,381 @@ paths:
           description: 'Not Found'
         '200':
           description: 'Data in response'
+  /v1/ads/cars/body-types:
+    post:
+      tags:
+        - 'Cars Body Types'
+      summary: 'used to Post Car body type'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'body type data'
+          required: true
+          schema:
+            $ref: '#/definitions/bodyTypes'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Car body type Posted Successfully'
+  /v1/ads/cars/body-types/:
+    get:
+      tags:
+        - 'Cars Body Types'
+      summary: 'used to get all body type'
+      description: 'Return all body types'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'List of all body types'
+  /v1/ads/cars/body-types/{id}:
+    get:
+      tags:
+        - 'Cars Body Types'
+      summary: 'used to get one body type'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Return result againt id'
+  /v1/ads/cars/body-types/:id:
+    patch:
+      tags:
+        - 'Cars Body Types'
+      summary: 'used to updated Car body type'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'body type data'
+          required: true
+          schema:
+            $ref: '#/definitions/bodyTypes'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car body type updated Successfully'
+  /v1/ads/cars/body-types/id:
+    delete:
+      tags:
+        - 'Cars Body Types'
+      summary: 'used to delete Car body type'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car body type deleted Successfully'
+  /v1/ads/cars/makes//:
+    post:
+      tags:
+        - 'Car Makes'
+      summary: 'used to create car make'
+      description: 'used to create car make'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'car make'
+          required: true
+          schema:
+            $ref: '#/definitions/car-make'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Car make created Successfully'
+  /v1/ads/cars/makes/:
+    get:
+      tags:
+        - 'Car Makes'
+      summary: 'used to get all car makes'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Data of all car makes'
+  /v1/ads/cars/makes/{id}:
+    get:
+      tags:
+        - 'Car Makes'
+      summary: 'used to get one car make'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Return result againt id'
+  /v1/ads/cars/makes/:id:
+    patch:
+      tags:
+        - 'Car Makes'
+      summary: 'used to updated Car Make'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'car make data'
+          required: true
+          schema:
+            $ref: '#/definitions/car-make'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car make updated Successfully'
+  /v1/ads/cars/makes/id:
+    delete:
+      tags:
+        - 'Car Makes'
+      summary: 'used to delete Car make'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car make deleted Successfully'
+
+  /v1/ads/cars/models//:
+    post:
+      tags:
+        - 'Car Models'
+      summary: 'used to create car model'
+      description: 'used to create car model'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'car model'
+          required: true
+          schema:
+            $ref: '#/definitions/car-model-version'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Car model created Successfully'
+  /v1/ads/cars/models?make_id=51:
+    get:
+      tags:
+        - 'Car Models'
+      summary: 'used to get all car models or by make_id '
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Data of all car models'
+  /v1/ads/cars/models/{id}:
+    get:
+      tags:
+        - 'Car Models'
+      summary: 'used to get one car make'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Return result againt id'
+  /v1/ads/cars/models/:id:
+    patch:
+      tags:
+        - 'Car Models'
+      summary: 'used to updated Car models'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'car models data'
+          required: true
+          schema:
+            $ref: '#/definitions/car-model-version'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car models updated Successfully'
+  /v1/ads/cars/models/id:
+    delete:
+      tags:
+        - 'Car Models'
+      summary: 'used to delete Car model'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car model deleted Successfully'
+  /v1/ads/cars/versions?model_id=1044:
+    get:
+      tags:
+        - 'Car Versions'
+      summary: 'Use to get car version'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'versions'
+  /v1/ads/cars/add-versions?model_id=749:
+    patch:
+      tags:
+        - 'Car Versions'
+      summary: 'used to add Car version'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'car version '
+          required: true
+          schema:
+            $ref: '#/definitions/car-version'
+      responses:
+        '400':
+          description: 'Not Found'
+        '200':
+          description: 'Car version added Successfully'
+  /v1/ads/cars/remove-versions?model_id=749:
+    patch:
+      tags:
+        - 'Car Versions'
+      summary: 'used to remove Car version'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'car version data'
+          required: true
+          schema:
+            $ref: '#/definitions/car-version'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car version removed Successfully'
 
 definitions:
   signup:
@@ -1057,4 +1432,28 @@ definitions:
     type: 'object'
     properties:
       soldByUs:
-        type: 'boolean'      
+        type: 'boolean'
+  bodyTypes:
+    type: 'object'
+    properties:
+      bodyType:
+        type: 'string'
+  car-make:
+    type: 'object'
+    properties:
+      name:
+        type: 'string'
+  car-model-version:
+    type: 'object'
+    properties:
+      make_id:
+        type: 'number'
+      name:
+        type: 'string'
+      versions:
+        type: 'object'
+  car-version:
+    type: 'object'
+    properties:
+      versions:
+        type: 'object'

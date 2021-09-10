@@ -107,6 +107,7 @@ exports.getOne = catchAsync(async (req, res, next) => {
 			result.isFav = false;
 		}
 	}
+
 	if (!(await CarView.findOne({ ip: ip, car_id: req.params.id }))) {
 		await CarView.create({ ip: ip, car_id: req.params.id });
 		await Car.findByIdAndUpdate(req.params.id, { $inc: { views: 1 } });
@@ -141,8 +142,8 @@ exports.updateOne = catchAsync(async (req, res, next) => {
 		}
 	}
 	if (!req.body.image || req.body.image.length <= 0) {
-		//return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
 		req.body.imageStatus = false;
+		return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
 	} else {
 		req.body.imageStatus = true;
 	}
