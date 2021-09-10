@@ -16,156 +16,158 @@ const { regex } = require('../../utils/regex');
 
 // Sign Up
 exports.signup = catchAsync(async (req, res, next) => {
-	if (!req.body.data) {
-		return next(
-			new AppError(
-				`${ERRORS.REQUIRED.EMAIL_REQUIRED} / ${ERRORS.REQUIRED.PHONE_REQUIRED}`,
-				STATUS_CODE.BAD_REQUEST
-			)
-		);
-	}
-	let user;
-	if (Validator.validate(req.body.data)) {
-		user = await User.create({
-			firstName: req.body.firstName.trim(),
-			lastName: req.body.lastName.trim(),
-			email: req.body.data,
-			username: req.body.username,
-			password: req.body.password,
-			passwordConfirm: req.body.passwordConfirm,
-			signedUpWithEmail: true,
-		});
-	} else if (regex.phone.test(req.body.data)) {
-		user = await User.create({
-			firstName: req.body.firstName.trim(),
-			lastName: req.body.lastName.trim(),
-			phone: req.body.data,
-			username: req.body.username,
-			password: req.body.password,
-			passwordConfirm: req.body.passwordConfirm,
-			signedUpWithPhone: true,
-		});
-	} else {
-		return next(
-			new AppError(
-				`${ERRORS.INVALID.INVALID_EMAIL} / ${ERRORS.INVALID.INVALID_PHONE}`,
-				STATUS_CODE.BAD_REQUEST
-			)
-		);
-	}
+  if (!req.body.data) {
+    console.log('First condition');
+    return next(
+      new AppError(
+        `${ERRORS.REQUIRED.EMAIL_REQUIRED} / ${ERRORS.REQUIRED.PHONE_REQUIRED}`,
+        STATUS_CODE.BAD_REQUEST,
+      ),
+    );
+  }
+  let user;
+  if (Validator.validate(req.body.data)) {
+    user = await User.create({
+      firstName: req.body.firstName.trim(),
+      lastName: req.body.lastName.trim(),
+      email: req.body.data,
+      username: req.body.username,
+      password: req.body.password,
+      passwordConfirm: req.body.passwordConfirm,
+      signedUpWithEmail: true,
+    });
+  } else if (regex.phone.test(req.body.data)) {
+    user = await User.create({
+      firstName: req.body.firstName.trim(),
+      lastName: req.body.lastName.trim(),
+      phone: req.body.data,
+      username: req.body.username,
+      password: req.body.password,
+      passwordConfirm: req.body.passwordConfirm,
+      signedUpWithPhone: true,
+    });
+  } else {
+    console.log('second condition');
+    return next(
+      new AppError(
+        `${ERRORS.INVALID.INVALID_EMAIL} / ${ERRORS.INVALID.INVALID_PHONE}`,
+        STATUS_CODE.BAD_REQUEST,
+      ),
+    );
+  }
 
-	res.status(STATUS_CODE.CREATED).json({
-		status: STATUS.SUCCESS,
-		message: SUCCESS_MSG.SUCCESS_MESSAGES.CREATED,
-	});
+  res.status(STATUS_CODE.CREATED).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.CREATED,
+  });
 });
 
 // Login
 exports.login = catchAsync(async (req, res, next) => {
-	const { data, password } = req.body;
-	if (!data || !password) {
-		// checking email or password empty?
-		return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
-	}
-	// Finding user by username, phone or email
-	const user = await User.findOne({
-		$or: [
-			{
-				email: data,
-			},
-			{
-				phone: data,
-			},
-			{
-				username: data,
-			},
-		],
-	}).select('+password');
-	if (user.role !== 'User') {
-		return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
-	}
-	//user existance and password is correct
-	if (!user || !(await user.correctPassword(password, user.password))) {
-		return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
-	}
-	// Check if user is banned , if banned then Throw Error
-	if (user.banned) {
-		return next(
-			new AppError(
-				'You have violated our Privacy Policy & Terms. For Further Information please contact our Customer Support Center. ',
-				STATUS_CODE.UNAUTHORIZED
-			)
-		);
-	}
-	// Check if user is active or not
-	if (!user.active) {
-		// If no user and not active:true then return Error
-		return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.NOT_FOUND));
-	}
-	jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
+  const { data, password } = req.body;
+  if (!data || !password) {
+    // checking email or password empty?
+    return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
+  }
+  // Finding user by username, phone or email
+  const user = await User.findOne({
+    $or: [
+      {
+        email: data,
+      },
+      {
+        phone: data,
+      },
+      {
+        username: data,
+      },
+    ],
+  }).select('+password');
+  if (user.role !== 'User') {
+    return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
+  }
+  //user existance and password is correct
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
+  }
+  // Check if user is banned , if banned then Throw Error
+  if (user.banned) {
+    return next(
+      new AppError(
+        'You have violated our Privacy Policy & Terms. For Further Information please contact our Customer Support Center. ',
+        STATUS_CODE.UNAUTHORIZED,
+      ),
+    );
+  }
+  // Check if user is active or not
+  if (!user.active) {
+    // If no user and not active:true then return Error
+    return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.NOT_FOUND));
+  }
+  jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
 });
 
 exports.adminPanellogin = catchAsync(async (req, res, next) => {
-	const { data, password } = req.body;
-	if (!data || !password) {
-		// checking email or password empty?
-		return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
-	}
-	// Finding user by username, phone or email
-	const user = await User.findOne({
-		$or: [
-			{
-				email: data,
-			},
-			{
-				phone: data,
-			},
-			{
-				username: data,
-			},
-		],
-	}).select('+password');
-	if (user.role === 'User') {
-		return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
-	}
-	//user existance and password is correct
-	if (!user || !(await user.correctPassword(password, user.password))) {
-		return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
-	}
-	// Check if user is banned , if banned then Throw Error
-	if (user.banned || !user.active) {
-		return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
-	}
-	jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
+  const { data, password } = req.body;
+  if (!data || !password) {
+    // checking email or password empty?
+    return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
+  }
+  // Finding user by username, phone or email
+  const user = await User.findOne({
+    $or: [
+      {
+        email: data,
+      },
+      {
+        phone: data,
+      },
+      {
+        username: data,
+      },
+    ],
+  }).select('+password');
+  if (user.role === 'User') {
+    return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
+  }
+  //user existance and password is correct
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
+  }
+  // Check if user is banned , if banned then Throw Error
+  if (user.banned || !user.active) {
+    return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
+  }
+  jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
 });
 
 // Check logged in User
 exports.isLoggedIn = catchAsync(async (req, res, next) => {
-	//getting token and check is it there
-	let token;
-	if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-		token = req.headers.authorization.split(' ')[1];
-	} else if (req.session.jwt) {
-		token = req.session.jwt;
-	}
-	if (!token) {
-		return next(new AppError(ERRORS.UNAUTHORIZED.NOT_LOGGED_IN, STATUS_CODE.UNAUTHORIZED));
-	}
-	//verification token
-	const decoded = jwt.verify(token, process.env.JWT_SECRET);
-	//check if user sitll exists
-	const currentUser = await User.findById(decoded.userdata.id);
-	if (!currentUser) {
-		return next(new AppError(`User ${ERRORS.INVALID.NOT_FOUND}`, STATUS_CODE.NOT_FOUND));
-	}
-	//check if user changed password after the token was issued
-	if (currentUser.changedPasswordAfter(decoded.iat)) {
-		return next(new AppError(ERRORS.UNAUTHORIZED.INVALID_JWT, STATUS_CODE.UNAUTHORIZED));
-	}
-	//send loggedIn User
-	res.status(STATUS_CODE.OK).json({
-		user: currentUser,
-	});
+  //getting token and check is it there
+  let token;
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1];
+  } else if (req.session.jwt) {
+    token = req.session.jwt;
+  }
+  if (!token) {
+    return next(new AppError(ERRORS.UNAUTHORIZED.NOT_LOGGED_IN, STATUS_CODE.UNAUTHORIZED));
+  }
+  //verification token
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  //check if user sitll exists
+  const currentUser = await User.findById(decoded.userdata.id);
+  if (!currentUser) {
+    return next(new AppError(`User ${ERRORS.INVALID.NOT_FOUND}`, STATUS_CODE.NOT_FOUND));
+  }
+  //check if user changed password after the token was issued
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
+    return next(new AppError(ERRORS.UNAUTHORIZED.INVALID_JWT, STATUS_CODE.UNAUTHORIZED));
+  }
+  //send loggedIn User
+  res.status(STATUS_CODE.OK).json({
+    user: currentUser,
+  });
 });
 
 //* ----------------------------------Previous Code is Below -----------------------------
