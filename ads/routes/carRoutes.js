@@ -19,6 +19,17 @@ const cacheExp = 30;
 const router = express.Router();
 // const { isCached } = require('../utils/redisCache');
 
+/**
+ * Total cars sold and sold in this month.
+ * Total cars Sold by our platform and  total cars sold by platform in this month.
+ */
+router
+  .route('/sold-cars-stats')
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.totalSoldCars);
+router
+  .route('/sold-cars-by-platform-stats')
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.carsSoldByPlatform);
+
 //       CAR BODYTYPES //
 router
   .route('/body-types')
