@@ -3,12 +3,12 @@ const validator = require('validator');
 const { ERRORS } = require('@constants/tdb-constants');
 const BodyType = require('../../models/cars/bodyTypes/bodyTypes');
 
-let carBodyType = async function () {
-  const result = await BodyType.find().select('-_id');
-  return result;
-};
+// let carBodyType = async function () {
+//   const result = await BodyType.find().select('-_id');
+//   return result;
+// };
 
-console.log(carBodyType);
+// console.log(carBodyType);
 
 const carsSchema = new mongoose.Schema(
   {
@@ -101,7 +101,28 @@ const carsSchema = new mongoose.Schema(
       type: String,
       required: [true, ERRORS.REQUIRED.BODY_TYPE_REQUIRED],
       enum: {
-        values: [carBodyType],
+        values: [
+          'Compact sedan',
+          'Mini Van',
+          'Convertible',
+          'Double Cabin',
+          'Micro Van',
+          'MPV',
+          'Pick Up',
+          'Single Cabin',
+          'Subcompact hatchback',
+          'Truck',
+          'Compact SUV',
+          'Coupe',
+          'Crossover',
+          'High Roof',
+          'Mini Vehicles',
+          'Off-Road Vehicles',
+          'Sedan',
+          'Station Wagon',
+          'SUV',
+          'Van',
+        ],
         message: ERRORS.INVALID.INVALID_BODY_TYPE,
       },
       trim: true,
