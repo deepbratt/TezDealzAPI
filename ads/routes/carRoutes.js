@@ -7,7 +7,12 @@ const bodyTypeController = require('../contollers/cars/bodyTypesController');
 const carMakeController = require('../contollers/cars/carMakeContoller');
 const carFilters = require('../contollers/cars/carFilters');
 const { authenticate, checkIsLoggedIn, restrictTo } = require('@auth/tdb-auth');
-const { permessionCheck, favPermessionCheck, phoneCheck } = require('../middleware/cars/index');
+const {
+  permessionCheck,
+  favPermessionCheck,
+  phoneCheckOnCreate,
+  phoneCheckOnupdate,
+} = require('../middleware/cars/index');
 const { upload } = require('@utils/tdb_globalutils');
 const cache = require('../utils/cache');
 const cacheExp = 30;
@@ -74,8 +79,8 @@ router
   .route('/')
   .post(
     authenticate(User),
-    phoneCheck,
     upload('image').array('image', 20),
+    phoneCheckOnCreate,
     carController.createOne,
   );
 router.route('/').get(checkIsLoggedIn(User), cache(cacheExp), carController.getAll);
@@ -108,9 +113,9 @@ router
   .get(checkIsLoggedIn(User), cache(cacheExp), carController.getOne)
   .patch(
     authenticate(User),
-    phoneCheck,
     permessionCheck,
     upload('image').array('image', 20),
+    phoneCheckOnupdate,
     carController.updateOne,
   )
   .delete(authenticate(User), permessionCheck, carController.deleteOne);

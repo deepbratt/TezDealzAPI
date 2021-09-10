@@ -4,29 +4,35 @@ const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-con
 const { filter, stats, dailyAggregate } = require('../factory/factoryHandler');
 
 exports.createOne = catchAsync(async (req, res, next) => {
-  if (req.files) {
-    let array = [];
-    for (var i = 0; i < req.files.length; i++) {
-      let { Location } = await uploadS3(
-        req.files[i],
-        process.env.AWS_BUCKET_REGION,
-        process.env.AWS_ACCESS_KEY,
-        process.env.AWS_SECRET_KEY,
-        process.env.AWS_BUCKET_NAME,
-      );
-      array.push(Location);
-    }
-    req.body.image = array;
-  }
-  req.body.createdBy = req.user._id;
-  if (!req.body.image || req.body.image.length <= 0) {
-    req.body.imageStatus = false;
-    //return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
-  } else {
-    req.body.imageStatus = true;
-  }
-  const result = await Car.create(req.body);
-  if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	if (req.files) {
+		let array = [];
+		for (var i = 0; i < req.files.length; i++) {
+			let { Location } = await uploadS3(
+				req.files[i],
+				process.env.AWS_BUCKET_REGION,
+				process.env.AWS_ACCESS_KEY,
+				process.env.AWS_SECRET_KEY,
+				process.env.AWS_BUCKET_NAME
+			);
+			array.push(Location);
+		}
+		req.body.image = array;
+	}
+	if (req.user.role !== 'User') {
+		if (!req.body.createdBy) {
+			return next(new AppError('User Id Is Required', STATUS_CODE.BAD_REQUEST));
+		}
+	} else {
+		req.body.createdBy = req.user._id;
+	}
+	if (!req.body.image || req.body.image.length <= 0) {
+		req.body.imageStatus = false;
+		return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
+	} else {
+		req.body.imageStatus = true;
+	}
+	const result = await Car.create(req.body);
+	if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
   res.status(STATUS_CODE.CREATED).json({
     status: STATUS.SUCCESS,
@@ -78,16 +84,26 @@ exports.getAll = catchAsync(async (req, res, next) => {
 });
 
 exports.getOne = catchAsync(async (req, res, next) => {
-  const result = await Car.findById(req.params.id).populate('createdBy');
-  if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-  //current user fav status
-  if (req.user) {
-    if (result.favOf.includes(req.user._id)) {
-      result.isFav = true;
-    } else {
-      result.isFav = false;
-    }
-  }
+	const result = await Car.findById(req.params.id).populate('createdBy');
+	if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	//current user fav status
+	if (!result.active || result.banned) {
+		if (req.user) {
+			const currentUser = req.user._id;
+			if (req.user.role === 'User' && !currentUser.equals(result.createdBy)) {
+				return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+			}
+		} else {
+			return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+		}
+	}
+	if (req.user && req.user.role === 'User') {
+		if (result.favOf.includes(req.user._id)) {
+			result.isFav = true;
+		} else {
+			result.isFav = false;
+		}
+	}
 
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
