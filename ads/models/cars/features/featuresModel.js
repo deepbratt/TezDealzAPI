@@ -1,14 +1,15 @@
 const mongoose = require('mongoose');
+const { ERRORS } = require('@constants/tdb-constants');
 
 const featuresSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Please Provide feature name'],
+    required: [true, ERRORS.REQUIRED.FEATURE_NAME],
     unique: true,
   },
   image: {
     type: String,
-    required: [true, 'Please Provide feature image'],
+    required: [true, ERRORS.REQUIRED.FEATURE_IMAGE],
   },
 });
 

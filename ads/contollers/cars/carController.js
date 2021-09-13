@@ -22,7 +22,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
   }
   if (req.user.role !== 'User') {
     if (!req.body.createdBy) {
-      return next(new AppError('User Id Is Required', STATUS_CODE.BAD_REQUEST));
+      return next(new AppError(ERRORS.REQUIRED.USER_ID, STATUS_CODE.BAD_REQUEST));
     }
   } else {
     req.body.createdBy = req.user._id;

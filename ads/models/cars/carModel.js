@@ -3,26 +3,27 @@ const validator = require('validator');
 const { ERRORS } = require('@constants/tdb-constants');
 const BodyType = require('../../models/cars/bodyTypes/bodyTypes');
 const Features = require('../../models/cars/features/featuresModel');
-// let carBodyType = async function () {
-//   const result = await BodyType.find().select('-_id');
-//   return result;
-// };
 
-// console.log(carBodyType);
+let carFeatures = async function () {
+  let result = await Features.find().select('name image');
+  return result;
+};
+
+console.log(carFeatures);
 
 const carsSchema = new mongoose.Schema(
   {
     country: {
       type: String,
-      required: [true, `Country name is Required`],
+      required: [true, ERRORS.REQUIRED.COUNTRY_NAME],
     },
     province: {
       type: String,
-      required: [true, `Province name is Required`],
+      required: [true, ERRORS.REQUIRED.PROVINCE_NAME],
     },
     city: {
       type: String,
-      required: [true, `City name is Required`],
+      required: [true, ERRORS.REQUIRED.CITY_NAME],
     },
     location: {
       type: {
@@ -139,7 +140,7 @@ const carsSchema = new mongoose.Schema(
     registrationCity: {
       type: String,
       trim: true,
-      required: [true, `Registeration city is Required`],
+      required: [true, ERRORS.REQUIRED.REGISTRATION_CITY],
     },
     milage: {
       type: Number,

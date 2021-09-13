@@ -55,7 +55,7 @@ exports.updateMake = catchAsync(async (req, res, next) => {
   });
 
   if (req.body.make_id) {
-    return next(new AppError('Make ID cannot be Updated', STATUS_CODE.BAD_REQUEST));
+    return next(new AppError(ERRORS.INVALID.MAKE_ID_UPDATE, STATUS_CODE.BAD_REQUEST));
   }
 
   if (!result) {

@@ -56,7 +56,7 @@ exports.updateModel = catchAsync(async (req, res, next) => {
   });
 
   if (req.body.model_id) {
-    return next(new AppError('Model ID cannot be Updated', STATUS_CODE.BAD_REQUEST));
+    return next(new AppError(ERRORS.INVALID.MODEL_ID_UPDATE, STATUS_CODE.BAD_REQUEST));
   }
 
   if (!result) {

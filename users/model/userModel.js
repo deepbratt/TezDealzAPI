@@ -99,7 +99,7 @@ const userSchema = new mongoose.Schema(
       default: 'User',
       enum: {
         values: ['User', 'Moderator', 'Admin'],
-        message: 'Role Must be User, Moderator or Admin',
+        message: ERRORS.INVALID.ROLE_SIGNUP,
       },
     },
     // isVerified: {
