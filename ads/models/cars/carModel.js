@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const { ERRORS } = require('@constants/tdb-constants');
 const BodyType = require('../../models/cars/bodyTypes/bodyTypes');
+const Features = require('../../models/cars/features/featuresModel');
 // let carBodyType = async function () {
 //   const result = await BodyType.find().select('-_id');
 //   return result;
