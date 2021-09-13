@@ -20,6 +20,14 @@ services:
       - users
     networks:
       - ms_network
+  tickets:
+    build: './tickets'
+    ports:
+      - '3002:3002'
+    depends_on:
+      - users
+    networks:
+      - ms_network
   nginx:
     image: nginx:latest
     ports:
@@ -30,6 +38,7 @@ services:
       - users
       - ads
       - swagger
+      - tickets
     networks:
       - ms_network
 networks:

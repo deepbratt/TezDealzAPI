@@ -72,7 +72,111 @@ paths:
           description: 'Invalid input'
         '201':
           description: 'Account created Successfully'
+  /v1/tickets/techAssistance:
+    post:
+      tags:
+        - 'tickets'
+      summary: 'for technical assistance'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: ''
+          required: true
+          schema:
+            $ref: '#/definitions/techticket'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Created Successfully'
 
+  /v1/tickets/advAssistance:
+    post:
+      tags:
+        - 'tickets'
+      summary: 'for advertisement assistance'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Created Successfully'
+  /v1/tickets:
+    get:
+      tags:
+        - 'tickets'
+      summary: 'get All'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Operation Successfully'        
+  /v1/tickets/{id}:
+    get:
+      tags:
+        - 'tickets'
+      summary: 'getone ticket'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Operation Successfully'
+  /v1/tickets/:id:
+    patch:
+      tags:
+        - 'tickets'
+      summary: 'get tickets'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: ''
+          required: true
+          schema:
+            $ref: '#/definitions/ticketupdate'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'updated Successfully'
+  /v1/tickets/id:
+    delete:
+      tags:
+        - 'tickets'
+      summary: 'getone ticket'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Operation Successfull'
   /v1/Users/forgotPassword:
     post:
       tags:
@@ -1610,6 +1714,7 @@ definitions:
     properties:
       versions:
         type: 'object'
+<<<<<<< HEAD
   car-features:
     type: 'object'
     properties:
@@ -1617,3 +1722,19 @@ definitions:
         type: 'string'
       image:
         type: 'string'
+=======
+  techticket:
+    type: 'object'
+    properties:
+      email:
+        type: 'string'
+      phone:
+        type: 'string'
+      description:
+        type: 'string'          
+  ticketupdate:
+    type: 'object'
+    properties:
+      status: 
+        type: 'string'      
+>>>>>>> 6e9c077b0daf6b1b346a680b1c3430dd639331f0
