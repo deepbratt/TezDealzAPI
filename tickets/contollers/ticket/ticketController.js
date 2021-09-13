@@ -86,12 +86,37 @@ exports.deleteOne = catchAsync(async (req, res, next) => {
 });
 
 exports.updateOne = catchAsync(async (req, res, next) => {
-  const result = await Ticket.updateOne({ _id: req.params.id }, req.body);
-  res.status(STATUS_CODE.OK).json({
-    status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.UPDATE,
-    data: {
-      result,
-    },
-  });
+	const result = await Ticket.findByIdAndUpdate(req.params.id, req.body, { new: true });
+	if (!result) {
+		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	}
+	res.status(STATUS_CODE.OK).json({
+		status: STATUS.SUCCESS,
+		message: SUCCESS_MSG.SUCCESS_MESSAGES.UPDATE,
+		data: {
+			result,
+		},
+	});
+});
+
+exports.closeTicket = catchAsync(async (req, res, next) => {
+	const data = await Ticket.findOne({ _id: req.params.id, status: 'opened' });
+	if (!data) {
+		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	}
+	const result = await Ticket.findByIdAndUpdate(
+		req.params.id,
+		{
+			status: 'closed',
+			closedAt: new Date(),
+		},
+		{ new: true }
+	);
+	res.status(STATUS_CODE.OK).json({
+		status: STATUS.SUCCESS,
+		message: 'Ticket Closed successfully',
+		data: {
+			result,
+		},
+	});
 });

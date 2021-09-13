@@ -177,6 +177,21 @@ paths:
           description: 'Invalid input'
         '201':
           description: 'Operation Successfull'
+  /v1/tickets/close/{id}:
+    patch:
+      tags:
+        - 'tickets'
+      summary: 'ticket close'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Successfull'      
   /v1/Users/forgotPassword:
     post:
       tags:
