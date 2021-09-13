@@ -27,7 +27,7 @@ services:
     depends_on:
       - users
     networks:
-      - ms_network    
+      - ms_network
   nginx:
     image: nginx:latest
     ports:

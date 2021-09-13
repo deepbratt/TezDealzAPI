@@ -118,7 +118,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   await user.save();
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
-    message: 'Password changed successfully',
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.PASSWORD_CHANGED,
   });
 });
 

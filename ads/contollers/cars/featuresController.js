@@ -1,10 +1,20 @@
-const CarMake = require('../../models/cars/make-model/car_make');
-const { AppError, catchAsync } = require('@utils/tdb_globalutils');
+const Features = require('../../models/cars/features/featuresModel');
+const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
-const { filter } = require('../factory/factoryHandler');
 
-exports.createMake = catchAsync(async (req, res, next) => {
-  const result = await CarMake.create(req.body);
+exports.createFeature = catchAsync(async (req, res, next) => {
+  if (req.file) {
+    let { Location } = await uploadS3(
+      req.file,
+      process.env.AWS_BUCKET_REGION,
+      process.env.AWS_ACCESS_KEY,
+      process.env.AWS_SECRET_KEY,
+      process.env.AWS_BUCKET_NAME,
+    );
+    req.body.image = Location;
+  }
+
+  const result = await Features.create(req.body);
 
   if (!result) {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
@@ -17,25 +27,23 @@ exports.createMake = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getAllMakes = catchAsync(async (req, res, next) => {
-  const [result, totalCount] = await filter(CarMake.find(), req.query);
+exports.getAllFeatures = catchAsync(async (req, res, next) => {
+  const result = await Features.find();
 
-  if (result.length <= 0) {
+  if (!result || result.length <= 0) {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
 
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-    total: totalCount,
-    data: {
-      result,
-    },
+    total: result.length,
+    result,
   });
 });
 
-exports.getOneMake = catchAsync(async (req, res, next) => {
-  const result = await CarMake.findById(req.params.id);
+exports.getOneFeature = catchAsync(async (req, res, next) => {
+  const result = await Features.findById(req.params.id);
 
   if (!result) {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
@@ -48,29 +56,25 @@ exports.getOneMake = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.updateMake = catchAsync(async (req, res, next) => {
-  const result = await CarMake.findByIdAndUpdate(req.params.id, req.body, {
+exports.UpdateOneFeature = catchAsync(async (req, res, next) => {
+  const result = await Features.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
   });
 
-  if (req.body.make_id) {
-    return next(new AppError(ERRORS.INVALID.MAKE_ID_UPDATE, STATUS_CODE.BAD_REQUEST));
-  }
-
   if (!result) {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
 
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.UPDATE,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
     result,
   });
 });
 
-exports.deleteMake = catchAsync(async (req, res, next) => {
-  const result = await CarMake.findByIdAndDelete(req.params.id);
+exports.deleteFeature = catchAsync(async (req, res, next) => {
+  const result = await Features.findByIdAndDelete(req.params.id);
 
   if (!result) {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));

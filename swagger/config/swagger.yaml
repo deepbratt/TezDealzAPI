@@ -968,7 +968,7 @@ paths:
         '404':
           description: 'Not Found'
         '200':
-          description: 'top viewed cars in response'        
+          description: 'top viewed cars in response'
   # /v1/ads/cars/makes:
   #   get:
   #     tags:
@@ -1337,6 +1337,7 @@ paths:
           description: 'Invalid input'
         '200':
           description: 'Car model deleted Successfully'
+
   /v1/ads/cars/versions?model_id=1044:
     get:
       tags:
@@ -1404,6 +1405,109 @@ paths:
           description: 'Invalid input'
         '200':
           description: 'Car version removed Successfully'
+
+  /v1/ads/cars/features:
+    post:
+      tags:
+        - 'Car Features'
+      summary: 'used to create car feature'
+      description: 'used to create car feature'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'car feature'
+          required: true
+          schema:
+            $ref: '#/definitions/car-features'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Car feature created Successfully'
+  /v1/ads/cars/features//:
+    get:
+      tags:
+        - 'Car Features'
+      summary: 'used to get all car features'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'All Features in response'
+  /v1/ads/cars/features/id:
+    get:
+      tags:
+        - 'Car Features'
+      summary: 'used to get one car feature'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Return result againt id'
+  /v1/ads/cars/features/:id:
+    patch:
+      tags:
+        - 'Car Features'
+      summary: 'used to updated Car features'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'car features data'
+          required: true
+          schema:
+            $ref: '#/definitions/car-features'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car feature updated Successfully'
+  /v1/ads/cars/features/{id}:
+    delete:
+      tags:
+        - 'Car Features'
+      summary: 'used to delete Car feature'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car feature deleted Successfully'
 
   /v1/ads/cars/sold-cars-stats:
     get:
@@ -1604,6 +1708,8 @@ definitions:
     properties:
       bodyType:
         type: 'string'
+      image:
+        type: 'string'
   car-make:
     type: 'object'
     properties:
@@ -1623,6 +1729,15 @@ definitions:
     properties:
       versions:
         type: 'object'
+<<<<<<< HEAD
+  car-features:
+    type: 'object'
+    properties:
+      name:
+        type: 'string'
+      image:
+        type: 'string'
+=======
   techticket:
     type: 'object'
     properties:
@@ -1637,3 +1752,4 @@ definitions:
     properties:
       status: 
         type: 'string'      
+>>>>>>> 6e9c077b0daf6b1b346a680b1c3430dd639331f0

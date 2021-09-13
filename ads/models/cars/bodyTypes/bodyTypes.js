@@ -1,11 +1,15 @@
 const mongoose = require('mongoose');
-const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
+const { ERRORS } = require('@constants/tdb-constants');
 
 const bodyTypesSchema = new mongoose.Schema({
   bodyType: {
     type: String,
     unique: true,
-    required: [true, 'Body Type is required'],
+    required: [true, ERRORS.REQUIRED.BODY_TYPE],
+  },
+  image: {
+    type: String,
+    required: true,
   },
 });
 
