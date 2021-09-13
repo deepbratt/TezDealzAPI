@@ -86,7 +86,7 @@ exports.deleteOne = catchAsync(async (req, res, next) => {
 });
 
 exports.updateOne = catchAsync(async (req, res, next) => {
-	const result = await Ticket.findByIdAndUpdate(req.params.id, req.body);
+	const result = await Ticket.findByIdAndUpdate(req.params.id, req.body, { new: true });
 	if (!result) {
 		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 	}
@@ -104,10 +104,14 @@ exports.closeTicket = catchAsync(async (req, res, next) => {
 	if (!data) {
 		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 	}
-	const result = await Ticket.findByIdAndUpdate(req.params.id, {
-		status: 'closed',
-		closedAt: new Date(),
-	});
+	const result = await Ticket.findByIdAndUpdate(
+		req.params.id,
+		{
+			status: 'closed',
+			closedAt: new Date(),
+		},
+		{ new: true }
+	);
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: 'Ticket Closed successfully',
@@ -116,4 +120,3 @@ exports.closeTicket = catchAsync(async (req, res, next) => {
 		},
 	});
 });
-
