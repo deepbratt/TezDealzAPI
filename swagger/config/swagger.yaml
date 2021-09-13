@@ -1729,7 +1729,6 @@ definitions:
     properties:
       versions:
         type: 'object'
-<<<<<<< HEAD
   car-features:
     type: 'object'
     properties:
@@ -1737,7 +1736,6 @@ definitions:
         type: 'string'
       image:
         type: 'string'
-=======
   techticket:
     type: 'object'
     properties:
@@ -1752,4 +1750,3 @@ definitions:
     properties:
       status: 
         type: 'string'      
->>>>>>> 6e9c077b0daf6b1b346a680b1c3430dd639331f0
