@@ -150,7 +150,7 @@ const userSchema = new mongoose.Schema(
 			type: Boolean,
 			default: true,
 		},
-		ban: {
+		banned: {
 			type: Boolean,
 			default: false,
 		},
