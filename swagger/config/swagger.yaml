@@ -124,7 +124,7 @@ paths:
         '400':
           description: 'Invalid input'
         '201':
-          description: 'Operation Successfully'        
+          description: 'Operation Successfully'
   /v1/tickets/{id}:
     get:
       tags:
@@ -191,7 +191,7 @@ paths:
         '400':
           description: 'Invalid input'
         '201':
-          description: 'Successfull'      
+          description: 'Successfull'
   /v1/Users/forgotPassword:
     post:
       tags:
@@ -1540,6 +1540,22 @@ paths:
         '200':
           description: 'Return statistics of total and monthly sold cars by our platform'
 
+  /v1/ads/cars/owners-list:
+    get:
+      tags:
+        - 'Total Car Owners Data'
+      summary: 'Used to get all Data of car owners'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Not Found'
+        '200':
+          description: 'Return Data of all owners'
+
 definitions:
   signup:
     type: 'object'
@@ -1743,9 +1759,9 @@ definitions:
       phone:
         type: 'string'
       description:
-        type: 'string'          
+        type: 'string'
   ticketupdate:
     type: 'object'
     properties:
-      status: 
-        type: 'string'      
+      status:
+        type: 'string'
