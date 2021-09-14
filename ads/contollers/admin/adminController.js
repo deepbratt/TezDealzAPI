@@ -352,14 +352,3 @@ exports.carsSoldByPlatform = catchAsync(async (req, res, next) => {
 		},
 	});
 });
-
-exports.getUserCars = catchAsync(async (req, res, next) => {
-	const result = await Car.find({ createdBy: req.params.createdby });
-	if (result.length <= 0) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-	res.status(STATUS_CODE.OK).json({
-		status: STATUS.SUCCESS,
-		data: {
-			result,
-		},
-	});
-});

@@ -241,22 +241,6 @@ paths:
           description: 'Invalid or expired Token'
         '200':
           description: 'Password reset Successfully'
-  /v1/cars/by-user/:createdby:
-    get:
-      tags:
-        - 'Admin/Moderator'
-      summary: 'use to get All cars of Users'
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      responses:
-        '404':
-          description: 'No User Found'
-        '200':
-          description: 'List of all cars of User'
-
   /v1/Users/:
     get:
       tags:
