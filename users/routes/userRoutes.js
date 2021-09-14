@@ -76,7 +76,7 @@ router
 router
 	.route('/:id')
 	.get(adminController.getUser)
-	.patch(adminController.updateUserProfile)
+	.patch(upload('image').single('image'), adminController.updateUserProfile)
 	.delete(adminController.deleteUser);
 router
 	.route('/updateUserPassword/:id')
