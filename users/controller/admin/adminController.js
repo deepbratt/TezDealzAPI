@@ -1,7 +1,7 @@
 const Validator = require('email-validator');
 const User = require('../../model/userModel');
 const moment = require('moment');
-const { AppError, catchAsync } = require('@utils/tdb_globalutils');
+const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
 const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
 const { regex } = require('../../utils/regex');
 const { send } = require('../../utils/rabbitMQ');
