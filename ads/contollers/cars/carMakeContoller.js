@@ -13,7 +13,9 @@ exports.createMake = catchAsync(async (req, res, next) => {
   res.status(STATUS_CODE.CREATED).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.CREATED,
-    result,
+    data: {
+      result,
+    },
   });
 });
 
@@ -44,7 +46,9 @@ exports.getOneMake = catchAsync(async (req, res, next) => {
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-    result,
+    data: {
+      result,
+    },
   });
 });
 
@@ -65,7 +69,9 @@ exports.updateMake = catchAsync(async (req, res, next) => {
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.UPDATE,
-    result,
+    data: {
+      result,
+    },
   });
 });
 

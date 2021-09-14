@@ -14,7 +14,9 @@ exports.createModel = catchAsync(async (req, res, next) => {
   res.status(STATUS_CODE.CREATED).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.CREATED,
-    result,
+    data: {
+      result,
+    },
   });
 });
 
@@ -45,7 +47,9 @@ exports.getOneModel = catchAsync(async (req, res, next) => {
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-    result,
+    data: {
+      result,
+    },
   });
 });
 
@@ -66,6 +70,9 @@ exports.updateModel = catchAsync(async (req, res, next) => {
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.UPDATE,
+    data: {
+      result,
+    },
   });
 });
 
@@ -113,7 +120,9 @@ exports.addVersion = catchAsync(async (req, res, next) => {
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-    newValue,
+    data: {
+      newValue,
+    },
   });
 });
 
@@ -129,7 +138,9 @@ exports.removeVersion = catchAsync(async (req, res, next) => {
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-    newValue,
+    data: {
+      newValue,
+    },
   });
 });
 

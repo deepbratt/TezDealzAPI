@@ -20,6 +20,9 @@ const cacheExp = 30;
 const router = express.Router();
 // const { isCached } = require('../utils/redisCache');
 
+// OWNERS LIST
+router.route('/owners-list').get(adminController.getAllOwners);
+
 /**
  * Features Routes
  */

@@ -23,7 +23,9 @@ exports.createFeature = catchAsync(async (req, res, next) => {
   res.status(STATUS_CODE.CREATED).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.CREATED,
-    result,
+    data: {
+      result,
+    },
   });
 });
 
@@ -38,7 +40,9 @@ exports.getAllFeatures = catchAsync(async (req, res, next) => {
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
     total: result.length,
-    result,
+    data: {
+      result,
+    },
   });
 });
 
@@ -52,7 +56,9 @@ exports.getOneFeature = catchAsync(async (req, res, next) => {
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-    result,
+    data: {
+      result,
+    },
   });
 });
 
@@ -69,7 +75,9 @@ exports.UpdateOneFeature = catchAsync(async (req, res, next) => {
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-    result,
+    data: {
+      result,
+    },
   });
 });
 

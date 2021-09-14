@@ -275,9 +275,11 @@ exports.totalSoldCars = catchAsync(async (req, res, next) => {
   ]);
   res.status(200).json({
     status: STATUS.SUCCESS,
-    result: {
-      total: count[0].total.length > 0 ? count[0].total[0] : 0,
-      monthly: count[0].monthly.length > 0 ? count[0].monthly[0] : 0,
+    data: {
+      result: {
+        total: count[0].total.length > 0 ? count[0].total[0] : 0,
+        monthly: count[0].monthly.length > 0 ? count[0].monthly[0] : 0,
+      },
     },
   });
 });
@@ -346,9 +348,45 @@ exports.carsSoldByPlatform = catchAsync(async (req, res, next) => {
   ]);
   res.status(200).json({
     status: STATUS.SUCCESS,
-    result: {
-      total: percentage[0].total.length > 0 ? percentage[0].total[0] : 0,
-      monthly: percentage[0].monthly.length > 0 ? percentage[0].monthly[0] : 0,
+    data: {
+      result: {
+        total: percentage[0].total.length > 0 ? percentage[0].total[0] : 0,
+        monthly: percentage[0].monthly.length > 0 ? percentage[0].monthly[0] : 0,
+      },
+    },
+  });
+});
+
+exports.getAllOwners = catchAsync(async (req, res, next) => {
+  const result = await Car.aggregate([
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'createdBy',
+        foreignField: '_id',
+        as: 'user_doc',
+      },
+    },
+    {
+      $unwind: '$user_doc',
+    },
+    {
+      $group: {
+        _id: '$user_doc',
+      },
+    },
+  ]);
+
+  if (!result) {
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  }
+
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    total: result.length,
+    data: {
+      result,
     },
   });
 });
