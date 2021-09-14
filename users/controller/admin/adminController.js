@@ -1,7 +1,7 @@
 const Validator = require('email-validator');
 const User = require('../../model/userModel');
 const moment = require('moment');
-const { AppError, catchAsync } = require('@utils/tdb_globalutils');
+const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
 const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
 const { regex } = require('../../utils/regex');
 const { send } = require('../../utils/rabbitMQ');
@@ -211,14 +211,14 @@ exports.activeUser = catchAsync(async (req, res, next) => {
 });
 
 exports.unbanUser = catchAsync(async (req, res, next) => {
-	const result = await User.findOne({ _id: req.params.id, ban: true });
+	const result = await User.findOne({ _id: req.params.id, banned: true });
 	if (!result) {
 		return next(new AppError(ERRORS.INVALID.UNBAN_USER, STATUS_CODE.BAD_REQUEST));
 	}
 	if (req.user.role !== 'Admin' && result.role !== 'User') {
 		return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
 	}
-	await User.updateOne({ _id: req.params.id }, { ban: false });
+	await User.updateOne({ _id: req.params.id }, { banned: false });
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.UNBANNED_USER,
@@ -226,14 +226,14 @@ exports.unbanUser = catchAsync(async (req, res, next) => {
 });
 
 exports.banUser = catchAsync(async (req, res, next) => {
-	const result = await User.findOne({ _id: req.params.id, ban: false });
+	const result = await User.findOne({ _id: req.params.id, banned: false });
 	if (!result) {
 		return next(new AppError(ERRORS.INVALID.BAN_USER, STATUS_CODE.BAD_REQUEST));
 	}
 	if (req.user.role !== 'Admin' && result.role !== 'User') {
 		return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
 	}
-	await User.updateOne({ _id: req.params.id }, { ban: true });
+	await User.updateOne({ _id: req.params.id }, { banned: true });
 	send('inactive_user', JSON.stringify({ createdBy: req.params.id }));
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,

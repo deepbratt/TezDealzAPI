@@ -150,7 +150,7 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    ban: {
+    banned: {
       type: Boolean,
       default: false,
     },
@@ -170,6 +170,8 @@ userSchema.index({
   lastName: 'text',
   email: 'text',
   username: 'text',
+  phone: 'text',
+  role: 'text',
 });
 
 //pre save middleware (runs before data saved to db)
