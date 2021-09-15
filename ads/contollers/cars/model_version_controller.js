@@ -1,147 +1,159 @@
 const CarModel = require('../../models/cars/make-model/car_model_version');
 const { AppError, catchAsync } = require('@utils/tdb_globalutils');
-const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
+const {
+	STATUS,
+	STATUS_CODE,
+	SUCCESS_MSG,
+	ERRORS,
+} = require('@constants/tdb-constants');
 const { filter } = require('../factory/factoryHandler');
 
 // MODELS
 exports.createModel = catchAsync(async (req, res, next) => {
-  const result = await CarModel.create(req.body);
+	const result = await CarModel.create(req.body);
 
-  if (!result) {
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-  }
+	if (!result) {
+		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	}
 
-  res.status(STATUS_CODE.CREATED).json({
-    status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.CREATED,
-    data: {
-      result,
-    },
-  });
+	res.status(STATUS_CODE.CREATED).json({
+		status: STATUS.SUCCESS,
+		message: SUCCESS_MSG.SUCCESS_MESSAGES.CREATED,
+		data: {
+			result,
+		},
+	});
 });
 
 exports.getAllModels = catchAsync(async (req, res, next) => {
-  const [result, totalCount] = await filter(CarModel.find().select('-versions'), req.query);
+	const [result, totalCount] = await filter(
+		CarModel.find().select('-versions'),
+		req.query
+	);
 
-  if (result.length <= 0) {
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-  }
+	if (result.length <= 0) {
+		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	}
 
-  res.status(STATUS_CODE.OK).json({
-    status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-    total: totalCount,
-    data: {
-      result,
-    },
-  });
+	res.status(STATUS_CODE.OK).json({
+		status: STATUS.SUCCESS,
+		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+		total: totalCount,
+		data: {
+			result,
+		},
+	});
 });
 
 exports.getOneModel = catchAsync(async (req, res, next) => {
-  const result = await CarModel.findById(req.params.id);
+	const result = await CarModel.findById(req.params.id);
 
-  if (!result) {
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-  }
+	if (!result) {
+		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	}
 
-  res.status(STATUS_CODE.OK).json({
-    status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-    data: {
-      result,
-    },
-  });
+	res.status(STATUS_CODE.OK).json({
+		status: STATUS.SUCCESS,
+		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+		data: {
+			result,
+		},
+	});
 });
 
 exports.updateModel = catchAsync(async (req, res, next) => {
-  const result = await CarModel.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+	const result = await CarModel.findByIdAndUpdate(req.params.id, req.body, {
+		new: true,
+		runValidators: true,
+	});
 
-  if (req.body.model_id) {
-    return next(new AppError(ERRORS.INVALID.MODEL_ID_UPDATE, STATUS_CODE.BAD_REQUEST));
-  }
+	if (req.body.model_id) {
+		return next(
+			new AppError(ERRORS.INVALID.MODEL_ID_UPDATE, STATUS_CODE.BAD_REQUEST)
+		);
+	}
 
-  if (!result) {
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-  }
+	if (!result) {
+		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	}
 
-  res.status(STATUS_CODE.OK).json({
-    status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.UPDATE,
-    data: {
-      result,
-    },
-  });
+	res.status(STATUS_CODE.OK).json({
+		status: STATUS.SUCCESS,
+		message: SUCCESS_MSG.SUCCESS_MESSAGES.UPDATE,
+		data: {
+			result,
+		},
+	});
 });
 
 exports.deleteModel = catchAsync(async (req, res, next) => {
-  const result = await CarModel.findByIdAndDelete(req.params.id);
+	const result = await CarModel.findByIdAndDelete(req.params.id);
 
-  if (!result) {
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-  }
+	if (!result) {
+		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	}
 
-  res.status(STATUS_CODE.OK).json({
-    status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.DELETE,
-  });
+	res.status(STATUS_CODE.OK).json({
+		status: STATUS.SUCCESS,
+		message: SUCCESS_MSG.SUCCESS_MESSAGES.DELETE,
+	});
 });
 
 // VERSIONS //////////////////////////////////
 exports.getVersions = catchAsync(async (req, res, next) => {
-  const [result, totalCount] = await filter(CarModel.find(), req.query);
-  // if (result[0].versions.length <= 0) {
-  //   return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-  // }
-  if (result.length <= 0) {
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-  }
-  res.status(STATUS_CODE.OK).json({
-    status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-    total: result[0].versions.length,
-    data: {
-      result: result[0].versions,
-    },
-  });
+	const [result, totalCount] = await filter(CarModel.find(), req.query);
+	// if (result[0].versions.length <= 0) {
+	//   return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	// }
+	if (result.length <= 0) {
+		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	}
+	res.status(STATUS_CODE.OK).json({
+		status: STATUS.SUCCESS,
+		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+		total: result[0].versions.length,
+		data: {
+			result: result[0].versions,
+		},
+	});
 });
 
 exports.addVersion = catchAsync(async (req, res, next) => {
-  let result;
-  result = await CarModel.findOne({ model_id: req.query.model_id }, req.query);
-  if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	let result;
+	result = await CarModel.findOne({ model_id: req.query.model_id }, req.query);
+	if (!result)
+		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
-  const newValue = await CarModel.updateOne(
-    { model_id: req.query.model_id },
-    { $push: { versions: req.body.versions } },
-  );
-  res.status(STATUS_CODE.OK).json({
-    status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-    data: {
-      newValue,
-    },
-  });
+	const newValue = await CarModel.updateOne(
+		{ model_id: req.query.model_id },
+		{ $push: { versions: req.body.versions } }
+	);
+	res.status(STATUS_CODE.OK).json({
+		status: STATUS.SUCCESS,
+		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+		data: {
+			newValue,
+		},
+	});
 });
 
 exports.removeVersion = catchAsync(async (req, res, next) => {
-  let result;
-  result = await CarModel.findOne({ model_id: req.query.model_id }, req.query);
-  if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	let result;
+	result = await CarModel.findOne({ model_id: req.query.model_id }, req.query);
+	if (!result)
+		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
-  const newValue = await CarModel.updateOne(
-    { model_id: req.query.model_id },
-    { $pull: { versions: req.body.versions } },
-  );
-  res.status(STATUS_CODE.OK).json({
-    status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-    data: {
-      newValue,
-    },
-  });
+	const newValue = await CarModel.updateOne(
+		{ model_id: req.query.model_id },
+		{ $pull: { versions: req.body.versions } }
+	);
+	res.status(STATUS_CODE.OK).json({
+		status: STATUS.SUCCESS,
+		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+		data: {
+			newValue,
+		},
+	});
 });
 
 // exports.createMakeModel = catchAsync(async (req, res, next) => {
