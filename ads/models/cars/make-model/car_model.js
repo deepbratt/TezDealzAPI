@@ -23,18 +23,18 @@ const carModels = new mongoose.Schema({
   }
 );
 
-// carModels.pre('save', async function (next) {
-// 	let randomNumber;
-// 	do {
-// 		randomNumber = Math.floor(Math.random() * (999 - 10) + 10);
-// 	} while (
-// 		await CarModel.findOne({
-// 			model_id: randomNumber,
-// 		})
-// 	);
-// 	this.model_id = randomNumber;
-// 	return randomNumber;
-// });
+carModels.pre('save', async function (next) {
+	let randomNumber;
+	do {
+		randomNumber = Math.floor(Math.random() * (999 - 10) + 10);
+	} while (
+		await CarModel.findOne({
+			model_id: randomNumber,
+		})
+	);
+	this.model_id = randomNumber;
+	return randomNumber;
+});
 
 const CarModel = mongoose.model('CarModel', carModels);
 module.exports = CarModel;

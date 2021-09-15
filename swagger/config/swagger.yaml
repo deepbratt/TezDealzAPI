@@ -1337,7 +1337,7 @@ paths:
         '200':
           description: 'Car model deleted Successfully'
 
-  /v1/ads/cars/versions:
+  /v1/ads/cars/versions?model_id=47:
     get:
       tags:
         - 'Car Versions'

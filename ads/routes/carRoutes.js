@@ -178,7 +178,7 @@ router
 	.post(
 		authenticate(User),
 		restrictTo('Admin', 'Moderator'),
-		carModelVersionController.createModel
+		carModelController.createModel
 	);
 router
 	.route('/models/:id')
