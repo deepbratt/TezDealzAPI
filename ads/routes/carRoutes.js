@@ -34,11 +34,7 @@ router
  */
 router
 	.route('/features')
-	.get(
-		authenticate(User),
-		restrictTo('Admin', 'Moderator'),
-		featuresController.getAllFeatures
-	)
+	.get(featuresController.getAllFeatures)
 	.post(
 		authenticate(User),
 		restrictTo('Admin', 'Moderator'),
@@ -86,11 +82,7 @@ router
 //       CAR BODYTYPES //
 router
 	.route('/body-types')
-	.get(
-		authenticate(User),
-		restrictTo('Admin', 'Moderator'),
-		bodyTypeController.getAllBodyTypes
-	)
+	.get(bodyTypeController.getAllBodyTypes)
 	.post(
 		authenticate(User),
 		restrictTo('Admin', 'Moderator'),
@@ -158,12 +150,7 @@ router
 // Car Makes
 router
 	.route('/makes')
-	.get(
-		authenticate(User),
-		restrictTo('Admin', 'Moderator'),
-		cache(cacheExp),
-		carMakeController.getAllMakes
-	)
+	.get(cache(cacheExp), carMakeController.getAllMakes)
 	.post(
 		authenticate(User),
 		restrictTo('Admin', 'Moderator'),
@@ -171,12 +158,7 @@ router
 	);
 router
 	.route('/makes/:id')
-	.get(
-		authenticate(User),
-		restrictTo('Admin', 'Moderator'),
-		cache(cacheExp),
-		carMakeController.getOneMake
-	)
+	.get(cache(cacheExp), carMakeController.getOneMake)
 	.patch(
 		authenticate(User),
 		restrictTo('Admin', 'Moderator'),
@@ -191,11 +173,7 @@ router
 // models with specific make.
 router
 	.route('/models')
-	.get(
-		authenticate(User),
-		restrictTo('Admin', 'Moderator'),
-		carModelVersionController.getAllModels
-	)
+	.get(carModelVersionController.getAllModels)
 	.post(
 		authenticate(User),
 		restrictTo('Admin', 'Moderator'),
@@ -203,11 +181,7 @@ router
 	);
 router
 	.route('/models/:id')
-	.get(
-		authenticate(User),
-		restrictTo('Admin', 'Moderator'),
-		carModelVersionController.getOneModel
-	)
+	.get(carModelVersionController.getOneModel)
 	.patch(
 		authenticate(User),
 		restrictTo('Admin', 'Moderator'),
@@ -220,12 +194,7 @@ router
 	);
 
 // Versions
-router.get(
-	'/versions',
-	authenticate(User),
-	restrictTo('Admin', 'Moderator'),
-	carModelVersionController.getVersions
-);
+router.get('/versions', carModelVersionController.getVersions);
 router.patch(
 	'/add-versions',
 	authenticate(User),
