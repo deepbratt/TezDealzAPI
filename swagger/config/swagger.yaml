@@ -1352,6 +1352,21 @@ paths:
           description: 'Not Found'
         '200':
           description: 'versions'
+  /v1/ads/cars/versions/:id:
+    get:
+      tags:
+        - 'Car Versions'
+      summary: 'Use to get one version'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'versions'        
   /v1/ads/cars/add-versions:
     post:
       tags:
