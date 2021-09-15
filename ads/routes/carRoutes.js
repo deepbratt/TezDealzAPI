@@ -208,7 +208,7 @@ router.patch(
 	restrictTo('Admin', 'Moderator'),
 	carVersionController.updateVersion
 );
-router.patch(
+router.delete(
 	'/remove-versions/:id',
 	authenticate(User),
 	restrictTo('Admin', 'Moderator'),
