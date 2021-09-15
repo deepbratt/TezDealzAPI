@@ -1,4 +1,4 @@
-const CarModel = require('../../models/cars/make-model/car_model_version');
+const CarModel = require('../../models/cars/make-model/car_model');
 const { AppError, catchAsync } = require('@utils/tdb_globalutils');
 const {
 	STATUS,
@@ -12,10 +12,6 @@ const { filter } = require('../factory/factoryHandler');
 exports.createModel = catchAsync(async (req, res, next) => {
 	const result = await CarModel.create(req.body);
 
-	if (!result) {
-		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-	}
-
 	res.status(STATUS_CODE.CREATED).json({
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.CREATED,
@@ -26,10 +22,7 @@ exports.createModel = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllModels = catchAsync(async (req, res, next) => {
-	const [result, totalCount] = await filter(
-		CarModel.find().select('-versions'),
-		req.query
-	);
+	const [result, totalCount] = await filter(CarModel.find(), req.query);
 
 	if (result.length <= 0) {
 		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
@@ -39,6 +32,7 @@ exports.getAllModels = catchAsync(async (req, res, next) => {
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
 		total: totalCount,
+		countOnpage: result.length,
 		data: {
 			result,
 		},
@@ -96,63 +90,6 @@ exports.deleteModel = catchAsync(async (req, res, next) => {
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.DELETE,
-	});
-});
-
-// VERSIONS //////////////////////////////////
-exports.getVersions = catchAsync(async (req, res, next) => {
-	const [result, totalCount] = await filter(CarModel.find(), req.query);
-	// if (result[0].versions.length <= 0) {
-	//   return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-	// }
-	if (result.length <= 0) {
-		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-	}
-	res.status(STATUS_CODE.OK).json({
-		status: STATUS.SUCCESS,
-		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-		total: result[0].versions.length,
-		data: {
-			result: result[0].versions,
-		},
-	});
-});
-
-exports.addVersion = catchAsync(async (req, res, next) => {
-	let result;
-	result = await CarModel.findOne({ model_id: req.query.model_id }, req.query);
-	if (!result)
-		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-
-	const newValue = await CarModel.updateOne(
-		{ model_id: req.query.model_id },
-		{ $push: { versions: req.body.versions } }
-	);
-	res.status(STATUS_CODE.OK).json({
-		status: STATUS.SUCCESS,
-		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-		data: {
-			newValue,
-		},
-	});
-});
-
-exports.removeVersion = catchAsync(async (req, res, next) => {
-	let result;
-	result = await CarModel.findOne({ model_id: req.query.model_id }, req.query);
-	if (!result)
-		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-
-	const newValue = await CarModel.updateOne(
-		{ model_id: req.query.model_id },
-		{ $pull: { versions: req.body.versions } }
-	);
-	res.status(STATUS_CODE.OK).json({
-		status: STATUS.SUCCESS,
-		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-		data: {
-			newValue,
-		},
 	});
 });
 

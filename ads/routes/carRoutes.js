@@ -1,7 +1,8 @@
 const express = require('express');
 const User = require('../models/user/userModel');
 const carController = require('../contollers/cars/carController');
-const carModelVersionController = require('../contollers/cars/model_version_controller');
+const carModelController = require('../contollers/cars/modelController');
+const carVersionController = require('../contollers/cars/versionController');
 const adminController = require('../contollers/admin/adminController');
 const bodyTypeController = require('../contollers/cars/bodyTypesController');
 const carMakeController = require('../contollers/cars/carMakeContoller');
@@ -173,7 +174,7 @@ router
 // models with specific make.
 router
 	.route('/models')
-	.get(carModelVersionController.getAllModels)
+	.get(carModelController.getAllModels)
 	.post(
 		authenticate(User),
 		restrictTo('Admin', 'Moderator'),
@@ -181,31 +182,37 @@ router
 	);
 router
 	.route('/models/:id')
-	.get(carModelVersionController.getOneModel)
+	.get(carModelController.getOneModel)
 	.patch(
 		authenticate(User),
 		restrictTo('Admin', 'Moderator'),
-		carModelVersionController.updateModel
+		carModelController.updateModel
 	)
 	.delete(
 		authenticate(User),
 		restrictTo('Admin', 'Moderator'),
-		carModelVersionController.deleteModel
+		carModelController.deleteModel
 	);
 
 // Versions
-router.get('/versions', carModelVersionController.getVersions);
-router.patch(
+router.get('/versions', carVersionController.getVersions);
+router.post(
 	'/add-versions',
 	authenticate(User),
 	restrictTo('Admin', 'Moderator'),
-	carModelVersionController.addVersion
+	carVersionController.addVersion
 );
 router.patch(
-	'/remove-versions',
+	'/update-versions/:id',
 	authenticate(User),
 	restrictTo('Admin', 'Moderator'),
-	carModelVersionController.removeVersion
+	carVersionController.updateVersion
+);
+router.patch(
+	'/remove-versions/:id',
+	authenticate(User),
+	restrictTo('Admin', 'Moderator'),
+	carVersionController.removeVersion
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
