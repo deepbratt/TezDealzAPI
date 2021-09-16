@@ -204,7 +204,7 @@ const carsSchema = new mongoose.Schema(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  },
+  }
 );
 
 carsSchema.index({

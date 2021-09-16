@@ -1234,7 +1234,7 @@ paths:
         '200':
           description: 'Car make deleted Successfully'
 
-  /v1/ads/cars/models//:
+  /v1/ads/cars/models:
     post:
       tags:
         - 'Car Models'
@@ -1337,7 +1337,7 @@ paths:
         '200':
           description: 'Car model deleted Successfully'
 
-  /v1/ads/cars/versions?model_id=1044:
+  /v1/ads/cars/versions?model_id=47:
     get:
       tags:
         - 'Car Versions'
@@ -1352,8 +1352,23 @@ paths:
           description: 'Not Found'
         '200':
           description: 'versions'
-  /v1/ads/cars/add-versions?model_id=749:
-    patch:
+  /v1/ads/cars/versions/:id:
+    get:
+      tags:
+        - 'Car Versions'
+      summary: 'Use to get one version'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'versions'        
+  /v1/ads/cars/add-versions:
+    post:
       tags:
         - 'Car Versions'
       summary: 'used to add Car version'
@@ -1378,8 +1393,34 @@ paths:
           description: 'Not Found'
         '200':
           description: 'Car version added Successfully'
-  /v1/ads/cars/remove-versions?model_id=749:
+  /v1/ads/cars/update-versions/:id:
     patch:
+      tags:
+        - 'Car Versions'
+      summary: 'used to add Car version'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'car version '
+          required: true
+          schema:
+            $ref: '#/definitions/car-version'
+      responses:
+        '400':
+          description: 'Not Found'
+        '200':
+          description: 'Car version added Successfully'        
+  /v1/ads/cars/remove-versions/:id:
+    delete:
       tags:
         - 'Car Versions'
       summary: 'used to remove Car version'
@@ -1393,12 +1434,6 @@ paths:
           name: 'id'
           required: true
           type: 'string'
-        - in: 'body'
-          name: 'body'
-          description: 'car version data'
-          required: true
-          schema:
-            $ref: '#/definitions/car-version'
       responses:
         '400':
           description: 'Invalid input'
@@ -1742,8 +1777,16 @@ definitions:
   car-version:
     type: 'object'
     properties:
-      versions:
-        type: 'object'
+      model_id:
+        type: 'number'
+      name: 
+        type: 'string'
+      capacity: 
+        type: 'number'
+      fuel_type: 
+        type: 'string' 
+      transmission_type: 
+        type: 'string'           
   car-features:
     type: 'object'
     properties:
