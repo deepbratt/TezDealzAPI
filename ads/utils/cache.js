@@ -45,7 +45,4 @@ module.exports = (duration) => async (req, res, next) => {
 		};
 		next();
 	}
-	client.quit(function (err, succeeded) {
-		console.log(succeeded); // will be true if successfull
-	});
 };
