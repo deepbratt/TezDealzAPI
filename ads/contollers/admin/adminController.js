@@ -1,4 +1,5 @@
 const Car = require('../../models/cars/carModel');
+const User = require('../../models/user/userModel');
 // const moment = require('moment');
 const { AppError, catchAsync } = require('@utils/tdb_globalutils');
 const {
@@ -7,6 +8,7 @@ const {
 	SUCCESS_MSG,
 	ERRORS,
 } = require('@constants/tdb-constants');
+const { filter } = require('../factory/factoryHandler');
 
 exports.carOwners = catchAsync(async (req, res, next) => {
 	const count = await Car.aggregate([
@@ -372,33 +374,22 @@ exports.carsSoldByPlatform = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllOwners = catchAsync(async (req, res, next) => {
-	const result = await Car.aggregate([
-		{
-			$lookup: {
-				from: 'users',
-				localField: 'createdBy',
-				foreignField: '_id',
-				as: 'user_doc',
-			},
-		},
-		{
-			$unwind: '$user_doc',
-		},
-		{
-			$group: {
-				_id: '$user_doc',
-			},
-		},
-	]);
+	const seller = await Car.distinct('createdBy');
+	console.log(seller);
+	const [result, totalCount] = await filter(
+		User.find({ _id: { $in: [...seller] } }),
+		req.query
+	);
 
-	if (!result) {
+	if (result.length <= 0) {
 		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 	}
 
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-		total: result.length,
+		totalCount: totalCount,
+		countOnPage: result.length,
 		data: {
 			result,
 		},
