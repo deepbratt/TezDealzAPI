@@ -108,7 +108,10 @@ exports.getOne = catchAsync(async (req, res, next) => {
 	if (!result.active || result.banned) {
 		if (req.user) {
 			const currentUser = req.user._id;
-			if (req.user.role === 'User' && !currentUser.equals(result.createdBy)) {
+			if (req.user.role === 'User' && !currentUser.equals(result.createdBy._id)) {
+				console.log('here');
+				console.log(currentUser);
+				console.log(result.createdBy);
 				return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 			}
 		} else {
