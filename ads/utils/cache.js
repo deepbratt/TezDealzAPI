@@ -1,21 +1,21 @@
 const redis = require('redis');
 const { promisify } = require('util');
-const client = redis.createClient({
-	host: 'us1-mint-spaniel-34776.upstash.io',
-	port: '34776',
-	password: '5d8d4327a75846eeab92d8a6666c8507',
-	tls: {},
-});
-client.on('error', function (err) {
-	console.log(err);
-});
-
-const GET_ASYNC = promisify(client.get).bind(client);
-const SET_ASYNC = promisify(client.set).bind(client);
-
 //const cache = new NodeCache();
 
 module.exports = (duration) => async (req, res, next) => {
+	const client = redis.createClient({
+		host: 'us1-mint-spaniel-34776.upstash.io',
+		port: '34776',
+		password: '5d8d4327a75846eeab92d8a6666c8507',
+		tls: {},
+	});
+	client.on('error', function (err) {
+		console.log(err);
+	});
+
+	const GET_ASYNC = promisify(client.get).bind(client);
+	const SET_ASYNC = promisify(client.set).bind(client);
+
 	if (req.method !== 'GET') {
 		client.flushdb(function (err, succeeded) {
 			console.log(succeeded); // will be true if successfull
@@ -43,6 +43,9 @@ module.exports = (duration) => async (req, res, next) => {
 			await SET_ASYNC(key, JSON.stringify(body), 'EX', duration);
 			//cache.set(key, body, duration);
 		};
+		client.quit(function (err, succeeded) {
+			console.log(succeeded); // will be true if successfull
+		});
 		next();
 	}
 };
