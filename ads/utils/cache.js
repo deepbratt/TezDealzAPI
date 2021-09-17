@@ -43,9 +43,9 @@ module.exports = (duration) => async (req, res, next) => {
 			await SET_ASYNC(key, JSON.stringify(body), 'EX', duration);
 			//cache.set(key, body, duration);
 		};
-		client.quit(function (err, succeeded) {
-			console.log(succeeded); // will be true if successfull
-		});
 		next();
 	}
+	client.quit(function (err, succeeded) {
+		console.log(succeeded); // will be true if successfull
+	});
 };
