@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const db = process.env.NODE_ENV === 'production' ? process.env.DB_LOCAL : process.env.DB_LOCAL;
+const db = process.env.NODE_ENV === 'production' ? process.env.DB_LOCAL : process.env.DB_REMOTE;
 
 const dbConnect = async () => {
   try {
