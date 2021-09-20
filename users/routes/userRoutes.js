@@ -6,14 +6,14 @@ const userController = require('../controller/user/userController');
 const adminController = require('../controller/admin/adminController');
 
 const {
-	changePassword,
-	validationFunction,
-	signupRules,
-	addUser,
-	//   signupEmailRules,
-	//   signupPhoneRules,
-	//   continueGoogleRules,
-	//   continueFaceBookRules,
+  changePassword,
+  validationFunction,
+  signupRules,
+  addUser,
+  //   signupEmailRules,
+  //   signupPhoneRules,
+  //   continueGoogleRules,
+  //   continueFaceBookRules,
 } = require('../utils/validations');
 const { upload } = require('@utils/tdb_globalutils');
 
@@ -24,17 +24,17 @@ router.post('/admin-panel-login', authController.adminPanellogin);
 router.post('/forgotPassword', authController.forgotPassword);
 
 router.patch(
-	'/resetPassword/:token',
-	changePassword,
-	validationFunction,
-	authController.resetPassword
+  '/resetPassword/:token',
+  changePassword,
+  validationFunction,
+  authController.resetPassword,
 );
 
 // authenticate route
 router.use(authenticate(User));
 
-//Add User, Moderators or Admins by Admin
-//router.post('/create-user', restrictTo('Admin', 'Moderator'), adminController.signupByAdmin);
+// Add User, Moderators or Admins by Admin
+router.post('/create-user', restrictTo('Admin', 'Moderator'), adminController.createUser);
 
 // Update Current User's Password
 router.patch('/updateMyPassword', validationFunction, authController.updatePassword);
@@ -63,24 +63,24 @@ router.route('/currentUser').get(authController.isLoggedIn);
 // Statistcs of Users
 router.route('/stats').get(restrictTo('Admin', 'Moderator'), adminController.userStats);
 router
-	.route('/daily-stats/:min/:max')
-	.get(restrictTo('Admin', 'Moderator'), adminController.dailyUserAggregate);
+  .route('/daily-stats/:min/:max')
+  .get(restrictTo('Admin', 'Moderator'), adminController.dailyUserAggregate);
 
 // Only accessibe by Admin and Moderator
 router.use(restrictTo('Admin', 'Moderator'));
 
 router
-	.route('/')
-	.get(adminController.getAllUsers)
-	.post(addUser, validationFunction, adminController.createUser);
+  .route('/')
+  .get(adminController.getAllUsers)
+  .post(addUser, validationFunction, adminController.createUser);
 router
-	.route('/:id')
-	.get(adminController.getUser)
-	.patch(upload('image').single('image'), adminController.updateUserProfile)
-	.delete(adminController.deleteUser);
+  .route('/:id')
+  .get(adminController.getUser)
+  .patch(upload('image').single('image'), adminController.updateUserProfile)
+  .delete(adminController.deleteUser);
 router
-	.route('/updateUserPassword/:id')
-	.patch(changePassword, validationFunction, adminController.updatePassword);
+  .route('/updateUserPassword/:id')
+  .patch(changePassword, validationFunction, adminController.updatePassword);
 
 // Google Authentication Route
 // router.post('/google-auth', continueGoogleRules, validationFunction, authController.continueGoogle);
