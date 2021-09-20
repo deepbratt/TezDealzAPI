@@ -6,6 +6,7 @@ const {
 	SUCCESS_MSG,
 	ERRORS,
 } = require('@constants/tdb-constants');
+const { filter } = require('../factory/factoryHandler');
 
 exports.createBodyType = catchAsync(async (req, res, next) => {
 	if (req.file) {
@@ -35,15 +36,16 @@ exports.createBodyType = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllBodyTypes = catchAsync(async (req, res, next) => {
-	const result = await BodyType.find();
+	const [result, totalCount] = await filter(BodyType.find(), req.query);
 
-	if (!result)
+	if (result.length <= 0) {
 		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-
+	}
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-		total: result.length,
+		countOnPage: result.length,
+		totalCount: totalCount,
 		data: {
 			result,
 		},

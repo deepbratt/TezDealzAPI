@@ -15,7 +15,10 @@ const ticketSchema = new mongoose.Schema(
 		},
 		phone: {
 			type: String,
-			validate: [validator.isMobilePhone, ERRORS.INVALID.INVALID_SIGNUP_CREDENTIALS],
+			validate: [
+				validator.isMobilePhone,
+				ERRORS.INVALID.INVALID_SIGNUP_CREDENTIALS,
+			],
 		},
 		type: {
 			type: String,
@@ -43,6 +46,13 @@ const ticketSchema = new mongoose.Schema(
 		timestamps: true,
 	}
 );
+
+ticketSchema.index({
+	phone: 'text',
+	email: 'text',
+	status: 'text',
+	type: 'text',
+});
 
 const Ticket = mongoose.model('Ticket', ticketSchema);
 module.exports = Ticket;

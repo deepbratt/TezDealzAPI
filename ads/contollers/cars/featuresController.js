@@ -6,6 +6,7 @@ const {
 	SUCCESS_MSG,
 	ERRORS,
 } = require('@constants/tdb-constants');
+const { filter } = require('../factory/factoryHandler');
 
 exports.createFeature = catchAsync(async (req, res, next) => {
 	if (req.file) {
@@ -35,16 +36,17 @@ exports.createFeature = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllFeatures = catchAsync(async (req, res, next) => {
-	const result = await Features.find();
+	const [result, totalCount] = await filter(Features.find(), req.query);
 
-	if (!result || result.length <= 0) {
+	if (result.length <= 0) {
 		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 	}
 
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-		total: result.length,
+		totalCount: totalCount,
+		countOnpage: result.length,
 		data: {
 			result,
 		},

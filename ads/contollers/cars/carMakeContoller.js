@@ -34,7 +34,8 @@ exports.getAllMakes = catchAsync(async (req, res, next) => {
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-		total: totalCount,
+		countOnPage: result.length,
+		totalCount: totalCount,
 		data: {
 			result,
 		},

@@ -9,38 +9,35 @@ require('./config/dbConnection')(); // db connection
 
 const { errorHandler, AppError } = require('@utils/tdb_globalutils');
 
-const ticketRoutes = require('./constants/consts').routeConsts.ticketRoute;
-const ticketRouter = require('./routes/ticketRoutes');
+const receivers = require('./utils/rabbitMq');
 
-const PORT = 3002; // port
+const adsRoutes = require('./constants/consts').routeConsts.carRoutes;
+const adsRouter = require('./routes/carRoutes');
+
 const app = express();
 
 // CORS
 app.use(cors());
-
+app.options('*', cors());
 app.use(morgan('dev'));
 
 // GLOBAL MIDDLEWARES
 app.use(express.json()); // body parser (reading data from body to req.body)
 //app.use(cookieParser()); // cookie parser (reading data from cookie to req.cookie)
 app.use(
-  session({
-    signed: false,
-  }),
+	session({
+		signed: false,
+	})
 );
 
 app.use(compression());
-
 //routes
-app.use(ticketRoutes, ticketRouter);
+receivers.userbanReceiver();
+app.use(adsRoutes, adsRouter);
 app.all('*', (req, res, next) => {
-  next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
+	next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
 });
 
 app.use(errorHandler);
-
-app.listen(PORT, () => {
-  console.log(`listening on ${PORT}`);
-});
 
 module.exports = app;
