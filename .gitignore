@@ -1,10 +1,6 @@
-_/node_modules
-_/importData
-test
-
-_/node_modules
-_/tests
-\*/importData
+*/node_modules
+*/tests
+*/importData
 
 # Logs
 
