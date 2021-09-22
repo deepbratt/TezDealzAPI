@@ -175,10 +175,12 @@ const carsSchema = new mongoose.Schema(
     isSold: {
       type: Boolean,
       default: false,
+      index: true,
     },
     active: {
       type: Boolean,
       default: true,
+      index: true,
     },
     sellerType: {
       type: String,
@@ -191,6 +193,7 @@ const carsSchema = new mongoose.Schema(
     banned: {
       type: Boolean,
       default: false,
+      index: true,
     },
     imageStatus: {
       type: Boolean,
@@ -204,8 +207,10 @@ const carsSchema = new mongoose.Schema(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 );
+
+carsSchema.index({ active: -1, isSold: 1, banned: 1 });
 
 carsSchema.index({
   country: 'text',
