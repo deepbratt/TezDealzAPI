@@ -1,0 +1,1810 @@
+swagger: '2.0'
+info:
+  description: 'TezDeals Api Documentation'
+  version: '1.0.0'
+  title: 'TezDeals'
+paths:
+  /v1/Users/admin-panel-login:
+    post:
+      tags:
+        - 'login'
+      summary: 'use foradmin-panel-login email or Phone or username'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'User can login with email or phone or username'
+          required: true
+          schema:
+            $ref: '#/definitions/login'
+      responses:
+        '400':
+          description: 'email or phone or username or password incorrect'
+        '200':
+          description: 'logged In Successfully'
+
+  /v1/Users/login:
+    post:
+      tags:
+        - 'login'
+      summary: 'use for login email or Phone or username'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'User can login with email or phone or username'
+          required: true
+          schema:
+            $ref: '#/definitions/login'
+      responses:
+        '400':
+          description: 'email or phone or username or password incorrect'
+        '200':
+          description: 'logged In Successfully'
+
+  /v1/Users/signup:
+    post:
+      tags:
+        - 'signup'
+      summary: 'use for signup With Email or Phone and username'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'use for signup With Email or Phone and username is Required'
+          required: true
+          schema:
+            $ref: '#/definitions/signup'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Account created Successfully'
+  /v1/tickets/techAssistance:
+    post:
+      tags:
+        - 'tickets'
+      summary: 'for technical assistance'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: ''
+          required: true
+          schema:
+            $ref: '#/definitions/techticket'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Created Successfully'
+
+  /v1/tickets/advAssistance:
+    post:
+      tags:
+        - 'tickets'
+      summary: 'for advertisement assistance'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Created Successfully'
+  /v1/tickets:
+    get:
+      tags:
+        - 'tickets'
+      summary: 'get All'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Operation Successfully'
+  /v1/tickets/{id}:
+    get:
+      tags:
+        - 'tickets'
+      summary: 'getone ticket'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Operation Successfully'
+  /v1/tickets/:id:
+    patch:
+      tags:
+        - 'tickets'
+      summary: 'get tickets'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: ''
+          required: true
+          schema:
+            $ref: '#/definitions/ticketupdate'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'updated Successfully'
+  /v1/tickets/id:
+    delete:
+      tags:
+        - 'tickets'
+      summary: 'getone ticket'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Operation Successfull'
+  /v1/tickets/close/{id}:
+    patch:
+      tags:
+        - 'tickets'
+      summary: 'ticket close'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Successfull'
+  /v1/Users/forgotPassword:
+    post:
+      tags:
+        - 'forgotPassword'
+      summary: 'use for forgot password with Email or phone'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'Users Email or phone'
+          required: true
+          schema:
+            $ref: '#/definitions/forgotPassword'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Token sent Successfully'
+
+  /v1/Users/resetPassword/{token}:
+    patch:
+      tags:
+        - 'resetPassword'
+      summary: 'use for reset password'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'token'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'password and passwordConfirm required'
+          required: true
+          schema:
+            $ref: '#/definitions/resetPassword'
+      responses:
+        '400':
+          description: 'Invalid or expired Token'
+        '200':
+          description: 'Password reset Successfully'
+  /v1/Users/:
+    get:
+      tags:
+        - 'Admin/Moderator'
+      summary: 'use to get All Users'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'No User Found'
+        '200':
+          description: 'List of all the Users'
+
+  /v1/Users/{id}:
+    get:
+      tags:
+        - 'Admin/Moderator'
+      summary: 'use to get One User'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'No User Found'
+        '200':
+          description: 'User details'
+  /v1/Users/updateUserPassword/{id}:
+    patch:
+      tags:
+        - 'Admin/Moderator'
+      summary: 'update User pawssord'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'Users details required'
+          required: true
+          schema:
+            $ref: '#/definitions/resetPassword'
+      responses:
+        '404':
+          description: 'No User Found'
+        '200':
+          description: 'User details'
+
+  /v1/Users/:id:
+    patch:
+      tags:
+        - 'Admin/Moderator'
+      summary: 'use to update One User'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'Users details required'
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateMyDetails'
+      responses:
+        '404':
+          description: 'No User Found'
+        '200':
+          description: 'User Updated Successfully'
+
+  /v1/Users/id:
+    delete:
+      tags:
+        - 'Admin/Moderator'
+      summary: 'use to delete One User'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'No User Found'
+        '200':
+          description: 'User deleted Successfully'
+  /v1/Users/currentUser:
+    get:
+      tags:
+        - 'currentUser'
+      summary: 'use to get Current User'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'No User Found'
+        '200':
+          description: 'User details'
+  /v1/Users/updateMe:
+    patch:
+      tags:
+        - 'Current/LoggedIn User'
+      summary: 'use for Update Current/LoggedIn User Data'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'Current/LoggedIn User Data => Date Format is Year-Month-Day'
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateMyDetails'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'User Updated Successfully'
+  /v1/Users/updateMyPassword:
+    patch:
+      tags:
+        - 'Current/LoggedIn User'
+      summary: 'use for Update/Change Current/LoggedIn User Password'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'Current/LoggedIn User Password Update/Change'
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateMyPassword'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Password Updated Successfully'
+
+  /v1/Users/deleteMe:
+    delete:
+      tags:
+        - 'Current/LoggedIn User'
+      summary: 'use for Delete Current/LoggedIn User'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Token sent Successfully'
+
+  /v1/users/active-user/:id:
+    patch:
+      tags:
+        - 'Active/Inactive User By Admin or Moderator'
+      summary: 'Active Users by Admin or Moderator by user id'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'User already active or does not exist'
+        '200':
+          description: 'User Activated Successfully'
+
+  /v1/users/inactive-user/:id:
+    patch:
+      tags:
+        - 'Active/Inactive User By Admin or Moderator'
+      summary: 'Inctive Users by Admin or Moderator by user id'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'User already inactive or does not exist'
+        '200':
+          description: 'User Inactivated Successfully'
+
+  /v1/users/ban-user/:id:
+    patch:
+      tags:
+        - 'Ban/Unban User By Admin or Moderator'
+      summary: 'Ban Users by Admin or Moderator by user id'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'User already Banned or does not exist'
+        '200':
+          description: 'User Banned Successfully'
+
+  /v1/users/unban-user/:id:
+    patch:
+      tags:
+        - 'Ban/Unban User By Admin or Moderator'
+      summary: 'Unbanned Users by Admin or Moderator by user id'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'User already Unbanned or does not exist'
+        '200':
+          description: 'User Unbanned Successfully'
+
+  /v1/Users:
+    post:
+      tags:
+        - 'Admin/Moderator'
+      summary: 'Admin can create User, Moderator and Admin'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'use for signup With Email or Phone and username is Required'
+          required: true
+          schema:
+            $ref: '#/definitions/createUser'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Account created Successfully'
+
+  /v1/Users/stats:
+    get:
+      tags:
+        - 'Stats for Admin/Moderator'
+      summary: 'User Stats'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Result'
+
+  /v1/Users/daily-stats/:min/:max:
+    get:
+      tags:
+        - 'Stats for Admin/Moderator'
+      summary: 'User Stats from one date to another date'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'min'
+          required: true
+          type: 'string'
+        - in: 'path'
+          name: 'max'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Result'
+
+  /v1/ads/cars:
+    post:
+      tags:
+        - 'Cars'
+      summary: 'used to Post Car'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'Cars data'
+          required: true
+          schema:
+            $ref: '#/definitions/Cars'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Car Posted Successfully'
+
+  /v1/ads/cars/{id}:
+    get:
+      tags:
+        - 'Cars'
+      summary: 'use to get single cars'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'No cars Found'
+        '200':
+          description: 'cars details'
+
+  /v1/ads/cars?keyword=cars with Petrol&fields=engineType,make,model,city&price[gt]=50000&price[lt]=100000000000&limit=2&page=1:
+    get:
+      tags:
+        - 'Cars'
+      summary: 'how to filter data using query params'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'No Found'
+        '200':
+          description: 'cars details'
+  /v1/ads/cars?engineType=Petrol&price[gt]=4000&sort=-price,milage:
+    get:
+      tags:
+        - 'Cars'
+      summary: 'how to filter data using query params'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'No Category Found'
+        '200':
+          description: 'cars details'
+  /v1/ads/Cars?_id=610b584d121a5a001dfb3a91&_id=610b5e3fa4190f001d9de601:
+    get:
+      tags:
+        - 'Cars'
+      summary: 'car comparision'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'No Category Found'
+        '200':
+          description: 'cars details'
+  /v1/ads/cars/:
+    get:
+      tags:
+        - 'Cars'
+      summary: 'use to get All car'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'No Category Found'
+        '200':
+          description: 'cars details'
+
+  /v1/ads/cars/:id:
+    patch:
+      tags:
+        - 'Cars'
+      summary: 'use to Update cars'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'car details required'
+          required: true
+          schema:
+            $ref: '#/definitions/Cars'
+      responses:
+        '404':
+          description: 'No cars Found'
+        '200':
+          description: 'cars update'
+
+  /v1/ads/cars/id:
+    delete:
+      tags:
+        - 'Cars'
+      summary: 'use to delete car'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'No car Found'
+        '200':
+          description: 'car deleted Successfully'
+  /v1/ads/cars/favourites:
+    get:
+      tags:
+        - 'Cars'
+      summary: 'get my favourites'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'
+  /v1/ads/cars/myCars:
+    get:
+      tags:
+        - 'Cars'
+      summary: 'get my cars'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'
+  /v1/ads/cars/remove-from-fav/:id:
+    patch:
+      tags:
+        - 'Cars'
+      summary: 'remove from fav'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'
+  /v1/ads/cars/add-to-fav/:id:
+    patch:
+      tags:
+        - 'Cars'
+      summary: 'add to fav'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'
+  /v1/ads/cars/mark-sold/:id:
+    patch:
+      tags:
+        - 'Cars'
+      summary: 'mark-sold'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'mark car as sold'
+          required: true
+          schema:
+            $ref: '#/definitions/mark-sold'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'
+  /v1/ads/cars/mark-unsold/:id:
+    patch:
+      tags:
+        - 'Cars'
+      summary: 'mark-unsold'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'
+  /v1/ads/cars/mark-active/:id:
+    patch:
+      tags:
+        - 'Cars'
+      summary: 'mark-active'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'
+  /v1/ads/cars/mark-inactive/:id:
+    patch:
+      tags:
+        - 'Cars'
+      summary: 'mark-inactive'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'
+  /v1/ads/cars/ban/:id:
+    patch:
+      tags:
+        - 'Admin/Moderator authorities for ads'
+      summary: 'mark-ban'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'
+  /v1/ads/cars/unban/:id:
+    patch:
+      tags:
+        - 'Admin/Moderator authorities for ads'
+      summary: 'mark-unban'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'successfull'
+  /v1/ads/cars/car-owners-stats:
+    get:
+      tags:
+        - 'Stats for Admin/Moderator'
+      summary: ''
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'Total Owners in response'
+  /v1/ads/cars/cars-stats:
+    get:
+      tags:
+        - 'Stats for Admin/Moderator'
+      summary: ''
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'Total Owners in response'
+  /v1/ads/cars/top-viewed:
+    get:
+      tags:
+        - 'Stats for Admin/Moderator'
+      summary: ''
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'top viewed cars in response'
+  # /v1/ads/cars/makes:
+  #   get:
+  #     tags:
+  #       - 'Cars Make Model'
+  #     summary: 'use to get All cars makes'
+  #     description: ''
+  #     consumes:
+  #       - 'application/json'
+  #     produces:
+  #       - 'application/json'
+  #     responses:
+  #       '404':
+  #         description: 'Not Found'
+  #       '200':
+  #         description: 'List of all makes'
+  # /v1/ads/cars/models/?make_id=41:
+  #   get:
+  #     tags:
+  #       - 'Cars Make Model'
+  #     summary: 'Use to get models for specific make'
+  #     description: ''
+  #     consumes:
+  #       - 'application/json'
+  #     produces:
+  #       - 'application/json'
+  #     responses:
+  #       '404':
+  #         description: 'Not Found'
+  #       '200':
+  #         description: 'Data in response'
+  # /v1/ads/cars/versions?model_id=984:
+  #   get:
+  #     tags:
+  #       - 'Cars Make Model'
+  #     summary: 'Use to get car version'
+  #     description: ''
+  #     consumes:
+  #       - 'application/json'
+  #     produces:
+  #       - 'application/json'
+  #     responses:
+  #       '404':
+  #         description: 'Not Found'
+  #       '200':
+  #         description: 'versions'
+  /v1/ads/cars/filter/cities-with-cars?province=Punjab:
+    get:
+      tags:
+        - 'Cities With Cars Based on Province'
+      summary: ''
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'Data in response'
+  /v1/ads/cars/body-types:
+    post:
+      tags:
+        - 'Cars Body Types'
+      summary: 'used to Post Car body type'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'body type data'
+          required: true
+          schema:
+            $ref: '#/definitions/bodyTypes'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Car body type Posted Successfully'
+  /v1/ads/cars/body-types/:
+    get:
+      tags:
+        - 'Cars Body Types'
+      summary: 'used to get all body type'
+      description: 'Return all body types'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'List of all body types'
+  /v1/ads/cars/body-types/{id}:
+    get:
+      tags:
+        - 'Cars Body Types'
+      summary: 'used to get one body type'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Return result againt id'
+  /v1/ads/cars/body-types/:id:
+    patch:
+      tags:
+        - 'Cars Body Types'
+      summary: 'used to updated Car body type'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'body type data'
+          required: true
+          schema:
+            $ref: '#/definitions/bodyTypes'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car body type updated Successfully'
+  /v1/ads/cars/body-types/id:
+    delete:
+      tags:
+        - 'Cars Body Types'
+      summary: 'used to delete Car body type'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car body type deleted Successfully'
+  /v1/ads/cars/makes:
+    post:
+      tags:
+        - 'Car Makes'
+      summary: 'used to create car make'
+      description: 'used to create car make'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'car make'
+          required: true
+          schema:
+            $ref: '#/definitions/car-make'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Car make created Successfully'
+  /v1/ads/cars/makes/:
+    get:
+      tags:
+        - 'Car Makes'
+      summary: 'used to get all car makes'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Data of all car makes'
+  /v1/ads/cars/makes/{id}:
+    get:
+      tags:
+        - 'Car Makes'
+      summary: 'used to get one car make'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Return result againt id'
+  /v1/ads/cars/makes/:id:
+    patch:
+      tags:
+        - 'Car Makes'
+      summary: 'used to updated Car Make'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'car make data'
+          required: true
+          schema:
+            $ref: '#/definitions/car-make'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car make updated Successfully'
+  /v1/ads/cars/makes/id:
+    delete:
+      tags:
+        - 'Car Makes'
+      summary: 'used to delete Car make'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car make deleted Successfully'
+
+  /v1/ads/cars/models:
+    post:
+      tags:
+        - 'Car Models'
+      summary: 'used to create car model'
+      description: 'used to create car model'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'car model'
+          required: true
+          schema:
+            $ref: '#/definitions/car-model-version'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Car model created Successfully'
+  /v1/ads/cars/models?make_id=51:
+    get:
+      tags:
+        - 'Car Models'
+      summary: 'used to get all car models or by make_id '
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Data of all car models'
+  /v1/ads/cars/models/{id}:
+    get:
+      tags:
+        - 'Car Models'
+      summary: 'used to get one car make'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Return result againt id'
+  /v1/ads/cars/models/:id:
+    patch:
+      tags:
+        - 'Car Models'
+      summary: 'used to updated Car models'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'car models data'
+          required: true
+          schema:
+            $ref: '#/definitions/car-model-version'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car models updated Successfully'
+  /v1/ads/cars/models/id:
+    delete:
+      tags:
+        - 'Car Models'
+      summary: 'used to delete Car model'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car model deleted Successfully'
+
+  /v1/ads/cars/versions?model_id=47:
+    get:
+      tags:
+        - 'Car Versions'
+      summary: 'Use to get car version'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'versions'
+  /v1/ads/cars/versions/:id:
+    get:
+      tags:
+        - 'Car Versions'
+      summary: 'Use to get one version'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'Not Found'
+        '200':
+          description: 'versions'        
+  /v1/ads/cars/add-versions:
+    post:
+      tags:
+        - 'Car Versions'
+      summary: 'used to add Car version'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'car version '
+          required: true
+          schema:
+            $ref: '#/definitions/car-version'
+      responses:
+        '400':
+          description: 'Not Found'
+        '200':
+          description: 'Car version added Successfully'
+  /v1/ads/cars/update-versions/:id:
+    patch:
+      tags:
+        - 'Car Versions'
+      summary: 'used to add Car version'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'car version '
+          required: true
+          schema:
+            $ref: '#/definitions/car-version'
+      responses:
+        '400':
+          description: 'Not Found'
+        '200':
+          description: 'Car version added Successfully'        
+  /v1/ads/cars/remove-versions/:id:
+    delete:
+      tags:
+        - 'Car Versions'
+      summary: 'used to remove Car version'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car version removed Successfully'
+
+  /v1/ads/cars/features:
+    post:
+      tags:
+        - 'Car Features'
+      summary: 'used to create car feature'
+      description: 'used to create car feature'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'car feature'
+          required: true
+          schema:
+            $ref: '#/definitions/car-features'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'Car feature created Successfully'
+  /v1/ads/cars/features//:
+    get:
+      tags:
+        - 'Car Features'
+      summary: 'used to get all car features'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'All Features in response'
+  /v1/ads/cars/features/id:
+    get:
+      tags:
+        - 'Car Features'
+      summary: 'used to get one car feature'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Return result againt id'
+  /v1/ads/cars/features/:id:
+    patch:
+      tags:
+        - 'Car Features'
+      summary: 'used to updated Car features'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'car features data'
+          required: true
+          schema:
+            $ref: '#/definitions/car-features'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car feature updated Successfully'
+  /v1/ads/cars/features/{id}:
+    delete:
+      tags:
+        - 'Car Features'
+      summary: 'used to delete Car feature'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car feature deleted Successfully'
+
+  /v1/ads/cars/sold-cars-stats:
+    get:
+      tags:
+        - 'Total and Monthly Cars sold Statistics'
+      summary: 'Used to get all cars sold and cars sold in current month'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Return statistics of total and monthly sold cars'
+
+  /v1/ads/cars/sold-cars-by-platform-stats:
+    get:
+      tags:
+        - 'Cars sold through Platform Total and Monthly Statistics'
+      summary: 'Used to get all cars sold through our platform and cars sold in current month by our platfrom'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Return statistics of total and monthly sold cars by our platform'
+
+  /v1/ads/cars/owners-list:
+    get:
+      tags:
+        - 'Total Car Owners Data'
+      summary: 'Used to get all Data of car owners'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Not Found'
+        '200':
+          description: 'Return Data of all owners'
+
+definitions:
+  signup:
+    type: 'object'
+    properties:
+      firstName:
+        type: 'string'
+      lastName:
+        type: 'string'
+      data:
+        type: 'string'
+      username:
+        type: 'string'
+      password:
+        type: 'string'
+      passwordConfirm:
+        type: 'string'
+  login:
+    type: 'object'
+    properties:
+      data:
+        type: 'string'
+      password:
+        type: 'string'
+  forgotPassword:
+    type: 'object'
+    properties:
+      data:
+        type: 'string'
+  resetPassword:
+    type: 'object'
+    properties:
+      password:
+        type: 'string'
+      passwordConfirm:
+        type: 'string'
+  Cars:
+    type: object
+    properties:
+      country:
+        type: string
+      province:
+        type: string
+      city:
+        type: string
+      location:
+        type: object
+        properties:
+          coordinates:
+            type: object
+            properties:
+              lat:
+                type: number
+              long:
+                type: number
+          address:
+            type: string
+      images:
+        type: array
+        items:
+          type: string
+      model:
+        type: string
+      make:
+        type: string
+      transmission:
+        type: string
+      assembly:
+        type: string
+      registrationCity:
+        type: string
+      bodyColor:
+        type: string
+      milage:
+        type: number
+      price:
+        type: number
+      version:
+        type: string
+      condition:
+        type: string
+      description:
+        type: string
+      bodyType:
+        type: string
+      engineType:
+        type: string
+      date:
+        type: string
+      features:
+        type: array
+        items:
+          type: string
+      sellerType:
+        type: string
+      modelYear:
+        type: number
+      regNumber:
+        type: string
+  UpdateMyDetails:
+    type: object
+    properties:
+      firstName:
+        type: 'string'
+      lastName:
+        type: 'string'
+      image:
+        type: 'string'
+      email:
+        type: 'string'
+      phone:
+        type: 'string'
+      gender:
+        type: 'string'
+      country:
+        type: 'string'
+      city:
+        type: 'string'
+      dateOfBirth:
+        type: 'string'
+  UpdateMyPassword:
+    type: object
+    properties:
+      passwordCurrent:
+        type: 'string'
+      password:
+        type: 'string'
+      passwordConfirm:
+        type: 'string'
+  createUser:
+    type: 'object'
+    properties:
+      firstName:
+        type: 'string'
+      lastName:
+        type: 'string'
+      data:
+        type: 'string'
+      username:
+        type: 'string'
+      role:
+        type: 'string'
+      password:
+        type: 'string'
+      passwordConfirm:
+        type: 'string'
+  make-model:
+    type: 'object'
+    properties:
+      make:
+        type: 'string'
+      model:
+        type: 'string'
+  model-update:
+    type: 'object'
+    properties:
+      model:
+        type: 'string'
+  mark-sold:
+    type: 'object'
+    properties:
+      soldByUs:
+        type: 'boolean'
+  bodyTypes:
+    type: 'object'
+    properties:
+      bodyType:
+        type: 'string'
+      image:
+        type: 'string'
+  car-make:
+    type: 'object'
+    properties:
+      name:
+        type: 'string'
+  car-model-version:
+    type: 'object'
+    properties:
+      make_id:
+        type: 'number'
+      name:
+        type: 'string'
+      versions:
+        type: 'object'
+  car-version:
+    type: 'object'
+    properties:
+      model_id:
+        type: 'number'
+      name: 
+        type: 'string'
+      capacity: 
+        type: 'number'
+      fuel_type: 
+        type: 'string' 
+      transmission_type: 
+        type: 'string'           
+  car-features:
+    type: 'object'
+    properties:
+      name:
+        type: 'string'
+      image:
+        type: 'string'
+  techticket:
+    type: 'object'
+    properties:
+      email:
+        type: 'string'
+      phone:
+        type: 'string'
+      description:
+        type: 'string'
+  ticketupdate:
+    type: 'object'
+    properties:
+      status:
+        type: 'string'
