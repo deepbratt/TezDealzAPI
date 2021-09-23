@@ -20,14 +20,6 @@ services:
       - users
     networks:
       - ms_network
-  ads1:
-    build: './ads'
-    ports:
-      - '4003:3003'
-    depends_on:
-      - users
-    networks:
-      - ms_network    
   tickets:
     build: './tickets'
     ports:
