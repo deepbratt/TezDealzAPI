@@ -1,6 +1,8 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
+const cluster = require('cluster');
+const os = require('os');
 const cors = require('cors');
 const { AppError, errorHandler } = require('@utils/tdb_globalutils');
 //const {c}= require('tdb_globalutils')
@@ -13,7 +15,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const compression = require('compression');
-
+const numCpu = os.cpus().length;
 // Global Error Handler
 const { ERRORS } = require('@constants/tdb-constants');
 
@@ -40,11 +42,11 @@ app.use(cors());
 // app.use(rateLimitRoute, limiter);
 
 app.use(
-  morgan('dev', {
-    skip: function (req, res) {
-      return res.statusCode < 200;
-    },
-  }),
+	morgan('dev', {
+		skip: function (req, res) {
+			return res.statusCode < 200;
+		},
+	})
 );
 
 // GLOBAL MIDDLEWARES
@@ -65,22 +67,26 @@ app.use(xss());
 // );
 
 app.use(
-  session({
-    signed: false,
-  }),
+	session({
+		signed: false,
+	})
 );
 
 app.use(compression());
 //routes
 app.use(userRoute, userRouter);
 app.all('*', (req, res, next) => {
-  next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
+	next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
 });
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Listening on Port ${PORT}`);
-});
-
-module.exports = app;
+if (cluster.isMaster) {
+	for (let i = 0; i < numCpu; i++) {
+		cluster.fork();
+	}
+} else {
+	app.listen(PORT, () => {
+		console.log(`${process.pid} listening on ${PORT}`);
+	});
+}

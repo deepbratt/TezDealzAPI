@@ -24,6 +24,7 @@
 		"jsonwebtoken": "^8.5.1",
 		"moment": "^2.29.1",
 		"mongoose": "^5.13.2",
+		"mongoose-query-logger": "^0.2.3",
 		"morgan": "^1.10.0",
 		"node-cache": "^5.1.2",
 		"redis": "^3.1.2",
