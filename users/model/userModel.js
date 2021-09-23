@@ -148,13 +148,13 @@ const userSchema = new mongoose.Schema(
     passwordChangedAt: Date,
     active: {
       type: Boolean,
-      default: true,
       index: true,
+      default: true,
     },
     banned: {
       type: Boolean,
-      default: false,
       index: true,
+      default: false,
     },
   },
   {
@@ -167,7 +167,6 @@ userSchema.index({ email: 1 }, { unique: true, sparse: true });
 userSchema.index({ phone: 1 }, { unique: true, sparse: true });
 userSchema.index({ username: 1 }, { unique: true, sparse: true });
 userSchema.index({ active: -1, banned: 1 });
-
 userSchema.index({
   firstName: 'text',
   lastName: 'text',

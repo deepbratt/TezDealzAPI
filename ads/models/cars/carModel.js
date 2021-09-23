@@ -174,13 +174,13 @@ const carsSchema = new mongoose.Schema(
     },
     isSold: {
       type: Boolean,
-      default: false,
       index: true,
+      default: false,
     },
     active: {
       type: Boolean,
-      default: true,
       index: true,
+      default: true,
     },
     sellerType: {
       type: String,
@@ -192,8 +192,8 @@ const carsSchema = new mongoose.Schema(
     },
     banned: {
       type: Boolean,
-      default: false,
       index: true,
+      default: false,
     },
     imageStatus: {
       type: Boolean,
