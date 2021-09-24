@@ -191,18 +191,6 @@ userSchema.pre('save', function (next) {
   next();
 });
 
-// To show only active true users in Users.find() query
-// userSchema.pre(/^find/, function (next) {
-//   // /^find/ find all that startsWith (find)
-//   // this. points to current query
-//   this.find({
-//     active: {
-//       $ne: false,
-//     },
-//   });
-//   next();
-// });
-
 //SCHEMA METHODS
 userSchema.methods.correctPassword = async function (candidatePassword, userpassword) {
   // Check Password Is Correct??
@@ -262,6 +250,18 @@ userSchema.methods.createPasswordResetToken = async function () {
 //   this.phoneVerificationTokenExpires = Date.now() + 10 * 60 * 1000;
 //   return verificationToken;
 // };
+
+// To show only active true users in Users.find() query
+// userSchema.pre(/^find/, function (next) {
+//   // /^find/ find all that startsWith (find)
+//   // this. points to current query
+//   this.find({
+//     active: {
+//       $ne: false,
+//     },
+//   });
+//   next();
+// });
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;
