@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const { MongooseQueryLogger } = require('mongoose-query-logger');
 
-const db = process.env.NODE_ENV === 'production' ? process.env.DB_REMOTE : process.env.DB_LOCAL;
+const db = process.env.NODE_ENV === 'production' ? process.env.DB_LOCAL : process.env.DB_LOCAL;
+console.log(db);
 
 const dbConnect = async () => {
   try {
