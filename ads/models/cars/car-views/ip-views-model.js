@@ -10,6 +10,6 @@ const carViews = new mongoose.Schema({
 		required: true,
 	},
 });
-
+carViews.index({ ip: 1, car_id: 1 });
 const CarView = mongoose.model('CarView', carViews);
 module.exports = CarView;

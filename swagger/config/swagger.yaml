@@ -1489,6 +1489,108 @@ paths:
         '200':
           description: 'Car version removed Successfully'
 
+  /v1/ads/cars/colors:
+    post:
+      tags:
+        - 'Car Colors'
+      summary: 'used to create car color'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'car feature'
+          required: true
+          schema:
+            $ref: '#/definitions/color'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'created Successfully'
+  /v1/ads/cars/colors/:
+    get:
+      tags:
+        - 'Car Colors'
+      summary: 'used to get all car colors'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'All Features in response'
+  /v1/ads/cars/colors/{id}:
+    get:
+      tags:
+        - 'Car Colors'
+      summary: 'used to get one Color'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Return result againt id'
+  /v1/ads/cars/colors/:id:
+    patch:
+      tags:
+        - 'Car Colors'
+      summary: 'used to updated Car color'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: ''
+          required: true
+          schema:
+            $ref: '#/definitions/color'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'updated Successfully'
+  /v1/ads/cars/colors/id:
+    delete:
+      tags:
+        - 'Car Colors'
+      summary: 'used to delete Car Color'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car color deleted Successfully'
   /v1/ads/cars/features:
     post:
       tags:
@@ -1868,4 +1970,11 @@ definitions:
       password:
         type: 'string'
       passwordConfirm:
+        type: 'string'
+  color:
+    type: 'object'
+    properties:
+      name:
+        type: 'string'
+      code:
         type: 'string'

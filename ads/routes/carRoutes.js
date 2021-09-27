@@ -7,6 +7,7 @@ const adminController = require('../contollers/admin/adminController');
 const bodyTypeController = require('../contollers/cars/bodyTypesController');
 const carMakeController = require('../contollers/cars/carMakeContoller');
 const featuresController = require('../contollers/cars/featuresController');
+const colorController = require('../contollers/cars/colorController');
 const carFilters = require('../contollers/cars/carFilters');
 const { authenticate, checkIsLoggedIn, restrictTo } = require('@auth/tdb-auth');
 const {
@@ -20,6 +21,18 @@ const { upload } = require('@utils/tdb_globalutils');
 //const cacheExp = 30;
 const router = express.Router();
 // const { isCached } = require('../utils/redisCache');
+
+//colors
+
+router
+	.route('/colors')
+	.post(authenticate(User), restrictTo('Admin', 'Moderator'), colorController.createOne)
+	.get(colorController.getAll);
+router
+	.route('/colors/:id')
+	.get(authenticate(User), restrictTo('Admin', 'Moderator'), colorController.getOne)
+	.patch(authenticate(User), restrictTo('Admin', 'Moderator'), colorController.updateOne)
+	.delete(authenticate(User), restrictTo('Admin', 'Moderator'), colorController.deleteOne);
 
 // OWNERS LIST
 router
