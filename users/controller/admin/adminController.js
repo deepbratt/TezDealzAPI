@@ -6,6 +6,7 @@ const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-con
 const { regex } = require('../../utils/regex');
 const { send } = require('../../utils/rabbitMQ');
 const { filterObj, filter } = require('../factory/factoryHandler');
+const sendSMS = require('../../utils/sendSMS');
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
   let result;
@@ -309,4 +310,60 @@ exports.dailyUserAggregate = catchAsync(async (req, res, next) => {
       stats,
     },
   });
+});
+
+// Forgot Password Admin Panel
+exports.forgotPasswordAdmin = catchAsync(async (req, res, next) => {
+  if (!req.body.data) {
+    return next(
+      new AppError(
+        `${ERRORS.REQUIRED.EMAIL_REQUIRED}/${ERRORS.REQUIRED.PHONE_REQUIRED}`,
+        STATUS_CODE.BAD_REQUEST,
+      ),
+    );
+  }
+
+  let user;
+  if (validator.validate(req.body.data)) {
+    users = await User.findOne({ email: req.body.data });
+  } else if (regex.phone.test(req.body.data)) {
+    user = await User.findOne({ phone: req.body.data });
+  }
+
+  if (!user) {
+    return next(
+      new AppError(
+        `${ERRORS.INVALID.INVALID_EMAIL}/${ERRORS.INVALID.INVALID_PHONE_NUM}`,
+        STATUS_CODE.UNAUTHORIZED,
+      ),
+    );
+  }
+
+  const resetToken = await user.createPasswordResetToken();
+  await user.save({ validateBeforeSave: false });
+
+  try {
+    if (validator.validate(req.body.data)) {
+      await new Email(user, resetToken).sendPasswordResetToken();
+      return res.status(STATUS_CODE.OK).json({
+        status: STATUS.SUCCESS,
+        message: SUCCESS_MSG.SUCCESS_MESSAGES.TOKEN_SENT_EMAIL,
+      });
+    } else {
+      await sendSMS({
+        body: `Your TezDealz Admin Password reset code is ${resetToken}`,
+        phone: user.phone, // Text this number
+        from: process.env.TWILIO_PHONE_NUMBER, // From a valid Twilio number
+      });
+      return res.status(STATUS_CODE.OK).json({
+        status: STATUS.SUCCESS,
+        message: SUCCESS_MSG.SUCCESS_MESSAGES.TOKEN_SENT_PHONE,
+      });
+    }
+  } catch (err) {
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+    return next(new AppError(ERRORS.RUNTIME.SENDING_TOKEN, STATUS_CODE.SERVER_ERROR));
+  }
 });

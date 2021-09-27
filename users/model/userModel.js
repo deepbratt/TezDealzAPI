@@ -145,6 +145,14 @@ const userSchema = new mongoose.Schema(
       type: Date,
       select: false,
     },
+    adminPasswordResetToken: {
+      type: String,
+      select: false,
+    },
+    adminPasswordResetExpires: {
+      type: Date,
+      select: false,
+    },
     passwordChangedAt: Date,
     active: {
       type: Boolean,
@@ -219,6 +227,19 @@ userSchema.methods.createPasswordResetToken = async function () {
   this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
   return resetToken;
+};
+
+userSchema.methods.createAdminPasswordResetToken = async function () {
+  let adminResetToken;
+  do {
+    adminResetToken = Math.floor(Math.random() * (1000 - 9999 + 1) + 9999).toString();
+  } while (
+    await User.findOne({
+      adminPasswordResetToken: crypto.createHash('sha256').update(adminResetToken).digest('hex'),
+    })
+  );
+  this.adminPasswordResetToken = crypto.createHash('sha256').update(adminResetToken).digest('hex');
+  this.adminPasswordResetExpires = Date.now() + 10 * 60 * 1000;
 };
 
 // Email Verification Token
