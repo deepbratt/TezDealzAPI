@@ -1,7 +1,8 @@
 const Validator = require('email-validator');
+const crypto = require('crypto');
 const User = require('../../model/userModel');
 const moment = require('moment');
-const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
+const { AppError, catchAsync, uploadS3, Email } = require('@utils/tdb_globalutils');
 const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
 const { regex } = require('../../utils/regex');
 const { send } = require('../../utils/rabbitMQ');
@@ -322,10 +323,9 @@ exports.forgotPasswordAdmin = catchAsync(async (req, res, next) => {
       ),
     );
   }
-
   let user;
-  if (validator.validate(req.body.data)) {
-    users = await User.findOne({ email: req.body.data });
+  if (Validator.validate(req.body.data)) {
+    user = await User.findOne({ email: req.body.data });
   } else if (regex.phone.test(req.body.data)) {
     user = await User.findOne({ phone: req.body.data });
   }
@@ -339,19 +339,19 @@ exports.forgotPasswordAdmin = catchAsync(async (req, res, next) => {
     );
   }
 
-  const resetToken = await user.createPasswordResetToken();
+  const adminResetToken = await user.createAdminPasswordResetToken();
   await user.save({ validateBeforeSave: false });
-
+  console.log(adminResetToken);
   try {
-    if (validator.validate(req.body.data)) {
-      await new Email(user, resetToken).sendPasswordResetToken();
+    if (Validator.validate(req.body.data)) {
+      await new Email(user, adminResetToken).sendPasswordResetToken();
       return res.status(STATUS_CODE.OK).json({
         status: STATUS.SUCCESS,
         message: SUCCESS_MSG.SUCCESS_MESSAGES.TOKEN_SENT_EMAIL,
       });
     } else {
       await sendSMS({
-        body: `Your TezDealz Admin Password reset code is ${resetToken}`,
+        body: `Your TezDealz Admin Password reset code is ${adminResetToken}`,
         phone: user.phone, // Text this number
         from: process.env.TWILIO_PHONE_NUMBER, // From a valid Twilio number
       });
@@ -361,9 +361,32 @@ exports.forgotPasswordAdmin = catchAsync(async (req, res, next) => {
       });
     }
   } catch (err) {
-    user.passwordResetToken = undefined;
-    user.passwordResetExpires = undefined;
+    user.adminPasswordResetToken = undefined;
+    user.adminPasswordResetExpires = undefined;
     await user.save({ validateBeforeSave: false });
     return next(new AppError(ERRORS.RUNTIME.SENDING_TOKEN, STATUS_CODE.SERVER_ERROR));
   }
+});
+
+exports.resetPasswordAdmin = catchAsync(async (req, res, next) => {
+  const hashedTokenAdmin = crypto.createHash('sha256').update(req.params.token).digest('hex');
+
+  const user = await User.findOne({
+    adminPasswordResetToken: hashedTokenAdmin,
+    adminPasswordResetExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(new AppError(ERRORS.INVALID.INVALID_RESET_LINK, STATUS_CODE.BAD_REQUEST));
+  }
+
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.adminPasswordResetToken = undefined;
+  user.adminPasswordResetExpires = undefined;
+  await user.save();
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.PASSWORD_RESET,
+  });
 });

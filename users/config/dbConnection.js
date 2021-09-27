@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
-const { MongooseQueryLogger } = require('mongoose-query-logger');
+// const { MongooseQueryLogger } = require('mongoose-query-logger');
 
 const db = process.env.NODE_ENV === 'production' ? process.env.DB_REMOTE : process.env.DB_LOCAL;
-console.log(db);
+// console.log(db);
 
 const dbConnect = async () => {
   try {
@@ -20,13 +20,13 @@ const dbConnect = async () => {
   }
 };
 
-const queryLogger = new MongooseQueryLogger();
-// optionally add custom configuration eg:
-// queryLogger
-//    .setExplain(true)
-//    .setAdditionalLogProperties(true)
-//    .setQueryLogger(myCustomQueryLogger)
-//    .setExplainLogger(myCustomExplainLogger);
-mongoose.plugin(queryLogger.getPlugin());
+// const queryLogger = new MongooseQueryLogger();
+// // optionally add custom configuration eg:
+// // queryLogger
+// //    .setExplain(true)
+// //    .setAdditionalLogProperties(true)
+// //    .setQueryLogger(myCustomQueryLogger)
+// //    .setExplainLogger(myCustomExplainLogger);
+// mongoose.plugin(queryLogger.getPlugin());
 
 module.exports = dbConnect;

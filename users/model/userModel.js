@@ -240,6 +240,7 @@ userSchema.methods.createAdminPasswordResetToken = async function () {
   );
   this.adminPasswordResetToken = crypto.createHash('sha256').update(adminResetToken).digest('hex');
   this.adminPasswordResetExpires = Date.now() + 10 * 60 * 1000;
+  return adminResetToken;
 };
 
 // Email Verification Token

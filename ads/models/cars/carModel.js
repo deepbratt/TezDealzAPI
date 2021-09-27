@@ -78,7 +78,7 @@ const carsSchema = new mongoose.Schema(
       type: String,
       required: [true, ERRORS.REQUIRED.ENGINE_TYPE_REQUIRED],
       enum: {
-        values: ['Diesel', 'Petrol', 'CNG', 'LPG', 'Hybrid', 'Electric'],
+        values: ['CNG', 'Diesel', 'Electric', 'Hybrid', 'LPG', 'Petrol'],
         message: ERRORS.INVALID.INVALID_ENGINE_TYPE,
       },
     },
@@ -86,7 +86,7 @@ const carsSchema = new mongoose.Schema(
       type: String,
       required: [true, ERRORS.REQUIRED.TRANSMISSION_TYPE_REQUIRED],
       enum: {
-        values: ['Manual', 'Automatic'],
+        values: ['Automatic', 'Manual'],
         message: ERRORS.INVALID.INVALID_TRANSMISSION_TYPE,
       },
     },
@@ -150,7 +150,7 @@ const carsSchema = new mongoose.Schema(
       type: String,
       required: [true, ERRORS.REQUIRED.ASSEMBLY_REQUIRED],
       enum: {
-        values: ['Local', 'Imported'],
+        values: ['Imported', 'Local'],
         message: ERRORS.INVALID.INVALID_ASSEMBLY,
       },
     },

@@ -22,6 +22,7 @@ router.post('/signup', signupRules, validationFunction, authController.signup);
 router.post('/login', authController.login);
 router.post('/admin-panel-login', authController.adminPanellogin);
 router.post('/forgotPassword', authController.forgotPassword);
+router.post('/forgot-password-admin', adminController.forgotPasswordAdmin);
 
 router.patch(
   '/resetPassword/:token',
@@ -30,6 +31,12 @@ router.patch(
   authController.resetPassword,
 );
 
+router.patch(
+  '/reset-password-admin/:token',
+  changePassword,
+  validationFunction,
+  adminController.resetPasswordAdmin,
+);
 // authenticate route
 router.use(authenticate(User));
 
