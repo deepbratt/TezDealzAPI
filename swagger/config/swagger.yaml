@@ -623,7 +623,34 @@ paths:
           description: 'Invalid input'
         '200':
           description: 'Result'
-
+  /v1/ads/cars/cars-within/{distance}/center/{latlng}/unit/{unit}:
+     get:
+      tags:
+        - 'Cars Based on radius'
+      summary: 'get nearest or location based'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: distance
+          required: true
+          type: 'number'
+        - in: 'path'  
+          name: latlng
+          required: true
+          type: 'string'
+        - in: 'path'  
+          name: unit
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'No cars Found'
+        '200':
+          description: 'cars details'
   /v1/ads/cars:
     post:
       tags:
