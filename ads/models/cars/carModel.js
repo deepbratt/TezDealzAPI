@@ -31,10 +31,7 @@ const carsSchema = new mongoose.Schema(
 				default: 'point',
 				enum: ['point'],
 			},
-			coordinates: {
-				lat: Number,
-				long: Number,
-			},
+			coordinates: [Number],
 			address: String,
 		},
 		createdBy: {
@@ -174,7 +171,7 @@ const carsSchema = new mongoose.Schema(
 		},
 		isSold: {
 			type: Boolean,
-			index:true,
+			index: true,
 			default: false,
 		},
 		active: {
@@ -211,6 +208,7 @@ const carsSchema = new mongoose.Schema(
 );
 
 carsSchema.index({ active: -1, isSold: 1, banned: 1 });
+carsSchema.index({ location: '2dsphere' });
 
 carsSchema.index({
 	country: 'text',

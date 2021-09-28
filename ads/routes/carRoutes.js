@@ -22,6 +22,10 @@ const { upload } = require('@utils/tdb_globalutils');
 const router = express.Router();
 // const { isCached } = require('../utils/redisCache');
 
+//location based search
+
+router.route('/cars-within/:distance/center/:latlng/unit/:unit').get(carController.getCarsWithin);
+
 //colors
 
 router
