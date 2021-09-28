@@ -1,4 +1,4 @@
-const { APIFeatures} = require('@utils/tdb_globalutils');
+const { APIFeatures } = require('@utils/tdb_globalutils');
 //const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
 //const { filter } = require('../../utils/apifilter');
 

@@ -211,17 +211,17 @@ carsSchema.index({ active: -1, isSold: 1, banned: 1 });
 carsSchema.index({ location: '2dsphere' });
 
 carsSchema.index({
-	country: 'text',
-	province: 'text',
-	city: 'text',
-	model: 'text',
-	make: 'text',
-	bodyColor: 'text',
-	engineType: 'text',
-	condition: 'text',
-	bodyType: 'text',
-	assembly: 'text',
-	transmission: 'text',
+  country: 'text',
+  province: 'text',
+  city: 'text',
+  model: 'text',
+  make: 'text',
+  bodyColor: 'text',
+  engineType: 'text',
+  condition: 'text',
+  bodyType: 'text',
+  assembly: 'text',
+  transmission: 'text',
 });
 
 const Car = mongoose.model('Car', carsSchema);

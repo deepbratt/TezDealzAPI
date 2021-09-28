@@ -12,16 +12,16 @@ const ticketSchema = new mongoose.Schema(
 			type: String,
 			lowercase: true,
 			validate: [validator.isEmail, ERRORS.INVALID.INVALID_SIGNUP_CREDENTIALS],
+			index: true,
 		},
 		phone: {
 			type: String,
-			validate: [
-				validator.isMobilePhone,
-				ERRORS.INVALID.INVALID_SIGNUP_CREDENTIALS,
-			],
+			validate: [validator.isMobilePhone, ERRORS.INVALID.INVALID_SIGNUP_CREDENTIALS],
+			index: true,
 		},
 		type: {
 			type: String,
+			index: true,
 			enum: {
 				values: ['Technical Assistance', 'Advertisement Assistance'],
 			},
@@ -46,6 +46,8 @@ const ticketSchema = new mongoose.Schema(
 		timestamps: true,
 	}
 );
+
+ticketSchema.index({ type: 1, phone: 1, email: 1 });
 
 ticketSchema.index({
 	phone: 'text',

@@ -241,6 +241,55 @@ paths:
           description: 'Invalid or expired Token'
         '200':
           description: 'Password reset Successfully'
+  /v1/Users/forgot-password-admin:
+    post:
+      tags:
+        - 'Forgot Password Admin Panel'
+      summary: 'Use for forgot password with Email or phone'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'Admin Email or phone'
+          required: true
+          schema:
+            $ref: '#/definitions/forgotPasswordAdmin'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Token sent Successfully'
+
+  /v1/Users/reset-password-admin/{token}:
+    patch:
+      tags:
+        - 'Reset Password Admin Panel'
+      summary: 'Use for reset password'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'token'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'password and passwordConfirm required'
+          required: true
+          schema:
+            $ref: '#/definitions/resetPasswordAdmin'
+      responses:
+        '400':
+          description: 'Invalid or expired Token'
+        '200':
+          description: 'Password reset Successfully'
   /v1/Users/:
     get:
       tags:
@@ -1393,7 +1442,7 @@ paths:
         '404':
           description: 'Not Found'
         '200':
-          description: 'versions'        
+          description: 'versions'
   /v1/ads/cars/add-versions:
     post:
       tags:
@@ -1445,7 +1494,7 @@ paths:
         '400':
           description: 'Not Found'
         '200':
-          description: 'Car version added Successfully'        
+          description: 'Car version added Successfully'
   /v1/ads/cars/remove-versions/:id:
     delete:
       tags:
@@ -1670,7 +1719,7 @@ paths:
         '400':
           description: 'Invalid input'
         '200':
-          description: 'Car feature deleted Successfully'        
+          description: 'Car feature deleted Successfully'
 
   /v1/ads/cars/sold-cars-stats:
     get:
@@ -1908,14 +1957,14 @@ definitions:
     properties:
       model_id:
         type: 'number'
-      name: 
+      name:
         type: 'string'
-      capacity: 
+      capacity:
         type: 'number'
-      fuel_type: 
-        type: 'string' 
-      transmission_type: 
-        type: 'string'           
+      fuel_type:
+        type: 'string'
+      transmission_type:
+        type: 'string'
   car-features:
     type: 'object'
     properties:
@@ -1937,10 +1986,22 @@ definitions:
     properties:
       status:
         type: 'string'
+  forgotPasswordAdmin:
+    type: 'object'
+    properties:
+      data:
+        type: 'string'
+  resetPasswordAdmin:
+    type: 'object'
+    properties:
+      password:
+        type: 'string'
+      passwordConfirm:
+        type: 'string'
   color:
     type: 'object'
     properties:
       name:
-        type: 'string'      
+        type: 'string'
       code:
         type: 'string'

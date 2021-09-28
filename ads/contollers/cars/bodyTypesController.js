@@ -1,11 +1,6 @@
 const BodyType = require('../../models/cars/bodyTypes/bodyTypes');
 const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
-const {
-	STATUS,
-	STATUS_CODE,
-	SUCCESS_MSG,
-	ERRORS,
-} = require('@constants/tdb-constants');
+const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
 const { filter } = require('../factory/factoryHandler');
 
 exports.createBodyType = catchAsync(async (req, res, next) => {
@@ -55,8 +50,7 @@ exports.getAllBodyTypes = catchAsync(async (req, res, next) => {
 exports.getOneBodyType = catchAsync(async (req, res, next) => {
 	const result = await BodyType.findById(req.params.id);
 
-	if (!result)
-		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,

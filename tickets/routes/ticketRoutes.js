@@ -24,8 +24,11 @@ router.post(
 
 router.use(restrictTo('Admin', 'Moderator'));
 
-router.get('/', //cache(cacheExp), 
-ticketController.getAll);
+router.get(
+	'/', 
+  //cache(cacheExp),
+	ticketController.getAll
+);
 router.patch('/close/:id', ticketController.closeTicket);
 router
 	.route('/:id')

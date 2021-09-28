@@ -56,7 +56,6 @@ exports.getAll = catchAsync(async (req, res, next) => {
 	} else {
 		data = await filter(Car.find({ active: true, isSold: false, banned: false }), req.query);
 	}
-
 	const [result, totalCount] = data;
 
 	if (result.length <= 0) {
@@ -156,7 +155,6 @@ exports.updateOne = catchAsync(async (req, res, next) => {
 	});
 
 	if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.UPDATE,

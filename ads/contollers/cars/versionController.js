@@ -1,11 +1,6 @@
 const CarVersion = require('../../models/cars/make-model/car_version');
 const { AppError, catchAsync } = require('@utils/tdb_globalutils');
-const {
-	STATUS,
-	STATUS_CODE,
-	SUCCESS_MSG,
-	ERRORS,
-} = require('@constants/tdb-constants');
+const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
 const { filter } = require('../factory/factoryHandler');
 
 // VERSIONS //////////////////////////////////

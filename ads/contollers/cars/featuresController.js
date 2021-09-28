@@ -1,11 +1,6 @@
 const Features = require('../../models/cars/features/featuresModel');
 const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
-const {
-	STATUS,
-	STATUS_CODE,
-	SUCCESS_MSG,
-	ERRORS,
-} = require('@constants/tdb-constants');
+const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
 const { filter } = require('../factory/factoryHandler');
 
 exports.createFeature = catchAsync(async (req, res, next) => {
