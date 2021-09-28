@@ -25,14 +25,14 @@ const router = express.Router();
 //colors
 
 router
-	.route('/colors')
-	.post(authenticate(User), restrictTo('Admin', 'Moderator'), colorController.createOne)
-	.get(colorController.getAll);
+  .route('/colors')
+  .post(authenticate(User), restrictTo('Admin', 'Moderator'), colorController.createOne)
+  .get(colorController.getAll);
 router
-	.route('/colors/:id')
-	.get(authenticate(User), restrictTo('Admin', 'Moderator'), colorController.getOne)
-	.patch(authenticate(User), restrictTo('Admin', 'Moderator'), colorController.updateOne)
-	.delete(authenticate(User), restrictTo('Admin', 'Moderator'), colorController.deleteOne);
+  .route('/colors/:id')
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), colorController.getOne)
+  .patch(authenticate(User), restrictTo('Admin', 'Moderator'), colorController.updateOne)
+  .delete(authenticate(User), restrictTo('Admin', 'Moderator'), colorController.deleteOne);
 
 // OWNERS LIST
 router
@@ -66,12 +66,8 @@ router
  * Total cars sold and sold in Current month.
  * Total cars Sold by our platform and  total cars sold by platform in Current month.
  */
-router
-  .route('/sold-cars-stats')
-  .get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.totalSoldCars);
-router
-  .route('/sold-cars-by-platform-stats')
-  .get(authenticate(User), restrictTo('Admin', 'Moderator'), adminController.carsSoldByPlatform);
+router.route('/sold-cars-stats').get(adminController.totalSoldCars);
+router.route('/sold-cars-by-platform-stats').get(adminController.carsSoldByPlatform);
 
 //       CAR BODYTYPES //
 router

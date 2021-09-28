@@ -243,6 +243,7 @@ exports.totalSoldCars = catchAsync(async (req, res, next) => {
               percentage: {
                 $round: [{ $multiply: [{ $divide: ['$totalSold', '$totalCars'] }, 100] }, 1],
               },
+              totalSold: 1,
             },
           },
         ],
@@ -259,7 +260,7 @@ exports.totalSoldCars = catchAsync(async (req, res, next) => {
             $group: {
               _id: null,
               totalCars: { $sum: 1 },
-              totalSold: { $sum: { $cond: ['$isSold', 1, 0] } },
+              totalSoldThisMonth: { $sum: { $cond: ['$isSold', 1, 0] } },
             },
           },
           {
@@ -267,8 +268,12 @@ exports.totalSoldCars = catchAsync(async (req, res, next) => {
               _id: 0,
               totalCars: 1,
               percentage: {
-                $round: [{ $multiply: [{ $divide: ['$totalSold', '$totalCars'] }, 100] }, 1],
+                $round: [
+                  { $multiply: [{ $divide: ['$totalSoldThisMonth', '$totalCars'] }, 100] },
+                  1,
+                ],
               },
+              totalSoldThisMonth: 1,
             },
           },
         ],
@@ -311,6 +316,7 @@ exports.carsSoldByPlatform = catchAsync(async (req, res, next) => {
                   1,
                 ],
               },
+              totalSoldByPlatform: 1,
             },
           },
         ],
@@ -327,7 +333,7 @@ exports.carsSoldByPlatform = catchAsync(async (req, res, next) => {
             $group: {
               _id: null,
               totalCars: { $sum: 1 },
-              totalSoldByPlatform: { $sum: { $cond: ['$soldByUs', 1, 0] } },
+              totalSoldByPlatformThisMonth: { $sum: { $cond: ['$soldByUs', 1, 0] } },
             },
           },
           {
@@ -337,11 +343,12 @@ exports.carsSoldByPlatform = catchAsync(async (req, res, next) => {
               percentage: {
                 $round: [
                   {
-                    $multiply: [{ $divide: ['$totalSoldByPlatform', '$totalCars'] }, 100],
+                    $multiply: [{ $divide: ['$totalSoldByPlatformThisMonth', '$totalCars'] }, 100],
                   },
                   1,
                 ],
               },
+              totalSoldByPlatformThisMonth: 1,
             },
           },
         ],
