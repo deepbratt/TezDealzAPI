@@ -1,6 +1,6 @@
-*/node_modules
-*/tests
-*/importData
+_/node_modules
+_/tests
+\*/importData
 
 # Logs
 
@@ -142,3 +142,4 @@ dist
 # Data File
 
 adsDataFile.json
+tests
