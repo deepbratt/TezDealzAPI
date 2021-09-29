@@ -29,14 +29,14 @@ router.route('/cars-within/:distance/center/:latlng/unit/:unit').get(carControll
 //colors
 
 router
-	.route('/colors')
-	.post(authenticate(User), restrictTo('Admin', 'Moderator'), colorController.createOne)
-	.get(colorController.getAll);
+  .route('/colors')
+  .post(authenticate(User), restrictTo('Admin', 'Moderator'), colorController.createOne)
+  .get(colorController.getAll);
 router
-	.route('/colors/:id')
-	.get(authenticate(User), restrictTo('Admin', 'Moderator'), colorController.getOne)
-	.patch(authenticate(User), restrictTo('Admin', 'Moderator'), colorController.updateOne)
-	.delete(authenticate(User), restrictTo('Admin', 'Moderator'), colorController.deleteOne);
+  .route('/colors/:id')
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), colorController.getOne)
+  .patch(authenticate(User), restrictTo('Admin', 'Moderator'), colorController.updateOne)
+  .delete(authenticate(User), restrictTo('Admin', 'Moderator'), colorController.deleteOne);
 
 // OWNERS LIST
 router
