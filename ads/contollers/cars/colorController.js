@@ -52,7 +52,7 @@ exports.getOne = catchAsync(async (req, res, next) => {
 });
 
 exports.updateOne = catchAsync(async (req, res, next) => {
-	const result = await BodyType.findByIdAndUpdate(req.params.id, req.body, {
+	const result = await Color.findByIdAndUpdate(req.params.id, req.body, {
 		new: true,
 		runValidators: true,
 	});
