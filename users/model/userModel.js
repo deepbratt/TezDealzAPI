@@ -145,14 +145,14 @@ const userSchema = new mongoose.Schema(
       type: Date,
       select: false,
     },
-    adminPasswordResetToken: {
-      type: String,
-      select: false,
-    },
-    adminPasswordResetExpires: {
-      type: Date,
-      select: false,
-    },
+    // adminPasswordResetToken: {
+    //   type: String,
+    //   select: false,
+    // },
+    // adminPasswordResetExpires: {
+    //   type: Date,
+    //   select: false,
+    // },
     passwordChangedAt: Date,
     active: {
       type: Boolean,
@@ -238,8 +238,8 @@ userSchema.methods.createAdminPasswordResetToken = async function () {
       adminPasswordResetToken: crypto.createHash('sha256').update(adminResetToken).digest('hex'),
     })
   );
-  this.adminPasswordResetToken = crypto.createHash('sha256').update(adminResetToken).digest('hex');
-  this.adminPasswordResetExpires = Date.now() + 10 * 60 * 1000;
+  this.passwordResetToken = crypto.createHash('sha256').update(adminResetToken).digest('hex');
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
   return adminResetToken;
 };
 

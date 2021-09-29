@@ -24,9 +24,9 @@ app.use(morgan('dev'));
 app.use(express.json()); // body parser (reading data from body to req.body)
 //app.use(cookieParser()); // cookie parser (reading data from cookie to req.cookie)
 app.use(
-  session({
-    signed: false,
-  }),
+	session({
+		signed: false,
+	})
 );
 
 app.use(compression());
@@ -34,13 +34,13 @@ app.use(compression());
 //routes
 app.use(ticketRoutes, ticketRouter);
 app.all('*', (req, res, next) => {
-  next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
+	next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
 });
 
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log(`listening on ${PORT}`);
+	console.log(`listening on ${PORT}`);
 });
 
-module.exports = app;
+//module.exports = app;

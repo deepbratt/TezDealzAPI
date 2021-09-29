@@ -7,32 +7,33 @@ const { authenticate, checkIsLoggedIn, restrictTo } = require('@auth/tdb-auth');
 const router = express.Router();
 
 router.post(
-  '/techAssistance',
-  checkIsLoggedIn(User),
-  //cache(cacheExp),
-  ticketController.createTechAssistance,
+	'/techAssistance',
+	checkIsLoggedIn(User),
+	//cache(cacheExp),
+	ticketController.createTechAssistance
 );
 
 router.use(authenticate(User));
 
 router.post(
-  '/advAssistance',
-  restrictTo('User'),
-  //cache(cacheExp),
-  ticketController.createAdvAssistance,
+	'/advAssistance',
+	restrictTo('User'),
+	//cache(cacheExp),
+	ticketController.createAdvAssistance
 );
 
 router.use(restrictTo('Admin', 'Moderator'));
 
 router.get(
-  '/', //cache(cacheExp),
-  ticketController.getAll,
+	'/', 
+  //cache(cacheExp),
+	ticketController.getAll
 );
 router.patch('/close/:id', ticketController.closeTicket);
 router
-  .route('/:id')
-  .get(ticketController.getOne)
-  .patch(ticketController.updateOne)
-  .delete(ticketController.deleteOne);
+	.route('/:id')
+	.get(ticketController.getOne)
+	.patch(ticketController.updateOne)
+	.delete(ticketController.deleteOne);
 
 module.exports = router;
