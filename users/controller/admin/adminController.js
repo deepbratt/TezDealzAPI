@@ -325,9 +325,29 @@ exports.forgotPasswordAdmin = catchAsync(async (req, res, next) => {
   }
   let user;
   if (Validator.validate(req.body.data)) {
-    user = await User.findOne({ email: req.body.data });
+    user = await User.findOne({
+      email: req.body.data,
+      $or: [
+        {
+          role: 'Admin',
+        },
+        {
+          role: 'Moderator',
+        },
+      ],
+    });
   } else if (regex.phone.test(req.body.data)) {
-    user = await User.findOne({ phone: req.body.data });
+    user = await User.findOne({
+      phone: req.body.data,
+      $or: [
+        {
+          role: 'Admin',
+        },
+        {
+          role: 'Moderator',
+        },
+      ],
+    });
   }
 
   if (!user) {
@@ -339,7 +359,7 @@ exports.forgotPasswordAdmin = catchAsync(async (req, res, next) => {
     );
   }
 
-  const adminResetToken = await user.createAdminPasswordResetToken();
+  const adminResetToken = await user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false });
   console.log(adminResetToken);
   try {
@@ -361,8 +381,8 @@ exports.forgotPasswordAdmin = catchAsync(async (req, res, next) => {
       });
     }
   } catch (err) {
-    user.adminPasswordResetToken = undefined;
-    user.adminPasswordResetExpires = undefined;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
     await user.save({ validateBeforeSave: false });
     return next(new AppError(ERRORS.RUNTIME.SENDING_TOKEN, STATUS_CODE.SERVER_ERROR));
   }
@@ -372,8 +392,8 @@ exports.resetPasswordAdmin = catchAsync(async (req, res, next) => {
   const hashedTokenAdmin = crypto.createHash('sha256').update(req.params.token).digest('hex');
 
   const user = await User.findOne({
-    adminPasswordResetToken: hashedTokenAdmin,
-    adminPasswordResetExpires: { $gt: Date.now() },
+    passwordResetToken: hashedTokenAdmin,
+    passwordResetExpires: { $gt: Date.now() },
   });
 
   if (!user) {
@@ -382,8 +402,8 @@ exports.resetPasswordAdmin = catchAsync(async (req, res, next) => {
 
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
-  user.adminPasswordResetToken = undefined;
-  user.adminPasswordResetExpires = undefined;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
   await user.save();
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
