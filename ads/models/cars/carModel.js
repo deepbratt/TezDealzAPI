@@ -74,10 +74,7 @@ const carsSchema = new mongoose.Schema(
 		engineType: {
 			type: String,
 			required: [true, ERRORS.REQUIRED.ENGINE_TYPE_REQUIRED],
-			enum: {
-				values: ['Diesel', 'Petrol', 'CNG', 'LPG', 'Hybrid', 'Electric'],
-				message: ERRORS.INVALID.INVALID_ENGINE_TYPE,
-			},
+			trim: true,
 		},
 		transmission: {
 			type: String,
@@ -98,31 +95,6 @@ const carsSchema = new mongoose.Schema(
 		bodyType: {
 			type: String,
 			required: [true, ERRORS.REQUIRED.BODY_TYPE_REQUIRED],
-			enum: {
-				values: [
-					'Compact sedan',
-					'Compact SUV',
-					'Mini Van',
-					'Coupe',
-					'Convertible',
-					'Crossover',
-					'Double Cabin',
-					'High Roof',
-					'Micro Van',
-					'Mini Vehicles',
-					'MPV',
-					'Off-Road Vehicles',
-					'Pick Up',
-					'Sedan',
-					'Single Cabin',
-					'Station Wagon',
-					'Subcompact hatchback',
-					'SUV',
-					'Truck',
-					'Van',
-				],
-				message: ERRORS.INVALID.INVALID_BODY_TYPE,
-			},
 			trim: true,
 		},
 		bodyColor: {
