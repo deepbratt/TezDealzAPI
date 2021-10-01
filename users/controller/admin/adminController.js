@@ -325,9 +325,29 @@ exports.forgotPasswordAdmin = catchAsync(async (req, res, next) => {
   }
   let user;
   if (Validator.validate(req.body.data)) {
-    user = await User.findOne({ email: req.body.data });
+    user = await User.findOne({
+      email: req.body.data,
+      $or: [
+        {
+          role: 'Admin',
+        },
+        {
+          role: 'Moderator',
+        },
+      ],
+    });
   } else if (regex.phone.test(req.body.data)) {
-    user = await User.findOne({ phone: req.body.data });
+    user = await User.findOne({
+      phone: req.body.data,
+      $or: [
+        {
+          role: 'Admin',
+        },
+        {
+          role: 'Moderator',
+        },
+      ],
+    });
   }
 
   if (!user) {
@@ -339,7 +359,7 @@ exports.forgotPasswordAdmin = catchAsync(async (req, res, next) => {
     );
   }
 
-  const adminResetToken = await user.createAdminPasswordResetToken();
+  const adminResetToken = await user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false });
   console.log(adminResetToken);
   try {
