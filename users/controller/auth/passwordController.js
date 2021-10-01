@@ -18,9 +18,12 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   }
   let user;
   if (validator.validate(req.body.data)) {
-    user = await User.findOne({ email: req.body.data });
+    user = await User.findOne({
+      email: req.body.data,
+      role: 'User',
+    });
   } else if (regex.phone.test(req.body.data)) {
-    user = await User.findOne({ phone: req.body.data });
+    user = await User.findOne({ phone: req.body.data, role: 'User' });
   }
 
   if (!user) {
