@@ -65,7 +65,7 @@ exports.login = catchAsync(async (req, res, next) => {
 	const { data, password } = req.body;
 	if (!data || !password) {
 		// checking email or password empty?
-		return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
+		return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
 	}
 	// Finding user by username, phone or email
 	const user = await User.findOne({
@@ -84,10 +84,10 @@ exports.login = catchAsync(async (req, res, next) => {
 
 	//user existance and password is correct
 	if (!user || !(await user.correctPassword(password, user.password))) {
-		return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
+		return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
 	}
 	if (user.role !== 'User') {
-		return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
+		return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
 	}
 	// Check if user is banned , if banned then Throw Error
 	if (user.banned) {
@@ -96,7 +96,7 @@ exports.login = catchAsync(async (req, res, next) => {
 	// Check if user is active or not
 	if (!user.active) {
 		// If no user and not active:true then return Error
-		return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.NOT_FOUND));
+		return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.NOT_FOUND));
 	}
 	jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
 });
@@ -105,7 +105,7 @@ exports.adminPanellogin = catchAsync(async (req, res, next) => {
 	const { data, password } = req.body;
 	if (!data || !password) {
 		// checking email or password empty?
-		return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
+		return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
 	}
 	// Finding user by username, phone or email
 	const user = await User.findOne({
@@ -123,14 +123,14 @@ exports.adminPanellogin = catchAsync(async (req, res, next) => {
 	}).select('+password');
 	//user existance and password is correct
 	if (!user || !(await user.correctPassword(password, user.password))) {
-		return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
+		return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
 	}
   if (user.role === 'User') {
-			return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
+			return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
 		}
 	// Check if user is banned , if banned then Throw Error
 	if (user.banned || !user.active) {
-		return next(new AppError(ERRORS.INVALID.INVALID_LOGIN_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
+		return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
 	}
 	jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
 });
