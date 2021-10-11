@@ -47,6 +47,7 @@ services:
       - ads
       - swagger
       - tickets
+      - appointments
     networks:
       - ms_network
 networks:
