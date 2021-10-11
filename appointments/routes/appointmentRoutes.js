@@ -7,8 +7,11 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(appointmentsController.getAllAppointments)
+  .get(authenticate('Admin', 'Moderator'), appointmentsController.getAllAppointments)
   .post(checkIsLoggedIn(User), appointmentsController.createAppointment);
+
+router.use(authenticate('Admin', 'Moderator'));
+
 router
   .route('/:id')
   .get(appointmentsController.getOneAppointment)
