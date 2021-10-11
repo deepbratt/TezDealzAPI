@@ -20,17 +20,11 @@ exports.createAppointment = catchAsync(async (req, res, next) => {
     }
   }
 
-  // if ( (req.user.role === 'User' && req.body.status)) {
-  //   return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
-  // }
+  if (req.user.role === 'User' && req.body.status) {
+    return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
+  }
 
-  const newObj = {
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    phone: req.body.phone,
-  };
-
-  const result = await Appointments.create(newObj);
+  const result = await Appointments.create(req.body);
 
   if (!result) {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
