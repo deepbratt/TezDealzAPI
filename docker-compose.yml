@@ -28,14 +28,6 @@ services:
       - users
     networks:
       - ms_network
-  appointments:
-    build: './appointments'
-    ports:
-      - '3001:3001'
-    depends_on:
-      - users
-    networks:
-      - ms_network
   nginx:
     image: nginx:latest
     ports:
@@ -47,7 +39,6 @@ services:
       - ads
       - swagger
       - tickets
-      - appointments
     networks:
       - ms_network
 networks:
