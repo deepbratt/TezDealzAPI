@@ -4,6 +4,108 @@ info:
   version: '1.0.0'
   title: 'TezDeals'
 paths:
+  /v1/appointments:
+    post:
+      tags:
+        - 'Appointments'
+      summary: 'If User is logged in then fields will be auto filled and appointments will be created Successfully, on the other hand user have to fill all the details itself'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'Used to create appointment'
+          required: true
+          schema:
+            $ref: '#/definitions/appointments'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'created Successfully'
+  /v1/appointments/:
+    get:
+      tags:
+        - 'Appointments'
+      summary: 'used to get all appointments and only Admin and Moderator can perform this request'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'All appointments in response'
+  /v1/appointments/{id}:
+    get:
+      tags:
+        - 'Appointments'
+      summary: 'used to get one appointments and only Admin and Moderator can perform this request'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Return result againt id'
+  /v1/appointments/:id:
+    patch:
+      tags:
+        - 'Appointments'
+      summary: 'used to updated appointment and only Admin and Moderator can perform this request'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: ''
+          required: true
+          schema:
+            $ref: '#/definitions/appointments'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'updated Successfully'
+  /v1/appointments/id:
+    delete:
+      tags:
+        - 'Appointments'
+      summary: 'used to delete appointment and only Admin and Moderator can perform this request'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Car color deleted Successfully'
   /v1/Users/admin-panel-login:
     post:
       tags:
@@ -624,7 +726,7 @@ paths:
         '200':
           description: 'Result'
   /v1/ads/cars/cars-within/{distance}/center/{latlng}/unit/{unit}:
-     get:
+    get:
       tags:
         - 'Cars Based on radius'
       summary: 'get nearest or location based'
@@ -638,11 +740,11 @@ paths:
           name: distance
           required: true
           type: 'number'
-        - in: 'path'  
+        - in: 'path'
           name: latlng
           required: true
           type: 'string'
-        - in: 'path'  
+        - in: 'path'
           name: unit
           required: true
           type: 'string'
@@ -2004,4 +2106,13 @@ definitions:
       name:
         type: 'string'
       code:
+        type: 'string'
+  appointments:
+    type: 'object'
+    properties:
+      firstName:
+        type: 'string'
+      lastName:
+        type: 'string'
+      phone:
         type: 'string'
