@@ -22,6 +22,8 @@ services:
     build: './ads'
     ports:
       - '3003:3003'
+    depends_on:
+      - users
     networks:
       - ms_network
   tickets:
