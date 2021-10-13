@@ -6,13 +6,13 @@ const session = require('cookie-session');
 const compression = require('compression');
 dotenv.config({ path: './config/config.env' });
 require('./config/dbConnection')(); // db connection
-const PORT = process.env.PORT || 3006;
 
 const { errorHandler, AppError } = require('@utils/tdb_globalutils');
 
 const appointmentsRoute = require('./constants/consts').routeConsts.appointmentRoute;
 const appointmentsRouter = require('./routes/appointmentRoutes');
 
+const PORT = process.env.PORT || 3006;
 const app = express();
 
 app.use(cors());

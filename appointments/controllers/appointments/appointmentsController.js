@@ -6,11 +6,19 @@ const { APIFeatures } = require('@utils/tdb_globalutils');
 exports.createAppointment = catchAsync(async (req, res, next) => {
   if (req.user) {
     if (!req.user.phone) {
-      return next(new AppError('Please add your phone number first.', STATUS_CODE.UNAUTHORIZED));
+      return next(
+        new AppError('Please enter phone number in your profile', STATUS_CODE.UNAUTHORIZED),
+      );
     }
-    req.body.firstname = req.user.firstName;
+
+    req.body.firstName = req.user.firstName;
     req.body.lastName = req.user.lastName;
     req.body.phone = req.user.phone;
+    req.body.user_id = req.user._id;
+
+    if (req.user.role === 'User' && req.body.status) {
+      return next(new AppError('You are not allowed to add status', STATUS_CODE.UNAUTHORIZED));
+    }
   } else {
     const { firstName, lastName, phone } = req.body;
     if (!firstName || !lastName || !phone) {
@@ -18,10 +26,9 @@ exports.createAppointment = catchAsync(async (req, res, next) => {
         new AppError('Please Provide a first name, last name or phone', STATUS_CODE.BAD_REQUEST),
       );
     }
-  }
-
-  if (req.user.role === 'User' && req.body.status) {
-    return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
+    if (req.body.status) {
+      return next(new AppError('You are not allowed to add status', STATUS_CODE.UNAUTHORIZED));
+    }
   }
 
   const result = await Appointments.create(req.body);

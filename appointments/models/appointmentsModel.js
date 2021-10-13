@@ -2,17 +2,18 @@ const mongoose = require('mongoose');
 
 const appointmentsSchema = new mongoose.Schema(
   {
+    user_id: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+    },
     firstName: {
       type: String,
-      required: [true, 'Please provide First Name'],
     },
     lastName: {
       type: String,
-      required: [true, 'Please provide Last Name'],
     },
     phone: {
       type: String,
-      required: [true, 'Please provide Phone Number'],
     },
     status: {
       type: String,

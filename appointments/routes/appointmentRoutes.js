@@ -5,16 +5,16 @@ const { checkIsLoggedIn, authenticate, restrictTo } = require('@auth/tdb-auth');
 
 const router = express.Router();
 
-router
-  .route('/')
-  .get(authenticate('Admin', 'Moderator'), appointmentsController.getAllAppointments)
-  .post(checkIsLoggedIn(User), appointmentsController.createAppointment);
+router.post('/', checkIsLoggedIn(User), appointmentsController.createAppointment);
 
-router.use(authenticate('Admin', 'Moderator'));
+router.use(authenticate(User));
+
+router.get('/', restrictTo('Admin', 'Moderator'), appointmentsController.getAllAppointments);
 
 router
   .route('/:id')
-  .get(appointmentsController.getOneAppointment)
-  .patch(appointmentsController.updateAppointment)
-  .delete(appointmentsController.deleteAppointment);
+  .get(restrictTo('Admin', 'Moderator'), appointmentsController.getOneAppointment)
+  .patch(restrictTo('Admin', 'Moderator'), appointmentsController.updateAppointment)
+  .delete(restrictTo('Admin', 'Moderator'), appointmentsController.deleteAppointment);
+
 module.exports = router;
