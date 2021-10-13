@@ -5,7 +5,7 @@ const { filter } = require('../../utils/apifilter');
 
 exports.filter = async (query, queryParams) => {
   const results = new APIFeatures(query, queryParams).filter().search().sort().limitFields();
-  const totalCount = await results.query.count();
+  const totalCount = await results.query.countDocuments();
 
   const freatures = new APIFeatures(query, queryParams)
     .filter()
