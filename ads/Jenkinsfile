@@ -1,7 +1,7 @@
 node('tezDeals') {
     
     stage('clone repository') {
-        git branch: 'testing', credentialsId: 'gitHub', url: 'https://github.com/themagnit/TDB-Ads.git'
+        git branch: 'latest', credentialsId: 'gitHub', url: 'https://github.com/themagnit/TDB-Ads.git'
     }
     stage('Test'){
         echo "TEST PASSED" 
