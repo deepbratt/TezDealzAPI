@@ -23,6 +23,10 @@ const appointmentsSchema = new mongoose.Schema(
         message: 'Please Enter Valid Status',
       },
     },
+    cancelled: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

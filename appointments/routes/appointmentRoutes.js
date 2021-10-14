@@ -9,6 +9,8 @@ router.post('/', checkIsLoggedIn(User), appointmentsController.createAppointment
 
 router.use(authenticate(User));
 
+router.get('/my-appointments', appointmentsController.getMine);
+
 router.get('/', restrictTo('Admin', 'Moderator'), appointmentsController.getAllAppointments);
 
 router
