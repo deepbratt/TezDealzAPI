@@ -49,7 +49,6 @@ exports.createAppointment = catchAsync(async (req, res, next) => {
 exports.getAllAppointments = catchAsync(async (req, res, next) => {
   const features = new APIFeatures(Appointments.find(), req.query)
     .filter()
-    .search()
     .sort()
     .limitFields()
     .pagination();
@@ -115,5 +114,28 @@ exports.deleteAppointment = catchAsync(async (req, res, next) => {
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.DELETE,
+  });
+});
+
+exports.getMine = catchAsync(async (req, res, next) => {
+  const features = new APIFeatures(Appointments.find({ user_id: req.user._id }), req.query)
+    .filter()
+    .search()
+    .sort()
+    .limitFields()
+    .pagination();
+
+  const result = await features.query;
+
+  if (result.length === 0)
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    total: result.length,
+    data: {
+      result,
+    },
   });
 });

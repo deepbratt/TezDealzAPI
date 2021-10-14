@@ -106,6 +106,20 @@ paths:
           description: 'Invalid input'
         '200':
           description: 'Car color deleted Successfully'
+  /v1/appointments/my-appointments:
+    get:
+      tags:
+        - 'Appointments'
+      summary: 'used to get my all Appointments'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: `User's All appointments in response`
   /v1/Users/admin-panel-login:
     post:
       tags:
