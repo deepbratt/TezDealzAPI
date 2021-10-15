@@ -139,3 +139,31 @@ exports.getMine = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.cancelAppointment = catchAsync(async (req, res, next) => {
+  const result = await Appointments.findOne({ _id: req.params.id, cancelled: false });
+  if (!result) {
+    return next(
+      new AppError('Appointment is already cancelled or does not exists.', STATUS_CODE.BAD_REQUEST),
+    );
+  }
+  await Appointments.updateOne({ _id: req.params.id }, { cancelled: true });
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: 'Your Appointment is cancelled successfully',
+  });
+});
+
+exports.reOpenAppointment = catchAsync(async (req, res, next) => {
+  const result = await Appointments.findOne({ _id: req.params.id, cancelled: true });
+  if (!result) {
+    return next(
+      new AppError('Appointment is already re-opened or does not exists.', STATUS_CODE.BAD_REQUEST),
+    );
+  }
+  await Appointments.updateOne({ _id: req.params.id }, { cancelled: false });
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: 'Your Appointment is re-opened successfully',
+  });
+});
