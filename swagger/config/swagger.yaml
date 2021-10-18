@@ -93,7 +93,7 @@ paths:
     delete:
       tags:
         - 'Show Number'
-      summary: 'used to delete clciked show number document details and only Admin and Moderator can perform this request'
+      summary: 'used to delete clicked show number document details and only Admin and Moderator can perform this request'
       description: ''
       consumes:
         - 'application/json'
@@ -109,6 +109,44 @@ paths:
           description: 'Invalid input'
         '200':
           description: 'clicked show number document deleted Successfully'
+  /v1/ads/cars/show-number/add-detail-of-ad/:{id}:
+    patch:
+      tags:
+        - 'Show Number'
+      summary: 'used to add id of advertisement in Users model when he clicks on clicked show number document details and only Admin and Moderator can perform this request'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Details Added of this Ad!!!'
+  /v1/ads/cars/show-number/all-buyers-of-one-ad/:{id}:
+    get:
+      tags:
+        - 'Show Number'
+      summary: 'used to get all users that clicked on show number button on specific advertisement'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'List of all users on specific advertisement'
   # /v1/appointments/my-appointments:
   #   get:
   #     tags:

@@ -102,6 +102,12 @@ const userSchema = new mongoose.Schema(
         message: ERRORS.INVALID.ROLE_SIGNUP,
       },
     },
+    showNumberOfAd: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Car',
+      },
+    ],
     // isVerified: {
     // 	type: Boolean,
     // 	default: false,

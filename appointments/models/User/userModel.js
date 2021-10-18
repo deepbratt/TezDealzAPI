@@ -100,6 +100,12 @@ const userSchema = new mongoose.Schema(
         message: 'Role Must be User, Moderator or Admin',
       },
     },
+    showNumberOfAd: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Car',
+      },
+    ],
     // isVerified: {
     // 	type: Boolean,
     // 	default: false,
