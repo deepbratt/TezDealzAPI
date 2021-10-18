@@ -1,4 +1,5 @@
 const Car = require('../../models/cars/carModel');
+const User = require('../../models/user/userModel');
 const ShowNumber = require('../../models/cars/number-viewed/showNumberModel');
 const { AppError, catchAsync } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
@@ -127,5 +128,45 @@ exports.deleteShowNumberDetails = catchAsync(async (req, res, next) => {
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.DELETE,
+  });
+});
+
+exports.addToShowNumberOfAd = catchAsync(async (req, res, next) => {
+  if (!(await Car.findById(req.params.id))) {
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  }
+
+  if (req.user.showNumberOfAd.includes(req.params.id)) {
+    res.status(STATUS_CODE.OK).json({
+      status: STATUS.SUCCESS,
+      message: 'This Add ID is Already Added',
+    });
+  } else {
+    await User.updateOne({ _id: req.user._id }, { $push: { showNumberOfAd: req.params.id } });
+
+    res.status(STATUS_CODE.OK).json({
+      status: STATUS.SUCCESS,
+      message: 'Details Added of this Ad!!!',
+    });
+  }
+});
+
+exports.getAllUsersClickedOnShowNumberOfAd = catchAsync(async (req, res, next) => {
+  const [result, totalCount] = await filter(
+    User.find({ showNumberOfAd: req.params.id }),
+    req.query,
+  );
+
+  if (result.length === 0)
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    countOnPage: result.length,
+    totalCount: totalCount,
+    data: {
+      result,
+    },
   });
 });

@@ -50,6 +50,18 @@ router
     showNumberController.deleteShowNumberDetails,
   );
 
+router
+  .route('/show-number/add-detail-of-ad/:id')
+  .patch(authenticate(User), showNumberController.addToShowNumberOfAd);
+
+router
+  .route('/show-number/all-buyers-of-one-ad/:id')
+  .get(
+    authenticate(User),
+    restrictTo('Admin', 'Moderator'),
+    showNumberController.getAllUsersClickedOnShowNumberOfAd,
+  );
+
 //location based search
 router.route('/cars-within/:distance/center/:latlng/unit/:unit').get(carController.getCarsWithin);
 
