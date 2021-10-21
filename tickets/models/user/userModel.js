@@ -100,12 +100,6 @@ const userSchema = new mongoose.Schema(
         message: ERRORS.REQUIRED.USER_ROLE_REQUIRED,
       },
     },
-    showNumberOfAd: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: 'Car',
-      },
-    ],
     // isVerified: {
     // 	type: Boolean,
     // 	default: false,

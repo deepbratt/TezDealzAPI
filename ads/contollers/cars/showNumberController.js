@@ -33,7 +33,7 @@ exports.createShowNumberDetails = catchAsync(async (req, res, next) => {
   } else {
     res.status(STATUS_CODE.OK).json({
       status: STATUS.SUCCESS,
-      message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+      message: 'Details Already Saved',
     });
   }
 });
@@ -62,7 +62,7 @@ exports.getAllShowNumberData = catchAsync(async (req, res, next) => {
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-    total: result.length,
+    countOnPage: result.length,
     totalCount: totalCount,
     data: {
       result,
@@ -131,34 +131,24 @@ exports.deleteShowNumberDetails = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.addToShowNumberOfAd = catchAsync(async (req, res, next) => {
-  if (!(await Car.findById(req.params.id))) {
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-  }
-
-  if (req.user.showNumberOfAd.includes(req.params.id)) {
-    res.status(STATUS_CODE.OK).json({
-      status: STATUS.SUCCESS,
-      message: 'This Add ID is Already Added',
-    });
-  } else {
-    await User.updateOne({ _id: req.user._id }, { $push: { showNumberOfAd: req.params.id } });
-
-    res.status(STATUS_CODE.OK).json({
-      status: STATUS.SUCCESS,
-      message: 'Details Added of this Ad!!!',
-    });
-  }
-});
-
-exports.getAllUsersClickedOnShowNumberOfAd = catchAsync(async (req, res, next) => {
+exports.getAllLogsOfOneAd = catchAsync(async (req, res, next) => {
   const [result, totalCount] = await filter(
-    User.find({ showNumberOfAd: req.params.id }),
+    ShowNumber.find({ car_details: req.params.id }).populate([
+      {
+        path: 'buyer_details',
+        model: 'User',
+        select: 'firstName lastName phone',
+      },
+      {
+        path: 'car_details',
+        model: 'Car',
+        select: 'make model modelYear',
+      },
+    ]),
     req.query,
   );
 
-  if (result.length === 0)
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
@@ -170,3 +160,23 @@ exports.getAllUsersClickedOnShowNumberOfAd = catchAsync(async (req, res, next) =
     },
   });
 });
+
+// exports.addToShowNumberOfAd = catchAsync(async (req, res, next) => {
+//   if (!(await Car.findById(req.params.id))) {
+//     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+//   }
+
+//   if (req.user.showNumberOfAd.includes(req.params.id)) {
+//     res.status(STATUS_CODE.OK).json({
+//       status: STATUS.SUCCESS,
+//       message: 'This Add ID is Already Added',
+//     });
+//   } else {
+//     await User.updateOne({ _id: req.user._id }, { $push: { showNumberOfAd: req.params.id } });
+
+//     res.status(STATUS_CODE.OK).json({
+//       status: STATUS.SUCCESS,
+//       message: 'Details Added of this Ad!!!',
+//     });
+//   }
+// });
