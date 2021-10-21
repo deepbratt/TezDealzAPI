@@ -30,10 +30,6 @@ showNumbers.index({
   buyer_details: 'text',
   seller_details: 'text',
   car_details: 'text',
-  firstName: 'text',
-  lastName: 'text',
-  make: 'text',
-  model: 'text',
 });
 
 const ShowNumber = mongoose.model('ShowNumber', showNumbers);
