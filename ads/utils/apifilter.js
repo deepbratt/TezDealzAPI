@@ -69,7 +69,7 @@ exports.filter = (query) => {
   Object.keys(queryParams).forEach((el) => {
     if (!excluded.includes(el)) {
       if (Array.isArray(queryParams[el])) {
-        console.log(Array.isArray(queryParams[el]));
+        // console.log(Array.isArray(queryParams[el]));
         var regex = queryParams[el].map(function (val) {
           return `^${val}$`;
         });
@@ -83,12 +83,12 @@ exports.filter = (query) => {
       newObj[el] = queryParams[el];
     }
   });
-  console.log(newObj);
+  // console.log(newObj);
   // FILTER MONGOOSE OPERATORS
   let queryStr = JSON.stringify(newObj);
   queryStr = queryStr.replace(/\b(gte|gt|lte|lt|regex|options)\b/g, (match) => `$${match}`);
 
-  console.log(JSON.parse(queryStr));
+  // console.log(JSON.parse(queryStr));
 
   // let obj = JSON.parse(queryStr);
   // Object.keys(obj.price).forEach((key) => {

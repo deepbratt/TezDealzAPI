@@ -50,16 +50,16 @@ router
     showNumberController.deleteShowNumberDetails,
   );
 
-router
-  .route('/show-number/add-detail-of-ad/:id')
-  .patch(authenticate(User), showNumberController.addToShowNumberOfAd);
+// router
+//   .route('/show-number/add-detail-of-ad/:id')
+//   .patch(authenticate(User), showNumberController.addToShowNumberOfAd);
 
 router
-  .route('/show-number/all-buyers-of-one-ad/:id')
+  .route('/show-number/logs/:id')
   .get(
     authenticate(User),
     restrictTo('Admin', 'Moderator'),
-    showNumberController.getAllUsersClickedOnShowNumberOfAd,
+    showNumberController.getAllLogsOfOneAd,
   );
 
 //location based search

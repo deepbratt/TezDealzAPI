@@ -109,30 +109,30 @@ paths:
           description: 'Invalid input'
         '200':
           description: 'clicked show number document deleted Successfully'
-  /v1/ads/cars/show-number/add-detail-of-ad/:{id}:
-    patch:
-      tags:
-        - 'Show Number'
-      summary: 'used to add id of advertisement in Users model when he clicks on clicked show number document details and only Admin and Moderator can perform this request'
-      description: ''
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      parameters:
-        - in: 'path'
-          name: 'id'
-          required: true
-      responses:
-        '400':
-          description: 'Invalid input'
-        '200':
-          description: 'Details Added of this Ad!!!'
-  /v1/ads/cars/show-number/all-buyers-of-one-ad/:{id}:
+  # /v1/ads/cars/show-number/add-detail-of-ad/:{id}:
+  #   patch:
+  #     tags:
+  #       - 'Show Number'
+  #     summary: 'used to add id of advertisement in Users model when he clicks on clicked show number document details and only Admin and Moderator can perform this request'
+  #     description: ''
+  #     consumes:
+  #       - 'application/json'
+  #     produces:
+  #       - 'application/json'
+  #     parameters:
+  #       - in: 'path'
+  #         name: 'id'
+  #         required: true
+  #     responses:
+  #       '400':
+  #         description: 'Invalid input'
+  #       '200':
+  #         description: 'Details Added of this Ad!!!'
+  /v1/ads/cars/show-number/logs/{id}:
     get:
       tags:
         - 'Show Number'
-      summary: 'used to get all users that clicked on show number button on specific advertisement'
+      summary: 'Get all the Logs of a specific Advertisement Only Admin and Moderators can access this information.'
       description: ''
       consumes:
         - 'application/json'
@@ -146,7 +146,7 @@ paths:
         '400':
           description: 'Invalid input'
         '200':
-          description: 'List of all users on specific advertisement'
+          description: 'List of all Logs of that Advertisement'
   # /v1/appointments/my-appointments:
   #   get:
   #     tags:

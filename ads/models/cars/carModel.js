@@ -1,15 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const { ERRORS } = require('@constants/tdb-constants');
-//const BodyType = require('../../models/cars/bodyTypes/bodyTypes');
-//const Features = require('../../models/cars/features/featuresModel');
-
-// let carFeatures = async function () {
-//   let result = await Features.find().select('name image');
-//   return result;
-// };
-
-// console.log(carFeatures);
 
 const carsSchema = new mongoose.Schema(
   {

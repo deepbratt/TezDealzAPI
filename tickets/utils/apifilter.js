@@ -48,54 +48,54 @@ const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-con
 // };
 
 exports.filter = (query) => {
-	//QUERY FILTER
-	const queryParams = { ...query };
-	const excludedFields = ['limit', 'page', 'sort', 'fields', 'keyword'];
-	excludedFields.forEach((el) => delete queryParams[el]);
-	// CASE INSENSITIVE SEARCH
-	let newObj = {};
-	const excluded = [
-		'price',
-		'engineCapacity',
-		'milage',
-		'modelYear',
-		'_id',
-		'id',
-		'active',
-		'banned',
-		'isSold',
-		'imageStatus',
-	];
-	Object.keys(queryParams).forEach((el) => {
-		if (!excluded.includes(el)) {
-			if (Array.isArray(queryParams[el])) {
-				console.log(Array.isArray(queryParams[el]));
-				var regex = queryParams[el].map(function (val) {
-					return `^${val}$`;
-				});
-				const reg = regex.join('|');
-				newObj[el] = { regex: reg, options: 'i' };
-			} else {
-				const value = `^${queryParams[el]}$`;
-				newObj[el] = { regex: value, options: 'i' };
-			}
-		} else {
-			newObj[el] = queryParams[el];
-		}
-	});
-	console.log(newObj);
-	// FILTER MONGOOSE OPERATORS
-	let queryStr = JSON.stringify(newObj);
-	queryStr = queryStr.replace(/\b(gte|gt|lte|lt|regex|options)\b/g, (match) => `$${match}`);
+  //QUERY FILTER
+  const queryParams = { ...query };
+  const excludedFields = ['limit', 'page', 'sort', 'fields', 'keyword'];
+  excludedFields.forEach((el) => delete queryParams[el]);
+  // CASE INSENSITIVE SEARCH
+  let newObj = {};
+  const excluded = [
+    'price',
+    'engineCapacity',
+    'milage',
+    'modelYear',
+    '_id',
+    'id',
+    'active',
+    'banned',
+    'isSold',
+    'imageStatus',
+  ];
+  Object.keys(queryParams).forEach((el) => {
+    if (!excluded.includes(el)) {
+      if (Array.isArray(queryParams[el])) {
+        // console.log(Array.isArray(queryParams[el]));
+        var regex = queryParams[el].map(function (val) {
+          return `^${val}$`;
+        });
+        const reg = regex.join('|');
+        newObj[el] = { regex: reg, options: 'i' };
+      } else {
+        const value = `^${queryParams[el]}$`;
+        newObj[el] = { regex: value, options: 'i' };
+      }
+    } else {
+      newObj[el] = queryParams[el];
+    }
+  });
+  // console.log(newObj);
+  // FILTER MONGOOSE OPERATORS
+  let queryStr = JSON.stringify(newObj);
+  queryStr = queryStr.replace(/\b(gte|gt|lte|lt|regex|options)\b/g, (match) => `$${match}`);
 
-	console.log(JSON.parse(queryStr));
+  // console.log(JSON.parse(queryStr));
 
-	// let obj = JSON.parse(queryStr);
-	// Object.keys(obj.price).forEach((key) => {
-	// 	obj.price[key] = parseInt(obj.price[key]);
-	// });
-	//console.log(obj);
-	// QUERY BUILDING
+  // let obj = JSON.parse(queryStr);
+  // Object.keys(obj.price).forEach((key) => {
+  // 	obj.price[key] = parseInt(obj.price[key]);
+  // });
+  //console.log(obj);
+  // QUERY BUILDING
 
-	return JSON.parse(queryStr);
+  return JSON.parse(queryStr);
 };
