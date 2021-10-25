@@ -5,13 +5,11 @@ const sendSMS = async (options) => {
   const authToken = process.env.AUTH_TOKEN_TWILIO; // Your Auth Token from www.twilio.com/console
   const client = new twilio(accountSid, authToken);
 
-  await client.messages
-    .create({
-      body: options.body,
-      to: options.phone, // Text this number
-      from: process.env.TWILIO_PHONE_NUMBER, // From a valid Twilio number
-    })
-    .then((message) => console.log(message.sid));
+  await client.messages.create({
+    body: options.body,
+    to: options.phone, // Text this number
+    from: process.env.TWILIO_PHONE_NUMBER, // From a valid Twilio number
+  });
 };
 
 module.exports = sendSMS;

@@ -368,7 +368,6 @@ exports.carsSoldByPlatform = catchAsync(async (req, res, next) => {
 
 exports.getAllOwners = catchAsync(async (req, res, next) => {
   const seller = await Car.distinct('createdBy');
-  // console.log(seller);
   const [result, totalCount] = await filter(User.find({ _id: { $in: [...seller] } }), req.query);
 
   if (result.length <= 0) {

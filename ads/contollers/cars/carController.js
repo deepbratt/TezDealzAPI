@@ -93,9 +93,6 @@ exports.getOne = catchAsync(async (req, res, next) => {
     if (req.user) {
       const currentUser = req.user._id;
       if (req.user.role === 'User' && !currentUser.equals(result.createdBy._id)) {
-        console.log('here');
-        console.log(currentUser);
-        console.log(result.createdBy);
         return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
       }
     } else {
@@ -136,7 +133,7 @@ exports.updateOne = catchAsync(async (req, res, next) => {
       );
       array.push(Location);
     }
-    console.log(req.body.image);
+    // console.log(req.body.image);
     if (req.body.image) {
       req.body.image = [...req.body.image, ...array];
     } else {

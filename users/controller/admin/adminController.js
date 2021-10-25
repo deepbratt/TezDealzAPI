@@ -361,7 +361,6 @@ exports.forgotPasswordAdmin = catchAsync(async (req, res, next) => {
 
   const adminResetToken = await user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false });
-  console.log(adminResetToken);
   try {
     if (Validator.validate(req.body.data)) {
       await new Email(user, adminResetToken).sendPasswordResetToken();
