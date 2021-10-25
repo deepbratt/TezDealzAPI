@@ -1,5 +1,5 @@
 const Car = require('../../models/cars/carModel');
-const User = require('../../models/user/userModel');
+// const User = require('../../models/user/userModel');
 const ShowNumber = require('../../models/cars/number-viewed/showNumberModel');
 const { AppError, catchAsync } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');

@@ -276,9 +276,7 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
 
 //   user.loggedInWithPhone = true;
 
-//   const verificationToken = await user.phoneVerificationToken();
-//   // console.log(resetToken);
-//   await user.save({ validateBeforeSave: false });
+//   const verificationToken = await user.phoneVerificationToken();//   await user.save({ validateBeforeSave: false });
 //   await sendSMS({
 //     body: `${SUCCESS_MSG.SUCCESS_MESSAGES.TEZDEALZ_VEFRIFICATION_CODE} ${verificationToken}`,
 //     phone: newUser.phone, // Text this number
