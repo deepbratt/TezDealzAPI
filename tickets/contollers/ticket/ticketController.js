@@ -1,7 +1,9 @@
 const Ticket = require('../../models/ticket/ticketModel');
+const Validator = require('email-validator');
 const { AppError, catchAsync } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
 const { filter } = require('../factory/factoryHandler');
+const { regex } = require('../../utils/regex');
 
 exports.createTechAssistance = catchAsync(async (req, res, next) => {
   if (req.user) {
@@ -18,16 +20,23 @@ exports.createTechAssistance = catchAsync(async (req, res, next) => {
     return next(new AppError(ERRORS.REQUIRED.DESCRIPTION_REQUIRED, STATUS_CODE.BAD_REQUEST));
   }
   req.body.type = 'Technical Assistance';
-  const result = await Ticket.create(req.body);
-  if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  if (regex.pakPhone.test(req.body.phone) && Validator.validate(req.body.email)) {
+    const result = await Ticket.create(req.body);
 
-  res.status(STATUS_CODE.CREATED).json({
-    status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-    data: {
-      result,
-    },
-  });
+    if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+
+    res.status(STATUS_CODE.CREATED).json({
+      status: STATUS.SUCCESS,
+      message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+      data: {
+        result,
+      },
+    });
+  } else {
+    return next(
+      new AppError('Please Provide valid Email or Phone Number', STATUS_CODE.BAD_REQUEST),
+    );
+  }
 });
 
 exports.createAdvAssistance = catchAsync(async (req, res, next) => {
