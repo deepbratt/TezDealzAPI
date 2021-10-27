@@ -187,6 +187,13 @@ carsSchema.index({
   transmission: 'text',
 });
 
+// carsSchema.pre('save', function (next) {
+//   if (this.isNew && Array.isArray(this.location) && 0 === this.location.length) {
+//     this.location = undefined;
+//   }
+//   next();
+// })
+
 const Car = mongoose.model('Car', carsSchema);
 
 module.exports = Car;
