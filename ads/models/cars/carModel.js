@@ -19,8 +19,8 @@ const carsSchema = new mongoose.Schema(
     location: {
       type: {
         type: String,
-        default: 'point',
-        enum: ['point'],
+        enum: ['Point'],
+        default: 'Point',
       },
       coordinates: [Number],
       address: String,
