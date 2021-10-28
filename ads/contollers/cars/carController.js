@@ -147,8 +147,8 @@ exports.updateOne = catchAsync(async (req, res, next) => {
     req.body.imageStatus = true;
   }
   const result = await Car.findByIdAndUpdate(req.params.id, req.body, {
-    runValidators: true,
     new: true,
+    runValidators: true,
   });
 
   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));

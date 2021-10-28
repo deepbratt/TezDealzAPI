@@ -19,8 +19,8 @@ const carsSchema = new mongoose.Schema(
     location: {
       type: {
         type: String,
-        default: 'point',
-        enum: ['point'],
+        enum: ['Point'],
+        default: 'Point',
       },
       coordinates: [Number],
       address: String,
@@ -186,6 +186,13 @@ carsSchema.index({
   assembly: 'text',
   transmission: 'text',
 });
+
+// carsSchema.pre('save', function (next) {
+//   if (this.isNew && Array.isArray(this.location) && 0 === this.location.length) {
+//     this.location = undefined;
+//   }
+//   next();
+// })
 
 const Car = mongoose.model('Car', carsSchema);
 
