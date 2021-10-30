@@ -2,13 +2,13 @@ const Validator = require('email-validator');
 const crypto = require('crypto');
 const User = require('../../model/userModel');
 const moment = require('moment');
-const { AppError, catchAsync, uploadS3, Email } = require('@utils/tdb_globalutils');
+const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
 const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
 const { regex, pakPhone } = require('../../utils/regex');
 const { send } = require('../../utils/rabbitMQ');
 const { filterObj, filter } = require('../factory/factoryHandler');
 const sendSMS = require('../../utils/sendSMS');
-
+const Email = require('../../utils/email-mailgun');
 exports.getAllUsers = catchAsync(async (req, res, next) => {
   let result;
   if (req.user.role === 'Admin') {
@@ -363,11 +363,15 @@ exports.forgotPasswordAdmin = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
   try {
     if (Validator.validate(req.body.data)) {
-      await new Email(user, adminResetToken).sendPasswordResetToken();
-      return res.status(STATUS_CODE.OK).json({
-        status: STATUS.SUCCESS,
-        message: SUCCESS_MSG.SUCCESS_MESSAGES.TOKEN_SENT_EMAIL,
-      });
+      try {
+        await new Email(user.email, { ...user._doc, adminResetToken }).adminSendPasswordResetToken();
+        return res.status(STATUS_CODE.OK).json({
+          status: STATUS.SUCCESS,
+          message: SUCCESS_MSG.SUCCESS_MESSAGES.TOKEN_SENT_EMAIL,
+        });
+      } catch (err) {
+        console.log(err);
+      }
     } else {
       await sendSMS({
         body: `Your TezDealz Admin Password reset code is ${adminResetToken}`,

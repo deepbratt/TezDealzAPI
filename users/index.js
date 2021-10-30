@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const cluster = require('cluster');
 const os = require('os');
 const cors = require('cors');
+const path = require('path');
 const { AppError, errorHandler } = require('@utils/tdb_globalutils');
 //const {c}= require('tdb_globalutils')
 dotenv.config({ path: './config/config.env' }); // read config.env to environmental variables
@@ -33,6 +34,8 @@ app.use(helmet());
 // CORS
 app.use(cors());
 
+app.set('utils', path.join(__dirname, 'utils'));
+
 // // To prrevent Brute force Attack
 // const limiter = rateLimit({
 //   max: process.env.MAX_REQUESTS_FORM_SAME_IP,
@@ -42,11 +45,11 @@ app.use(cors());
 // app.use(rateLimitRoute, limiter);
 
 app.use(
-	morgan('dev', {
-		skip: function (req, res) {
-			return res.statusCode < 200;
-		},
-	})
+  morgan('dev', {
+    skip: function (req, res) {
+      return res.statusCode < 200;
+    },
+  }),
 );
 
 // GLOBAL MIDDLEWARES
@@ -67,26 +70,26 @@ app.use(xss());
 // );
 
 app.use(
-	session({
-		signed: false,
-	})
+  session({
+    signed: false,
+  }),
 );
 
 app.use(compression());
 //routes
 app.use(userRoute, userRouter);
 app.all('*', (req, res, next) => {
-	next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
+  next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
 });
 
 app.use(errorHandler);
 
 if (cluster.isMaster) {
-	for (let i = 0; i < numCpu; i++) {
-		cluster.fork();
-	}
+  for (let i = 0; i < numCpu; i++) {
+    cluster.fork();
+  }
 } else {
-	app.listen(PORT, () => {
-		console.log(`${process.pid} listening on ${PORT}`);
-	});
+  app.listen(PORT, () => {
+    console.log(`${process.pid} listening on ${PORT}`);
+  });
 }

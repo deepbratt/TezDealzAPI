@@ -1,11 +1,12 @@
 const crypto = require('crypto');
 var validator = require('email-validator');
 const User = require('../../model/userModel');
-const { AppError, Email, catchAsync } = require('@utils/tdb_globalutils');
+const { AppError, catchAsync } = require('@utils/tdb_globalutils');
 const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
 const sendSMS = require('../../utils/sendSMS');
 const jwtManagement = require('../../utils/jwtManagement');
 const { regex, pakPhone } = require('../../utils/regex');
+const Email = require('../../utils/email-mailgun');
 //Forgot Password Via Email/phone
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   if (!req.body.data) {
@@ -38,11 +39,15 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
   try {
     if (validator.validate(req.body.data)) {
-      await new Email(user, resetToken).sendPasswordResetToken();
-      return res.status(STATUS_CODE.OK).json({
-        status: STATUS.SUCCESS,
-        message: SUCCESS_MSG.SUCCESS_MESSAGES.TOKEN_SENT_EMAIL,
-      });
+      try {
+        await new Email(user.email, { ...user._doc, resetToken }).sendPasswordResetToken();
+        return res.status(STATUS_CODE.OK).json({
+          status: STATUS.SUCCESS,
+          message: SUCCESS_MSG.SUCCESS_MESSAGES.TOKEN_SENT_EMAIL,
+        });
+      } catch (err) {
+        console.log(err);
+      }
     } else {
       await sendSMS({
         body: `Your TezDealz password reset code is ${resetToken}`,
