@@ -1,6 +1,6 @@
 # Car Okta API
 
-##prerequisites
+## prerequisites
 - Docker
 
 ## To run application in machine
