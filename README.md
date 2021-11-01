@@ -8,4 +8,3 @@
  - cd TezDealzAPI
  - docker-compose build
  - docker-compose up
-...
