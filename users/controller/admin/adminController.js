@@ -363,15 +363,11 @@ exports.forgotPasswordAdmin = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
   try {
     if (Validator.validate(req.body.data)) {
-      try {
         await new Email(user.email, { ...user._doc, adminResetToken }).adminSendPasswordResetToken();
         return res.status(STATUS_CODE.OK).json({
           status: STATUS.SUCCESS,
           message: SUCCESS_MSG.SUCCESS_MESSAGES.TOKEN_SENT_EMAIL,
         });
-      } catch (err) {
-        console.log(err);
-      }
     } else {
       await sendSMS({
         body: `Your TezDealz Admin Password reset code is ${adminResetToken}`,

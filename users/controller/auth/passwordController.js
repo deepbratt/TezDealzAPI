@@ -39,15 +39,11 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
   try {
     if (validator.validate(req.body.data)) {
-      try {
         await new Email(user.email, { ...user._doc, resetToken }).sendPasswordResetToken();
         return res.status(STATUS_CODE.OK).json({
           status: STATUS.SUCCESS,
           message: SUCCESS_MSG.SUCCESS_MESSAGES.TOKEN_SENT_EMAIL,
         });
-      } catch (err) {
-        console.log(err);
-      }
     } else {
       await sendSMS({
         body: `Your TezDealz password reset code is ${resetToken}`,
