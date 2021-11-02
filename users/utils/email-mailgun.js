@@ -15,13 +15,13 @@ module.exports = class Email {
     });
   }
 
-  async send(subject, object, text) {
+  async send(template, subject, object) {
     // mail options
     const data = {
       from: this.from,
       to: this.to,
       subject: subject,
-      text: text,
+      template: template,
       'h:X-Mailgun-Variables': object,
     };
     //create transport and send email
@@ -44,17 +44,17 @@ module.exports = class Email {
   //   }
   async sendPasswordResetToken() {
     await this.send(
-      'Password Reset Token, Your Password Reset Link(only valid for 10 minutes)',
+      'password-reset-user',
       'Your Password Reset Link(only valid for 10 minutes)',
-      `Hi ${this.obj.firstName},Your password reset token is: ${this.obj.resetToken}`,
+      `{"firstName": "${this.obj.firstName}","resetToken": "${this.obj.resetToken}"}`,
     );
   }
 
   async adminSendPasswordResetToken() {
     await this.send(
-      'Password Reset Token, Your Password Reset Link(only valid for 10 minutes)',
+      'password-reset-user',
       'Your Password Reset Link(only valid for 10 minutes)',
-      `Hi ${this.obj.firstName},Your password reset token is: ${this.obj.adminResetToken}`,
+      `{"firstName": "${this.obj.firstName}","resetToken": "${this.obj.adminResetToken}"}`,
     );
   }
   //   async customEmail() {

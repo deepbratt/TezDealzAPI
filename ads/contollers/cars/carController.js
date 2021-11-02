@@ -33,6 +33,15 @@ exports.createOne = catchAsync(async (req, res, next) => {
   } else {
     req.body.imageStatus = true;
   }
+  if (req.user.role === 'User' && req.body.associatedPhone) {
+    return next(
+      new AppError(
+        'You are not allowed to add associated phone information',
+        STATUS_CODE.UNAUTHORIZED,
+      ),
+    );
+  }
+
   const result = await Car.create(req.body);
   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
@@ -146,6 +155,16 @@ exports.updateOne = catchAsync(async (req, res, next) => {
   } else {
     req.body.imageStatus = true;
   }
+
+  if (req.user.role === 'User' && req.body.associatedPhone) {
+    return next(
+      new AppError(
+        'You are not allowed to update associated phone information',
+        STATUS_CODE.UNAUTHORIZED,
+      ),
+    );
+  }
+
   const result = await Car.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
