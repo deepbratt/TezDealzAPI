@@ -125,6 +125,10 @@ const carsSchema = new mongoose.Schema(
         ref: 'User',
       },
     ],
+    associatedPhone: {
+      type: String,
+      validate: [validator.isMobilePhone, ERRORS.INVALID.INVALID_PHONE_NUM],
+    },
     soldByUs: {
       type: Boolean,
     },
