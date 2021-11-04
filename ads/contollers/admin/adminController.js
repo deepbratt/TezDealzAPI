@@ -1,9 +1,13 @@
 const Car = require('../../models/cars/carModel');
 const User = require('../../models/user/userModel');
+const fs = require('fs');
 // const moment = require('moment');
 const { AppError, catchAsync } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
 const { filter } = require('../factory/factoryHandler');
+const fastcsv = require('fast-csv');
+
+exports.addBulkCars = catchAsync(async (req, res, next) => {});
 
 exports.carOwners = catchAsync(async (req, res, next) => {
   const count = await Car.aggregate([

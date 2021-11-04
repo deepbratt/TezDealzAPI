@@ -18,10 +18,13 @@ const {
   phoneCheckOnupdate,
 } = require('../middleware/cars/index');
 const { upload } = require('@utils/tdb_globalutils');
+const fileUpload = require('../utils/fileUpload');
 //const cache = require('../utils/cache');
 //const cacheExp = 30;
 const router = express.Router();
 // const { isCached } = require('../utils/redisCache');
+
+router.post('/bulk-ads', adminController.addBulkCars);
 
 //Show Number
 router.post('/show-number/:id', authenticate(User), showNumberController.createShowNumberDetails);
