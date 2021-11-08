@@ -4,6 +4,26 @@ info:
   version: '1.0.0'
   title: 'TezDeals'
 paths:
+  /v1/ads/cars/bulk-ads:
+    post:
+      tags:
+        - 'To Post Bulk Advertisements'
+      summary: 'We can create multiple ads from csv using this route.'
+      description: ''
+      consumes:
+        - 'text/csv'
+      produces:
+        - 'text/csv'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'Used to create bulk ads from csv file'
+          required: true
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'created Successfully'
   /v1/ads/cars/show-number/:id:
     post:
       tags:

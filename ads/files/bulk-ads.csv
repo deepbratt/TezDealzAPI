@@ -1,0 +1,3 @@
+country,province,city,createdBy,regNumber,make,model,version,modelYear,price,engineType,transmission,condition,bodyType,bodyColor,engineCapacity,registrationCity,assembly,description,sellerType,milage
+pakistan,punjab,lahore,613b56b4b6cee2001ec1ef79,LU12,Honda,Accord,20TL,2020,3567000,Petrol,Automatic,Good,Sedan,White,2000,Lahore,Local,car for sale,Individual,3400
+pakistan,punjab,lahore,613b56b4b6cee2001ec1ef79,LU13,Honda,Accord,20TL,2020,3567000,Petrol,Automatic,Good,Sedan,White,2000,Lahore,Local,car for sale,Individual,3412
