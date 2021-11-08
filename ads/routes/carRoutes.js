@@ -9,6 +9,7 @@ const carMakeController = require('../contollers/cars/carMakeContoller');
 const featuresController = require('../contollers/cars/featuresController');
 const colorController = require('../contollers/cars/colorController');
 const showNumberController = require('../contollers/cars/showNumberController');
+const bulkUploadsController = require('../contollers/cars/bulkUploadAds');
 const carFilters = require('../contollers/cars/carFilters');
 const { authenticate, checkIsLoggedIn, restrictTo } = require('@auth/tdb-auth');
 const {
@@ -18,10 +19,19 @@ const {
   phoneCheckOnupdate,
 } = require('../middleware/cars/index');
 const { upload } = require('@utils/tdb_globalutils');
+const { fileUpload } = require('../utils/fileUpload');
 //const cache = require('../utils/cache');
 //const cacheExp = 30;
 const router = express.Router();
 // const { isCached } = require('../utils/redisCache');
+
+router.post(
+  '/bulk-ads',
+  authenticate(User),
+  restrictTo('Admin', 'Moderator'),
+  fileUpload().single('csvFile'),
+  bulkUploadsController.createBulkUploads,
+);
 
 //Show Number
 router.post('/show-number/:id', authenticate(User), showNumberController.createShowNumberDetails);
