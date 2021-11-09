@@ -25,13 +25,23 @@ const { fileUpload } = require('../utils/fileUpload');
 const router = express.Router();
 // const { isCached } = require('../utils/redisCache');
 
-router.post(
-  '/bulk-ads',
-  authenticate(User),
-  restrictTo('Admin', 'Moderator'),
-  fileUpload().single('csvFile'),
-  bulkUploadsController.createBulkUploads,
-);
+router
+  .route('/bulk-ads/:id')
+  .post(
+    authenticate(User),
+    restrictTo('Admin', 'Moderator'),
+    fileUpload().single('csvFile'),
+    bulkUploadsController.createBulkUploads,
+  );
+router
+  .route('/bulk-ads')
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), bulkUploadsController.getAllBulkAds);
+
+router
+  .route('/bulk-ads/:id')
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), bulkUploadsController.getOneBulkAd)
+  .patch(authenticate(User), restrictTo('Admin', 'Moderator'), bulkUploadsController.UpdateBulkAd)
+  .delete(authenticate(User), restrictTo('Admin', 'Moderator'), bulkUploadsController.deleteBulkAd);
 
 //Show Number
 router.post('/show-number/:id', authenticate(User), showNumberController.createShowNumberDetails);

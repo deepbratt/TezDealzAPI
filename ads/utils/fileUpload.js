@@ -13,6 +13,7 @@ const s3 = new S3({
   region,
   accessKeyId,
   secretAccessKey,
+  correctClockSkew: true,
 });
 
 exports.uploadFile = async (file) => {
