@@ -3,7 +3,24 @@ const { APIFeatures, catchAsync } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
 const { filter } = require('../../utils/apifilter');
 
+// Importing log files
+var log4js = require("log4js");
+log4js.configure({
+	"appenders": {
+		"app": { "type": "file", "filename": "../../app.log" }
+	},
+	"categories": {
+		"default": {
+			"appenders": ["app"],
+			"level": "all"
+		}
+	}
+});
+var logger = log4js.getLogger("Ads");
+
+
 exports.filter = async (query, queryParams) => {
+try{
   const results = new APIFeatures(query, queryParams).filter().search().sort().limitFields();
   const totalCount = await results.query.countDocuments();
 
@@ -16,10 +33,18 @@ exports.filter = async (query, queryParams) => {
   const doc = await freatures.query;
 
   return [doc, totalCount];
+}
+  catch(e){
+    logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+  }
+
 };
 
 exports.stats = (Model) => {
   return catchAsync(async (req, res, next) => {
+   
+   try{
     const stats = await Model.aggregate([
       {
         $group: {
@@ -37,6 +62,12 @@ exports.stats = (Model) => {
         $sort: { avgPrice: 1 },
       },
     ]);
+  }
+catch(e){
+  logger.error("Custom Error Message")
+  logger.trace("Something unexpected has occured.", e)
+}
+
     res.status(200).json({
       status: STATUS.SUCCESS,
       data: {
@@ -48,6 +79,7 @@ exports.stats = (Model) => {
 
 exports.dailyAggregate = (Model) => {
   return catchAsync(async (req, res, next) => {
+    try{
     const { min, max } = req.params;
     const stats = await Model.aggregate([
       {
@@ -77,6 +109,12 @@ exports.dailyAggregate = (Model) => {
         },
       },
     ]);
+  }
+  catch(e){
+    logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+  }
+
     res.status(200).json({
       status: STATUS.SUCCESS,
       data: stats,
@@ -86,6 +124,7 @@ exports.dailyAggregate = (Model) => {
 
 exports.citiesByProvince = (Model) => {
   return catchAsync(async (req, res, next) => {
+    try{
     let array = [
       {
         $group: {
@@ -113,6 +152,12 @@ exports.citiesByProvince = (Model) => {
       array.unshift({ $match: filter(req.query) });
     }
     const result = await Model.aggregate(array);
+  }
+  catch(e){
+    logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+  }
+
     res.status(200).json({
       status: STATUS.SUCCESS,
       data: {

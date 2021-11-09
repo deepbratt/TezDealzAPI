@@ -8,9 +8,33 @@ const {
 } = require('@constants/tdb-constants');
 const { filter } = require('../factory/factoryHandler');
 
+
+// Importing log files
+var log4js = require("log4js");
+log4js.configure({
+	"appenders": {
+		"app": { "type": "file", "filename": "../../app.log" }
+	},
+	"categories": {
+		"default": {
+			"appenders": ["app"],
+			"level": "all"
+		}
+	}
+});
+var logger = log4js.getLogger("Ads");
+
+
+
 // MODELS
 exports.createModel = catchAsync(async (req, res, next) => {
-	const result = await CarModel.create(req.body);
+	try {
+		const result = await CarModel.create(req.body);
+	}
+	catch (e) {
+		logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+	}
 
 	res.status(STATUS_CODE.CREATED).json({
 		status: STATUS.SUCCESS,
@@ -22,10 +46,17 @@ exports.createModel = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllModels = catchAsync(async (req, res, next) => {
-	const [result, totalCount] = await filter(CarModel.find(), req.query);
+	try {
+		const [result, totalCount] = await filter(CarModel.find(), req.query);
 
-	if (result.length <= 0) {
-		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+		if (result.length <= 0) {
+			logger.error("Custom Error Message")
+			return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+		}
+	}
+	catch (e) {
+		logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
 	}
 
 	res.status(STATUS_CODE.OK).json({
@@ -40,10 +71,17 @@ exports.getAllModels = catchAsync(async (req, res, next) => {
 });
 
 exports.getOneModel = catchAsync(async (req, res, next) => {
-	const result = await CarModel.findById(req.params.id);
+	try {
+		const result = await CarModel.findById(req.params.id);
 
-	if (!result) {
-		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+		if (!result) {
+			logger.error("Custom Error Message")
+			return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+		}
+	}
+	catch (e) {
+		logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
 	}
 
 	res.status(STATUS_CODE.OK).json({
@@ -56,19 +94,27 @@ exports.getOneModel = catchAsync(async (req, res, next) => {
 });
 
 exports.updateModel = catchAsync(async (req, res, next) => {
-	const result = await CarModel.findByIdAndUpdate(req.params.id, req.body, {
-		new: true,
-		runValidators: true,
-	});
+	try {
+		const result = await CarModel.findByIdAndUpdate(req.params.id, req.body, {
+			new: true,
+			runValidators: true,
+		});
 
-	if (req.body.model_id) {
-		return next(
-			new AppError(ERRORS.INVALID.MODEL_ID_UPDATE, STATUS_CODE.BAD_REQUEST)
-		);
+		if (req.body.model_id) {
+			logger.error("Custom Error Message")
+			return next(
+				new AppError(ERRORS.INVALID.MODEL_ID_UPDATE, STATUS_CODE.BAD_REQUEST)
+			);
+		}
+
+		if (!result) {
+			logger.error("Custom Error Message")
+			return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+		}
 	}
-
-	if (!result) {
-		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	catch (e) {
+		logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
 	}
 
 	res.status(STATUS_CODE.OK).json({
@@ -81,10 +127,18 @@ exports.updateModel = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteModel = catchAsync(async (req, res, next) => {
-	const result = await CarModel.findByIdAndDelete(req.params.id);
 
-	if (!result) {
-		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+	try {
+		const result = await CarModel.findByIdAndDelete(req.params.id);
+
+		if (!result) {
+			logger.error("Custom Error Message")
+			return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+		}
+	}
+	catch (e) {
+		logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
 	}
 
 	res.status(STATUS_CODE.OK).json({

@@ -3,12 +3,36 @@ const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
 const { filter } = require('../factory/factoryHandler');
 
-exports.createOne = catchAsync(async (req, res, next) => {
-	
-	const result = await Color.create(req.body);
 
-	if (!result) {
-		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+// Importing log files
+var log4js = require("log4js");
+log4js.configure({
+	"appenders": {
+		"app": { "type": "file", "filename": "../../app.log" }
+	},
+	"categories": {
+		"default": {
+			"appenders": ["app"],
+			"level": "all"
+		}
+	}
+});
+var logger = log4js.getLogger("Ads");
+
+
+
+exports.createOne = catchAsync(async (req, res, next) => {
+	try {
+		const result = await Color.create(req.body);
+
+		if (!result) {
+			logger.error("Custom Error Message")
+			return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+		}
+	}
+	catch (e) {
+		logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
 	}
 
 	res.status(STATUS_CODE.CREATED).json({
@@ -21,11 +45,19 @@ exports.createOne = catchAsync(async (req, res, next) => {
 });
 
 exports.getAll = catchAsync(async (req, res, next) => {
-	const [result, totalCount] = await filter(Color.find(), req.query);
+	try {
+		const [result, totalCount] = await filter(Color.find(), req.query);
 
-	if (result.length <= 0) {
-		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+		if (result.length <= 0) {
+			logger.error("Custom Error Message")
+			return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+		}
 	}
+	catch (e) {
+		logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+	}
+
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
 		message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
@@ -38,9 +70,18 @@ exports.getAll = catchAsync(async (req, res, next) => {
 });
 
 exports.getOne = catchAsync(async (req, res, next) => {
-	const result = await Color.findById(req.params.id);
+	try {
+		const result = await Color.findById(req.params.id);
 
-	if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+		if (!result) {
+			logger.error("Custom Error Message")
+			return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+		}
+	}
+	catch (e) {
+		logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+	}
 
 	res.status(STATUS_CODE.OK).json({
 		status: STATUS.SUCCESS,
@@ -52,13 +93,20 @@ exports.getOne = catchAsync(async (req, res, next) => {
 });
 
 exports.updateOne = catchAsync(async (req, res, next) => {
-	const result = await Color.findByIdAndUpdate(req.params.id, req.body, {
-		new: true,
-		runValidators: true,
-	});
+	try {
+		const result = await Color.findByIdAndUpdate(req.params.id, req.body, {
+			new: true,
+			runValidators: true,
+		});
 
-	if (!result) {
-		return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+		if (!result) {
+			logger.error("Custom Error Message")
+			return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+		}
+	}
+	catch (e) {
+		logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
 	}
 
 	res.status(STATUS_CODE.OK).json({
@@ -71,10 +119,17 @@ exports.updateOne = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteOne = catchAsync(async (req, res, next) => {
-	const result = await Color.findByIdAndDelete(req.params.id);
+	try {
+		const result = await Color.findByIdAndDelete(req.params.id);
 
-	if (!result) {
-		return new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND);
+		if (!result) {
+			logger.error("Custom Error Message")
+			return new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND);
+		}
+	}
+	catch (e) {
+		logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
 	}
 
 	res.status(STATUS_CODE.OK).json({
