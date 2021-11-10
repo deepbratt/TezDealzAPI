@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const bulkUploadSchema = new mongoose.Schema(
   {
-    createdBy: {
+    user_Id: {
       type: mongoose.Schema.ObjectId,
       ref: 'User',
     },
