@@ -2,13 +2,16 @@ const mongoose = require('mongoose');
 
 const bulkUploadSchema = new mongoose.Schema(
   {
-    user_Id: {
+    createdBy: {
       type: mongoose.Schema.ObjectId,
       ref: 'User',
     },
     csvFile: {
       type: String,
       required: [true, 'Please Add a file'],
+    },
+    totalPostedAds: {
+      type: Number,
     },
     successCount: {
       type: Number,
