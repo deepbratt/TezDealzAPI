@@ -10,13 +10,14 @@ exports.createBulkUploads = catchAsync(async (req, res, next) => {
   if (!req.file) {
     return next(new AppError('Please insert a CSV File to add data', STATUS_CODE.BAD_REQUEST));
   }
+
   // Parsing csv file from buffer
   let results = [];
   fastcsv
     .parseString(req.file.buffer, { headers: true, ignoreEmpty: true })
     .validate((data) => data.regNumber !== '')
     .on('data', (data) => results.push(data))
-    .on('end', async () => {
+    .on('end', () => {
       if (!results || results.length <= 0) {
         return next(
           new AppError(
@@ -25,44 +26,62 @@ exports.createBulkUploads = catchAsync(async (req, res, next) => {
           ),
         );
       }
-      // inserting key-value pair of createdBy:req.params.id by taking id from params and map it into all elements of array
-      results.forEach((e) => {
-        e.createdBy = req.params.id;
-      });
-
-      // To get all registrationNumbers from collection,
-      let duplicate = await Car.aggregate([
-        {
-          $group: {
-            _id: '$regNumber',
-          },
-        },
-        {
-          $project: { _id: 1 },
-        },
-      ]);
-
-      // Extracting values of registrationNumber from csv file and from cars collection
-      let allRegNumbers = duplicate.map(({ _id }) => _id);
-      let regNumsFromFile = results.map(({ regNumber }) => regNumber);
-      // console.log(allRegNumbers);
-      // console.log(regNumsFromFile);
-
-      // Checking for duplicate reg numbers
-      let isFounded = regNumsFromFile.some((val) => allRegNumbers.includes(val));
-
-      if (isFounded === true) {
-        return next(
-          new AppError(
-            'Please check regNumber column it has Duplicate Registers Number/Numbers that are already exists',
-            STATUS_CODE.BAD_REQUEST,
-          ),
-        );
-      }
-
-      // creating records in ads collection from parsed file data
-      await Car.create(results);
     });
+
+  // To get all registrationNumbers from cars collection,
+  let duplicate = await Car.aggregate([
+    {
+      $group: {
+        _id: '$regNumber',
+      },
+    },
+    {
+      $project: { _id: 1 },
+    },
+  ]);
+
+  // Extracting values of registrationNumber from csv file and from cars collection
+  let allRegNumbers = duplicate.map(({ _id }) => _id);
+  let regNumsFromFile = results.map(({ regNumber }) => regNumber);
+
+  // Getting same values from both arrays by comairing both arrays
+  const duplicateRegNumbers = allRegNumbers.filter((element) => regNumsFromFile.includes(element));
+
+  // Checking for duplicate reg numbers
+  let isFounded = regNumsFromFile.some((val) => allRegNumbers.includes(val));
+  // if duplicate regNumber exists then it will return this error
+  if (isFounded === true) {
+    const failedCase = await BulkUploads.create({
+      createdBy: req.user._id,
+      userId: req.params.id,
+      failedAdsCount: results.length,
+      status: 'fail',
+    });
+
+    res.status(STATUS_CODE.BAD_REQUEST).json({
+      status: STATUS.FAIL,
+      message:
+        'Please check regNumber column in your CSV File it has Duplicate Registeration Number/Numbers that are already exists! Fix them and try again.',
+      duplicateRegNumbers,
+      data: {
+        failedCase,
+      },
+    });
+  }
+  if (!results || results.length <= 0) {
+    res.status(400).json({
+      status: 'fail',
+      message: 'No data available to insert or something is missing or incorrect ',
+    });
+    // return next(new AppError('No data available to insert ', STATUS_CODE.BAD_REQUEST));
+  }
+
+  // inserting key-value pair of createdBy:req.params.id by taking id from params and map it into all elements of array
+  results.forEach((e) => {
+    e.createdBy = req.params.id;
+  });
+  // creating records in ads collection from parsed file data
+  await Car.create(results);
 
   // Uploading file to s3 Bucket
   const file = req.file;
@@ -72,7 +91,9 @@ exports.createBulkUploads = catchAsync(async (req, res, next) => {
   const result = await BulkUploads.create({
     csvFile: Location,
     createdBy: req.user._id,
-    totalPostedAds: results.length,
+    userId: req.params.id,
+    successAdsCount: results.length,
+    status: 'success',
   });
 
   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
@@ -80,7 +101,6 @@ exports.createBulkUploads = catchAsync(async (req, res, next) => {
   res.status(STATUS_CODE.CREATED).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.CREATED,
-    // totalPostedAds: results.length,
     data: {
       result,
     },
@@ -150,5 +170,29 @@ exports.deleteBulkAd = catchAsync(async (req, res, next) => {
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.DELETE,
+  });
+});
+
+exports.getAllBulkUploadsOfUser = catchAsync(async (req, res, next) => {
+  const [result, totalCount] = await filter(
+    BulkUploads.find({ userId: req.params.id }).populate({
+      path: 'createdBy',
+      model: 'User',
+      select: 'firstName lastName phone',
+    }),
+    req.query,
+  );
+
+  if (result.length === 0)
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    countOnPage: result.length,
+    totalCount: totalCount,
+    data: {
+      result,
+    },
   });
 });

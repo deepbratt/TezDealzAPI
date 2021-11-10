@@ -26,6 +26,14 @@ const router = express.Router();
 // const { isCached } = require('../utils/redisCache');
 
 router
+  .route('/bulk-uploads-stats/:id')
+  .get(
+    authenticate(User),
+    restrictTo('Admin', 'Moderator'),
+    bulkUploadsController.getAllBulkUploadsOfUser,
+  );
+
+router
   .route('/bulk-ads/:id')
   .post(
     authenticate(User),
