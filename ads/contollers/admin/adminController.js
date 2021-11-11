@@ -19,7 +19,7 @@ log4js.configure({
   }
 });
 var logger = log4js.getLogger("Ads");
-
+ 
 exports.carOwners = catchAsync(async (req, res, next) => {
   try {
     const count = await Car.aggregate([

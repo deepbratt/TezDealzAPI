@@ -4,8 +4,26 @@ const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-con
 const { uploadS3 } = require('@utils/tdb_globalutils');
 const { filterObj } = require('../factory/factoryHandler');
 
+
+// Importing log files
+var log4js = require("log4js");
+log4js.configure({
+  "appenders": {
+    "app": { "type": "file", "filename": "../../app.log" }
+  },
+  "categories": {
+    "default": {
+      "appenders": ["app"],
+      "level": "all"
+    }
+  }
+});
+var logger = log4js.getLogger("UserController");
+
+
 // To filter unwanted fields from req.body
 exports.updateMe = catchAsync(async (req, res, next) => {
+  try{
   // Create error if user tying to change/update passowrd data
   if (req.body.password || req.body.passwordConfirm) {
     return next(new AppError(ERRORS.INVALID.INVALID_ROUTE, STATUS_CODE.BAD_REQUEST));
@@ -56,6 +74,11 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     runValidators: true,
     new: true,
   });
+}
+  catch(e){
+    logger.error("Custom Error Message")
+    logger.trace("Something unexpected has occured.", e)
+  }
 
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
@@ -68,8 +91,13 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
 // User can also delete/inactive himself
 exports.deleteMe = catchAsync(async (req, res, next) => {
+  try{
   await Users.findByIdAndUpdate(req.user.id, { active: false });
-
+  }
+  catch(e){
+    logger.error("Custom Error Message")
+    logger.trace("Something unexpected has occured.", e)
+  }
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.USER_DELETED,
