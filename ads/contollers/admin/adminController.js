@@ -6,87 +6,107 @@ const { AppError, catchAsync } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
 const { filter } = require('../factory/factoryHandler');
 
+// Importing log files
+var log4js = require("log4js");
+log4js.configure({
+  "appenders": {
+    "app": { "type": "file", "filename": "../../app.log" }
+  },
+  "categories": {
+    "default": {
+      "appenders": ["app"],
+      "level": "all"
+    }
+  }
+});
+var logger = log4js.getLogger("Ads");
+ 
 exports.carOwners = catchAsync(async (req, res, next) => {
-  const count = await Car.aggregate([
-    {
-      $facet: {
-        total: [
-          {
-            $group: {
-              _id: '$createdBy',
-            },
-          },
-          {
-            $project: { _id: 0, totalOwners: 0 },
-          },
-          {
-            $count: 'count',
-          },
-        ],
-        monthly: [
-          {
-            $lookup: {
-              from: 'users',
-              localField: 'createdBy',
-              foreignField: '_id',
-              as: 'user_doc',
-            },
-          },
-          {
-            $unwind: '$user_doc',
-          },
-          {
-            $match: {
-              $expr: {
-                $eq: [{ $year: '$user_doc.createdAt' }, { $year: new Date() }],
-                $eq: [{ $month: '$user_doc.createdAt' }, { $month: new Date() }],
+  try {
+    const count = await Car.aggregate([
+      {
+        $facet: {
+          total: [
+            {
+              $group: {
+                _id: '$createdBy',
               },
             },
-          },
-          {
-            $group: {
-              _id: '$user_doc._id',
-              owners: { $sum: 1 },
+            {
+              $project: { _id: 0, totalOwners: 0 },
             },
-          },
-          {
-            $count: 'count',
-          },
-        ],
-        today: [
-          {
-            $lookup: {
-              from: 'users',
-              localField: 'createdBy',
-              foreignField: '_id',
-              as: 'user_doc',
+            {
+              $count: 'count',
             },
-          },
-          {
-            $unwind: '$user_doc',
-          },
-          {
-            $match: {
-              $expr: {
-                $eq: [{ $year: '$user_doc.createdAt' }, { $year: new Date() }],
-                $eq: [{ $month: '$user_doc.createdAt' }, { $month: new Date() }],
-                $eq: [{ $dayOfMonth: '$user_doc.createdAt' }, { $dayOfMonth: new Date() }],
+          ],
+          monthly: [
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'createdBy',
+                foreignField: '_id',
+                as: 'user_doc',
               },
             },
-          },
-          {
-            $group: {
-              _id: '$user_doc._id',
-              owners: { $sum: 1 },
+            {
+              $unwind: '$user_doc',
             },
-          },
-          {
-            $count: 'count',
-          },
-        ],
+            {
+              $match: {
+                $expr: {
+                  $eq: [{ $year: '$user_doc.createdAt' }, { $year: new Date() }],
+                  $eq: [{ $month: '$user_doc.createdAt' }, { $month: new Date() }],
+                },
+              },
+            },
+            {
+              $group: {
+                _id: '$user_doc._id',
+                owners: { $sum: 1 },
+              },
+            },
+            {
+              $count: 'count',
+            },
+          ],
+          today: [
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'createdBy',
+                foreignField: '_id',
+                as: 'user_doc',
+              },
+            },
+            {
+              $unwind: '$user_doc',
+            },
+            {
+              $match: {
+                $expr: {
+                  $eq: [{ $year: '$user_doc.createdAt' }, { $year: new Date() }],
+                  $eq: [{ $month: '$user_doc.createdAt' }, { $month: new Date() }],
+                  $eq: [{ $dayOfMonth: '$user_doc.createdAt' }, { $dayOfMonth: new Date() }],
+                },
+              },
+            },
+            {
+              $group: {
+                _id: '$user_doc._id',
+                owners: { $sum: 1 },
+              },
+            },
+            {
+              $count: 'count',
+            },
+          ],
+        },
       },
-    },
-  ]);
+    ]);
+  } catch (e) {
+    logger.error("Custom Error Message")
+    logger.trace("Something unexpected has occured.", e)
+  }
 
   res.status(200).json({
     status: STATUS.SUCCESS,
@@ -101,6 +121,7 @@ exports.carOwners = catchAsync(async (req, res, next) => {
 });
 
 exports.cars = catchAsync(async (req, res, next) => {
+try{
   const count = await Car.aggregate([
     {
       $facet: {
@@ -159,6 +180,10 @@ exports.cars = catchAsync(async (req, res, next) => {
       },
     },
   ]);
+}catch(e){
+  logger.error("Custom Error Message")
+  logger.trace("Something unexpected has occured.", e)
+}
 
   res.status(200).json({
     status: STATUS.SUCCESS,
@@ -173,14 +198,19 @@ exports.cars = catchAsync(async (req, res, next) => {
 });
 
 exports.views = catchAsync(async (req, res, next) => {
-  const sum = await Car.aggregate([
-    {
-      $group: {
-        _id: 'null',
-        views: { $sum: '$views' },
+  try{
+    const sum = await Car.aggregate([
+      {
+        $group: {
+          _id: 'null',
+          views: { $sum: '$views' },
+        },
       },
-    },
-  ]);
+    ]);
+  }catch(e){
+    logger.error("Custom Error Message")
+    logger.trace("Something unexpected has occured.", e)
+  }
   const count = await Car.aggregate([
     {
       $group: {
@@ -226,61 +256,66 @@ exports.views = catchAsync(async (req, res, next) => {
 
 // Total and montly cars sold percentage
 exports.totalSoldCars = catchAsync(async (req, res, next) => {
-  const count = await Car.aggregate([
-    {
-      $facet: {
-        total: [
-          {
-            $group: {
-              _id: null,
-              totalCars: { $sum: 1 },
-              totalSold: { $sum: { $cond: ['$isSold', 1, 0] } },
-            },
-          },
-          {
-            $project: {
-              _id: 0,
-              totalCars: 1,
-              percentage: {
-                $round: [{ $multiply: [{ $divide: ['$totalSold', '$totalCars'] }, 100] }, 1],
-              },
-              totalSold: 1,
-            },
-          },
-        ],
-        monthly: [
-          {
-            $match: {
-              $expr: {
-                $eq: [{ $year: '$createdAt' }, { $year: new Date() }],
-                $eq: [{ $month: '$createdAt' }, { $month: new Date() }],
+  try{
+    const count = await Car.aggregate([
+      {
+        $facet: {
+          total: [
+            {
+              $group: {
+                _id: null,
+                totalCars: { $sum: 1 },
+                totalSold: { $sum: { $cond: ['$isSold', 1, 0] } },
               },
             },
-          },
-          {
-            $group: {
-              _id: null,
-              totalCars: { $sum: 1 },
-              totalSoldThisMonth: { $sum: { $cond: ['$isSold', 1, 0] } },
-            },
-          },
-          {
-            $project: {
-              _id: 0,
-              totalCars: 1,
-              percentage: {
-                $round: [
-                  { $multiply: [{ $divide: ['$totalSoldThisMonth', '$totalCars'] }, 100] },
-                  1,
-                ],
+            {
+              $project: {
+                _id: 0,
+                totalCars: 1,
+                percentage: {
+                  $round: [{ $multiply: [{ $divide: ['$totalSold', '$totalCars'] }, 100] }, 1],
+                },
+                totalSold: 1,
               },
-              totalSoldThisMonth: 1,
             },
-          },
-        ],
+          ],
+          monthly: [
+            {
+              $match: {
+                $expr: {
+                  $eq: [{ $year: '$createdAt' }, { $year: new Date() }],
+                  $eq: [{ $month: '$createdAt' }, { $month: new Date() }],
+                },
+              },
+            },
+            {
+              $group: {
+                _id: null,
+                totalCars: { $sum: 1 },
+                totalSoldThisMonth: { $sum: { $cond: ['$isSold', 1, 0] } },
+              },
+            },
+            {
+              $project: {
+                _id: 0,
+                totalCars: 1,
+                percentage: {
+                  $round: [
+                    { $multiply: [{ $divide: ['$totalSoldThisMonth', '$totalCars'] }, 100] },
+                    1,
+                  ],
+                },
+                totalSoldThisMonth: 1,
+              },
+            },
+          ],
+        },
       },
-    },
-  ]);
+    ]);
+  }catch(e){
+    logger.error("Custom Error Message")
+    logger.trace("Something unexpected has occured.", e)
+  }
   res.status(200).json({
     status: STATUS.SUCCESS,
     data: {
@@ -294,68 +329,73 @@ exports.totalSoldCars = catchAsync(async (req, res, next) => {
 
 // Total and montly cars sold by platform percentage
 exports.carsSoldByPlatform = catchAsync(async (req, res, next) => {
-  const percentage = await Car.aggregate([
-    {
-      $facet: {
-        total: [
-          {
-            $group: {
-              _id: null,
-              totalCars: { $sum: 1 },
-              totalSoldByPlatform: { $sum: { $cond: ['$soldByUs', 1, 0] } },
-            },
-          },
-          {
-            $project: {
-              _id: 0,
-              totalCars: 1,
-              percentage: {
-                $round: [
-                  {
-                    $multiply: [{ $divide: ['$totalSoldByPlatform', '$totalCars'] }, 100],
-                  },
-                  1,
-                ],
-              },
-              totalSoldByPlatform: 1,
-            },
-          },
-        ],
-        monthly: [
-          {
-            $match: {
-              $expr: {
-                $eq: [{ $year: '$createdAt' }, { $year: new Date() }],
-                $eq: [{ $month: '$createdAt' }, { $month: new Date() }],
+  try{
+    const percentage = await Car.aggregate([
+      {
+        $facet: {
+          total: [
+            {
+              $group: {
+                _id: null,
+                totalCars: { $sum: 1 },
+                totalSoldByPlatform: { $sum: { $cond: ['$soldByUs', 1, 0] } },
               },
             },
-          },
-          {
-            $group: {
-              _id: null,
-              totalCars: { $sum: 1 },
-              totalSoldByPlatformThisMonth: { $sum: { $cond: ['$soldByUs', 1, 0] } },
-            },
-          },
-          {
-            $project: {
-              _id: 0,
-              totalCars: 1,
-              percentage: {
-                $round: [
-                  {
-                    $multiply: [{ $divide: ['$totalSoldByPlatformThisMonth', '$totalCars'] }, 100],
-                  },
-                  1,
-                ],
+            {
+              $project: {
+                _id: 0,
+                totalCars: 1,
+                percentage: {
+                  $round: [
+                    {
+                      $multiply: [{ $divide: ['$totalSoldByPlatform', '$totalCars'] }, 100],
+                    },
+                    1,
+                  ],
+                },
+                totalSoldByPlatform: 1,
               },
-              totalSoldByPlatformThisMonth: 1,
             },
-          },
-        ],
+          ],
+          monthly: [
+            {
+              $match: {
+                $expr: {
+                  $eq: [{ $year: '$createdAt' }, { $year: new Date() }],
+                  $eq: [{ $month: '$createdAt' }, { $month: new Date() }],
+                },
+              },
+            },
+            {
+              $group: {
+                _id: null,
+                totalCars: { $sum: 1 },
+                totalSoldByPlatformThisMonth: { $sum: { $cond: ['$soldByUs', 1, 0] } },
+              },
+            },
+            {
+              $project: {
+                _id: 0,
+                totalCars: 1,
+                percentage: {
+                  $round: [
+                    {
+                      $multiply: [{ $divide: ['$totalSoldByPlatformThisMonth', '$totalCars'] }, 100],
+                    },
+                    1,
+                  ],
+                },
+                totalSoldByPlatformThisMonth: 1,
+              },
+            },
+          ],
+        },
       },
-    },
-  ]);
+    ]);
+  }catch(e){
+    logger.error("Custom Error Message")
+    logger.trace("Something unexpected has occured.", e)
+  }
   res.status(200).json({
     status: STATUS.SUCCESS,
     data: {
@@ -368,11 +408,17 @@ exports.carsSoldByPlatform = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllOwners = catchAsync(async (req, res, next) => {
-  const seller = await Car.distinct('createdBy');
-  const [result, totalCount] = await filter(User.find({ _id: { $in: [...seller] } }), req.query);
-
-  if (result.length <= 0) {
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  try{
+    const seller = await Car.distinct('createdBy');
+    const [result, totalCount] = await filter(User.find({ _id: { $in: [...seller] } }), req.query);
+  
+    if (result.length <= 0) {
+      logger.error("Custom Error Message");
+      return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+    }
+  }catch(e){
+    logger.error("Custom Error Message")
+    logger.trace("Something unexpected has occured.", e)
   }
 
   res.status(STATUS_CODE.OK).json({

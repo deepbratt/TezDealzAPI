@@ -5,7 +5,25 @@ const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
 const { filter, stats, dailyAggregate } = require('../factory/factoryHandler');
 
+// Importing log files
+var log4js = require("log4js");
+log4js.configure({
+	"appenders": {
+		"app": { "type": "file", "filename": "../../app.log" }
+	},
+	"categories": {
+		"default": {
+			"appenders": ["app"],
+			"level": "all"
+		}
+	}
+});
+var logger = log4js.getLogger("Ads");
+
+
+
 exports.createOne = catchAsync(async (req, res, next) => {
+try{
   if (req.files) {
     let array = [];
     for (var i = 0; i < req.files.length; i++) {
@@ -22,13 +40,15 @@ exports.createOne = catchAsync(async (req, res, next) => {
   }
   if (req.user.role !== 'User') {
     if (!req.body.createdBy) {
+      logger.error("Custom error message")
       return next(new AppError(ERRORS.REQUIRED.USER_ID, STATUS_CODE.BAD_REQUEST));
     }
   } else {
     req.body.createdBy = req.user._id;
   }
-
-  if (req.user.role === 'User' && (!req.body.image || req.body.image.length <= 0)) {
+  if (!req.body.image || req.body.image.length <= 0) {
+    req.body.imageStatus = false;
+    logger.error("Custom error message")
     return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
   } else if (req.user.role === 'User' && (req.body.image || req.body.image.length >= 0)) {
     req.body.imageStatus = true;
@@ -41,6 +61,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
   }
 
   if (req.user.role === 'User' && req.body.associatedPhone) {
+    logger.error("Custom error message")
     return next(
       new AppError(
         'You are not allowed to add associated phone information',
@@ -50,8 +71,14 @@ exports.createOne = catchAsync(async (req, res, next) => {
   }
 
   const result = await Car.create(req.body);
-  if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-
+  if (!result) {
+    logger.error("Custom error message")
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  }
+}catch(e){
+  logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+}
   res.status(STATUS_CODE.CREATED).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
@@ -62,7 +89,8 @@ exports.createOne = catchAsync(async (req, res, next) => {
 });
 
 exports.getAll = catchAsync(async (req, res, next) => {
-  let data;
+  try{
+    let data;
   if (req.user) {
     if (req.user.role !== 'User') {
       data = await filter(Car.find(), req.query);
@@ -81,6 +109,7 @@ exports.getAll = catchAsync(async (req, res, next) => {
   const [result, totalCount] = data;
 
   if (result.length <= 0) {
+    logger.error("Custom error message")
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
   //current user fav status
@@ -95,6 +124,13 @@ exports.getAll = catchAsync(async (req, res, next) => {
       }
     }
   }
+  }catch(e){
+    logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+  }
+
+
+
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
@@ -107,17 +143,23 @@ exports.getAll = catchAsync(async (req, res, next) => {
 });
 
 exports.getOne = catchAsync(async (req, res, next) => {
+try{
   const result = await Car.findById(req.params.id).populate('createdBy');
-  if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  if (!result) {
+    logger.error("Custom error message")
+  return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  }
   const ip = RequestIp.getClientIp(req);
   //current user fav status
   if (!result.active || result.banned) {
     if (req.user) {
       const currentUser = req.user._id;
       if (req.user.role === 'User' && !currentUser.equals(result.createdBy._id)) {
+        logger.error("Custom error message")
         return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
       }
     } else {
+      logger.error("Custom error message")
       return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
     }
   }
@@ -133,6 +175,12 @@ exports.getOne = catchAsync(async (req, res, next) => {
     await CarView.create({ ip: ip, car_id: req.params.id });
     await Car.findByIdAndUpdate(req.params.id, { $inc: { views: 1 } });
   }
+}catch(e){
+  logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+}
+
+
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
@@ -143,6 +191,7 @@ exports.getOne = catchAsync(async (req, res, next) => {
 });
 
 exports.updateOne = catchAsync(async (req, res, next) => {
+try{
   if (req.files) {
     let array = [];
     for (var i = 0; i < req.files.length; i++) {
@@ -163,7 +212,9 @@ exports.updateOne = catchAsync(async (req, res, next) => {
     }
   }
 
-  if (req.user.role === 'User' && (!req.body.image || req.body.image.length <= 0)) {
+  if (!req.body.image || req.body.image.length <= 0) {
+    req.body.imageStatus = false;
+    logger.error("Custom error message")
     return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
   } else if (req.user.role === 'User' && (req.body.image || req.body.image.length >= 0)) {
     req.body.imageStatus = true;
@@ -176,6 +227,7 @@ exports.updateOne = catchAsync(async (req, res, next) => {
   }
 
   if (req.user.role === 'User' && req.body.associatedPhone) {
+    logger.error("Custom error message")
     return next(
       new AppError(
         'You are not allowed to update associated phone information',
@@ -189,8 +241,18 @@ exports.updateOne = catchAsync(async (req, res, next) => {
     runValidators: true,
   });
 
-  if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-  res.status(STATUS_CODE.OK).json({
+  if (!result) {
+    logger.error("Custom error message")
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  }
+}catch(e){
+  logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+}
+
+
+
+    res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.UPDATE,
     data: {
@@ -200,8 +262,17 @@ exports.updateOne = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteOne = catchAsync(async (req, res, next) => {
-  const result = await Car.findByIdAndDelete(req.params.id);
-  if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  try{
+    const result = await Car.findByIdAndDelete(req.params.id);
+  if (!result){
+    logger.error("Custom error message")
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  } 
+  }catch(e){
+    logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+  }
+
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
@@ -210,10 +281,18 @@ exports.deleteOne = catchAsync(async (req, res, next) => {
 });
 
 exports.getMine = catchAsync(async (req, res, next) => {
-  const [result, totalCount] = await filter(Car.find({ createdBy: req.user._id }), req.query);
+  try{
+    const [result, totalCount] = await filter(Car.find({ createdBy: req.user._id }), req.query);
 
-  if (result.length === 0)
+  if (result.length === 0){
+    logger.error("Custom error message")
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  }
+  }catch(e){
+    logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+  }
+    
 
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
@@ -227,9 +306,17 @@ exports.getMine = catchAsync(async (req, res, next) => {
 });
 
 exports.addtoFav = catchAsync(async (req, res, next) => {
+try{
   const result = await Car.findOne({ _id: req.params.id, favOf: req.user._id });
-  if (result) return next(new AppError(ERRORS.INVALID.ALREADY_FAV, STATUS_CODE.BAD_REQUEST));
+  if (result) {
+    return next(new AppError(ERRORS.INVALID.ALREADY_FAV, STATUS_CODE.BAD_REQUEST));
+  }
   await Car.updateOne({ _id: req.params.id }, { $push: { favOf: req.user._id } });
+}catch(e){
+  logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+}
+
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.ADDED_FAV,
@@ -237,11 +324,20 @@ exports.addtoFav = catchAsync(async (req, res, next) => {
 });
 
 exports.removeFromFav = catchAsync(async (req, res, next) => {
+try{
   const result = await Car.findOne({ _id: req.params.id, favOf: req.user._id });
   if (!result) {
+    logger.error("Custom error message")
     return next(new AppError(ERRORS.INVALID.NOT_IN_FAV, STATUS_CODE.BAD_REQUEST));
   }
   await Car.updateOne({ _id: req.params.id }, { $pull: { favOf: req.user._id } });
+ 
+}catch(e){
+  logger.error("Custom Error Message")
+  logger.trace("Something unexpected has occured.", e)
+}
+
+
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.REMOVED_FAV,
@@ -249,10 +345,17 @@ exports.removeFromFav = catchAsync(async (req, res, next) => {
 });
 
 exports.favorites = catchAsync(async (req, res, next) => {
+try{
   const [result, totalCount] = await filter(Car.find({ favOf: req.user._id }), req.query);
 
-  if (result.length === 0)
+  if (result.length === 0){
+    logger.error("Custom Error Message")
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  }
+}catch(e){
+  logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+}
 
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
@@ -266,11 +369,19 @@ exports.favorites = catchAsync(async (req, res, next) => {
 });
 
 exports.markSold = catchAsync(async (req, res, next) => {
-  const result = await Car.findOne({ _id: req.params.id, isSold: false });
+  try{
+    const result = await Car.findOne({ _id: req.params.id, isSold: false });
   if (!result) {
+    logger.error("Custom error message")
     return next(new AppError(ERRORS.INVALID.MARK_SOLD, STATUS_CODE.BAD_REQUEST));
   }
   await Car.updateOne({ _id: req.params.id }, { isSold: true, soldByUs: req.body.soldByUs });
+  
+  }catch(e){
+    logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+  }
+  
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.MARKED_SOLD,
@@ -278,11 +389,19 @@ exports.markSold = catchAsync(async (req, res, next) => {
 });
 
 exports.unmarkSold = catchAsync(async (req, res, next) => {
+ try{
   const result = await Car.findOne({ _id: req.params.id, isSold: true });
   if (!result) {
+    logger.error("Custom Error Message")
     return next(new AppError(ERRORS.INVALID.UNMARK_SOLD, STATUS_CODE.BAD_REQUEST));
   }
   await Car.updateOne({ _id: req.params.id }, { isSold: false, soldByUs: undefined });
+}
+  catch(e){
+    logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+  }
+  
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.MARKED_UNSOLD,
@@ -290,11 +409,19 @@ exports.unmarkSold = catchAsync(async (req, res, next) => {
 });
 
 exports.markActive = catchAsync(async (req, res, next) => {
+  try{
   const result = await Car.findOne({ _id: req.params.id, active: false });
   if (!result) {
+    logger.error("Custom Error Message")
     return next(new AppError(ERRORS.INVALID.MARK_ACTIVE, STATUS_CODE.BAD_REQUEST));
   }
   await Car.updateOne({ _id: req.params.id }, { active: true });
+}
+  catch(e){
+    logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+  }
+  
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.MARKED_ACTIVE,
@@ -302,11 +429,19 @@ exports.markActive = catchAsync(async (req, res, next) => {
 });
 
 exports.unmarkActive = catchAsync(async (req, res, next) => {
+  try{
   const result = await Car.findOne({ _id: req.params.id, active: true });
   if (!result) {
+    logger.error("Custom Error Message")
     return next(new AppError(ERRORS.INVALID.UNMARK_ACTIVE, STATUS_CODE.BAD_REQUEST));
   }
   await Car.updateOne({ _id: req.params.id }, { active: false });
+}
+  catch(e){
+    logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+  }
+
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.MARKED_INACTIVE,
@@ -314,11 +449,19 @@ exports.unmarkActive = catchAsync(async (req, res, next) => {
 });
 
 exports.markbanned = catchAsync(async (req, res, next) => {
+  try{
   const result = await Car.findOne({ _id: req.params.id, banned: false });
   if (!result) {
+    logger.error("Custom Error Message")
     return next(new AppError(ERRORS.INVALID.MARK_BANNED, STATUS_CODE.BAD_REQUEST));
   }
   await Car.updateOne({ _id: req.params.id }, { banned: true });
+}
+  catch(e){
+    logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+  }
+  
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.MARKED_BANNED,
@@ -326,11 +469,19 @@ exports.markbanned = catchAsync(async (req, res, next) => {
 });
 
 exports.markunbanned = catchAsync(async (req, res, next) => {
+  
+  try{
   const result = await Car.findOne({ _id: req.params.id, banned: true });
   if (!result) {
+    logger.error("Custom Error Message")
     return next(new AppError(ERRORS.INVALID.MARK_UBANNED, STATUS_CODE.BAD_REQUEST));
   }
   await Car.updateOne({ _id: req.params.id }, { banned: false });
+}catch(e){
+  logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+}
+  
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.MARKED_UNBANNED,
@@ -338,10 +489,12 @@ exports.markunbanned = catchAsync(async (req, res, next) => {
 });
 
 exports.getCarsWithin = catchAsync(async (req, res, next) => {
+  try{
   const { distance, latlng, unit } = req.params;
   const [lat, lng] = latlng.split(',');
   const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
   if (!lat || !lng) {
+    logger.error("Custom Error Message")
     return next(
       new AppError(
         'please provide latitude and longitude in format lat,lng',
@@ -357,6 +510,12 @@ exports.getCarsWithin = catchAsync(async (req, res, next) => {
     }),
     req.query,
   );
+  }
+catch(e){
+  logger.error("Custom Error Message")
+		logger.trace("Something unexpected has occured.", e)
+}
+
   res.status(200).json({
     status: STATUS.SUCCESS,
     countOnPage: result.length,

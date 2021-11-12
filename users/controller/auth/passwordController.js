@@ -9,7 +9,9 @@ const { regex, pakPhone } = require('../../utils/regex');
 const Email = require('../../utils/email-mailgun');
 //Forgot Password Via Email/phone
 exports.forgotPassword = catchAsync(async (req, res, next) => {
+  try{
   if (!req.body.data) {
+    logger.error("Custom Error Message")
     return next(
       new AppError(
         `${ERRORS.REQUIRED.EMAIL_REQUIRED}/${ERRORS.REQUIRED.PHONE_REQUIRED}`,
@@ -59,12 +61,20 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save({ validateBeforeSave: false });
+    logger.error("Custom Error Message")
+    logger.trace("Something unexpected has occured.", err)
     return next(new AppError(ERRORS.RUNTIME.SENDING_TOKEN, STATUS_CODE.SERVER_ERROR));
   }
+}
+catch(e){
+  logger.error("Custom Error Message")
+    logger.trace("Something unexpected has occured.", e)
+}
 });
 
 //Reset Password
 exports.resetPassword = catchAsync(async (req, res, next) => {
+  try{
   const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
   //const hashedToken = req.params.token;
 
@@ -74,6 +84,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   });
 
   if (!user || user.role !== 'User') {
+    logger.error("Custom Error Message")
     return next(new AppError(ERRORS.INVALID.INVALID_RESET_LINK, STATUS_CODE.BAD_REQUEST));
   }
 
@@ -82,6 +93,11 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
   await user.save();
+}
+catch(e){
+  logger.error("Custom Error Message")
+    logger.trace("Something unexpected has occured.", e)
+}
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.PASSWORD_RESET,
@@ -90,15 +106,18 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
 // Update Current User's Password
 exports.updatePassword = catchAsync(async (req, res, next) => {
+  try{
   // Get user from user's collection
   const user = await User.findById(req.user.id).select('+password');
 
   // If user has GoogleId and FacebookId, then he cannot update Password
   if (user.googleId || user.facebookId) {
+    logger.error("Custom Error Message")
     return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
   }
 
   if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
+    logger.error("Custom Error Message")
     // check if current user is correct
     return next(new AppError('Invalid Password', STATUS_CODE.UNAUTHORIZED));
   }
@@ -109,4 +128,9 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   await user.save();
 
   jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
+}
+catch(e){
+  logger.error("Custom Error Message")
+    logger.trace("Something unexpected has occured.", e)
+}
 });

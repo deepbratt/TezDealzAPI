@@ -16,7 +16,9 @@ const { pakPhone, regex } = require('../../utils/regex');
 
 // Sign Up
 exports.signup = catchAsync(async (req, res, next) => {
+  try{
   if (!req.body.data) {
+    logger.error("Custom Error Message")
     return next(
       new AppError(
         `${ERRORS.REQUIRED.EMAIL_REQUIRED} / ${ERRORS.REQUIRED.PHONE_REQUIRED}`,
@@ -46,6 +48,7 @@ exports.signup = catchAsync(async (req, res, next) => {
       signedUpWithPhone: true,
     });
   } else {
+    logger.error("Custom Error Message")
     return next(
       new AppError(
         `${ERRORS.INVALID.INVALID_EMAIL} / ${ERRORS.INVALID.INVALID_PHONE}`,
@@ -53,6 +56,11 @@ exports.signup = catchAsync(async (req, res, next) => {
       ),
     );
   }
+}
+catch(e){
+  logger.error("Custom Error Message")
+    logger.trace("Something unexpected has occured.", e)
+}
 
   res.status(STATUS_CODE.CREATED).json({
     status: STATUS.SUCCESS,
@@ -62,8 +70,10 @@ exports.signup = catchAsync(async (req, res, next) => {
 
 // Login
 exports.login = catchAsync(async (req, res, next) => {
+  try{
   const { data, password } = req.body;
   if (!data || !password) {
+    logger.error("Custom Error Message")
     // checking email or password empty?
     return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
   }
@@ -84,26 +94,37 @@ exports.login = catchAsync(async (req, res, next) => {
 
   //user existance and password is correct
   if (!user || !(await user.correctPassword(password, user.password))) {
+    logger.error("Custom Error Message")
     return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
   }
   if (user.role !== 'User') {
+    logger.error("Custom Error Message")
     return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
   }
   // Check if user is banned , if banned then Throw Error
   if (user.banned) {
+    logger.error("Custom Error Message")
     return next(new AppError(ERRORS.UNAUTHORIZED.BAN_BY_ADMIN, STATUS_CODE.UNAUTHORIZED));
   }
   // Check if user is active or not
   if (!user.active) {
+    logger.error("Custom Error Message")
     // If no user and not active:true then return Error
     return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.NOT_FOUND));
   }
   jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
+}
+  catch(e){
+    logger.error("Custom Error Message")
+    logger.trace("Something unexpected has occured.", e)
+  }
 });
 
 exports.adminPanellogin = catchAsync(async (req, res, next) => {
+  try{
   const { data, password } = req.body;
   if (!data || !password) {
+    logger.error("Custom Error Message")
     // checking email or password empty?
     return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
   }
@@ -123,20 +144,29 @@ exports.adminPanellogin = catchAsync(async (req, res, next) => {
   }).select('+password');
   //user existance and password is correct
   if (!user || !(await user.correctPassword(password, user.password))) {
+    logger.error("Custom Error Message")
     return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
   }
   if (user.role === 'User') {
+    logger.error("Custom Error Message")
     return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
   }
   // Check if user is banned , if banned then Throw Error
   if (user.banned || !user.active) {
+    logger.error("Custom Error Message")
     return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
   }
   jwtManagement.createSendJwtToken(user, STATUS_CODE.OK, req, res);
+}
+catch(e){
+  logger.error("Custom Error Message")
+    logger.trace("Something unexpected has occured.", e)
+}
 });
 
 // Check logged in User
 exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  try{
   //getting token and check is it there
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
@@ -145,6 +175,7 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
     token = req.session.jwt;
   }
   if (!token) {
+    logger.error("Custom Error Message")
     return next(new AppError(ERRORS.UNAUTHORIZED.NOT_LOGGED_IN, STATUS_CODE.UNAUTHORIZED));
   }
   //verification token
@@ -152,12 +183,19 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
   //check if user sitll exists
   const currentUser = await User.findById(decoded.userdata.id);
   if (!currentUser) {
+    logger.error("Custom Error Message")
     return next(new AppError(`User ${ERRORS.INVALID.NOT_FOUND}`, STATUS_CODE.NOT_FOUND));
   }
   //check if user changed password after the token was issued
   if (currentUser.changedPasswordAfter(decoded.iat)) {
+    logger.error("Custom Error Message")
     return next(new AppError(ERRORS.UNAUTHORIZED.INVALID_JWT, STATUS_CODE.UNAUTHORIZED));
   }
+}
+catch(e){
+  logger.error("Custom Error Message")
+    logger.trace("Something unexpected has occured.", e)
+}
   //send loggedIn User
   res.status(STATUS_CODE.OK).json({
     user: currentUser,
