@@ -4,10 +4,30 @@ info:
   version: '1.0.0'
   title: 'TezDeals'
 paths:
+  /v1/ads/cars/bulk-uploads-stats/{id}:
+    get:
+      tags:
+        - 'Bulk Advertisements'
+      summary: 'used to get one bulk ad data stats of specific user and only Admin and Moderator can perform this request'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Return stats of that user according to the specified id.'
   /v1/ads/cars/bulk-ads/:id:
     post:
       tags:
-        - 'To Post Bulk Advertisements'
+        - 'Bulk Advertisements'
       summary: 'We can create multiple ads from csv file using this route.'
       description: ''
       consumes:
@@ -29,7 +49,7 @@ paths:
   /v1/ads/cars/bulk-ads:
     get:
       tags:
-        - 'To Post Bulk Advertisements'
+        - 'Bulk Advertisements'
       summary: 'To get all bulk ads data'
       consumes:
         - 'application/json'
@@ -43,7 +63,7 @@ paths:
   /v1/ads/cars/bulk-ads/{id}:
     get:
       tags:
-        - 'To Post Bulk Advertisements'
+        - 'Bulk Advertisements'
       summary: 'used to get one bulk ad data and only Admin and Moderator can perform this request'
       description: ''
       consumes:
@@ -63,7 +83,7 @@ paths:
   /v1/ads/cars/bulk-ads/:{id}:
     patch:
       tags:
-        - 'To Post Bulk Advertisements'
+        - 'Bulk Advertisements'
       summary: 'used to updated bulk ads data and only Admin and Moderator can perform this request'
       description: ''
       consumes:
@@ -89,7 +109,7 @@ paths:
   /v1/ads/cars/bulk-ads/id:
     delete:
       tags:
-        - 'To Post Bulk Advertisements'
+        - 'Bulk Advertisements'
       summary: 'used to delete bulk ad document details and only Admin and Moderator can perform this request'
       description: ''
       consumes:
