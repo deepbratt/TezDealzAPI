@@ -9,6 +9,7 @@ const carMakeController = require('../contollers/cars/carMakeContoller');
 const featuresController = require('../contollers/cars/featuresController');
 const colorController = require('../contollers/cars/colorController');
 const showNumberController = require('../contollers/cars/showNumberController');
+const bulkUploadsController = require('../contollers/cars/bulkUploadAds');
 const carFilters = require('../contollers/cars/carFilters');
 const { authenticate, checkIsLoggedIn, restrictTo } = require('@auth/tdb-auth');
 const {
@@ -18,10 +19,37 @@ const {
   phoneCheckOnupdate,
 } = require('../middleware/cars/index');
 const { upload } = require('@utils/tdb_globalutils');
+const { fileUpload } = require('../utils/fileUpload');
 //const cache = require('../utils/cache');
 //const cacheExp = 30;
 const router = express.Router();
 // const { isCached } = require('../utils/redisCache');
+
+router
+  .route('/bulk-uploads-stats/:id')
+  .get(
+    authenticate(User),
+    restrictTo('Admin', 'Moderator'),
+    bulkUploadsController.getAllBulkUploadsOfUser,
+  );
+
+router
+  .route('/bulk-ads/:id')
+  .post(
+    authenticate(User),
+    restrictTo('Admin', 'Moderator'),
+    fileUpload().single('csvFile'),
+    bulkUploadsController.createBulkUploads,
+  );
+router
+  .route('/bulk-ads')
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), bulkUploadsController.getAllBulkAds);
+
+router
+  .route('/bulk-ads/:id')
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), bulkUploadsController.getOneBulkAd)
+  .patch(authenticate(User), restrictTo('Admin', 'Moderator'), bulkUploadsController.UpdateBulkAd)
+  .delete(authenticate(User), restrictTo('Admin', 'Moderator'), bulkUploadsController.deleteBulkAd);
 
 //Show Number
 router.post('/show-number/:id', authenticate(User), showNumberController.createShowNumberDetails);

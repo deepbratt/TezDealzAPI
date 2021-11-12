@@ -1,6 +1,6 @@
 {
 	"name": "ads",
-	"version": "1.0.77",
+	"version": "1.0.85",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
@@ -15,12 +15,14 @@
 		"@supercharge/request-ip": "^1.1.2",
 		"@utils/tdb_globalutils": "^1.0.103",
 		"amqplib": "^0.8.0",
+		"aws-sdk": "^2.1022.0",
 		"axios": "^0.21.1",
 		"compression": "^1.7.4",
 		"cookie-session": "^1.4.0",
 		"cors": "^2.8.5",
 		"dotenv": "^10.0.0",
 		"express": "^4.17.1",
+		"fast-csv": "^4.3.6",
 		"jsonwebtoken": "^8.5.1",
 		"log4js": "^6.3.0",
 		"moment": "^2.29.1",

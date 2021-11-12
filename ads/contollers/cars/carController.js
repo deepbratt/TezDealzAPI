@@ -50,9 +50,16 @@ try{
     req.body.imageStatus = false;
     logger.error("Custom error message")
     return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
-  } else {
+  } else if (req.user.role === 'User' && (req.body.image || req.body.image.length >= 0)) {
     req.body.imageStatus = true;
   }
+
+  if (req.user.role !== 'User' && (!req.body.image || req.body.image.length <= 0)) {
+    req.body.imageStatus = false;
+  } else if (req.user.role !== 'User' && (req.body.image || req.body.image.length >= 0)) {
+    req.body.imageStatus = true;
+  }
+
   if (req.user.role === 'User' && req.body.associatedPhone) {
     logger.error("Custom error message")
     return next(
@@ -88,10 +95,16 @@ exports.getAll = catchAsync(async (req, res, next) => {
     if (req.user.role !== 'User') {
       data = await filter(Car.find(), req.query);
     } else {
-      data = await filter(Car.find({ active: true, isSold: false, banned: false }), req.query);
+      data = await filter(
+        Car.find({ active: true, isSold: false, banned: false, imageStatus: true }),
+        req.query,
+      );
     }
   } else {
-    data = await filter(Car.find({ active: true, isSold: false, banned: false }), req.query);
+    data = await filter(
+      Car.find({ active: true, isSold: false, banned: false, imageStatus: true }),
+      req.query,
+    );
   }
   const [result, totalCount] = data;
 
@@ -198,11 +211,18 @@ try{
       req.body.image = array;
     }
   }
+
   if (!req.body.image || req.body.image.length <= 0) {
     req.body.imageStatus = false;
     logger.error("Custom error message")
     return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
-  } else {
+  } else if (req.user.role === 'User' && (req.body.image || req.body.image.length >= 0)) {
+    req.body.imageStatus = true;
+  }
+
+  if (req.user.role !== 'User' && (!req.body.image || req.body.image.length <= 0)) {
+    req.body.imageStatus = false;
+  } else if (req.user.role !== 'User' && (req.body.image || req.body.image.length >= 0)) {
     req.body.imageStatus = true;
   }
 
