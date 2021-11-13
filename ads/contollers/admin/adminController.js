@@ -385,3 +385,21 @@ exports.getAllOwners = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+
+exports.getUploadStatus=catchAsync(async(req,res,next) => {
+
+  res.status(200).json({
+    status: STATUS.SUCCESS,
+    data: {
+      result: {
+        userID:"",
+        createdBy:"",
+        s3referenceID:"",
+        successCount:"",
+        failedCount:"",
+        status:""
+      },
+    },
+  });
+});
