@@ -139,11 +139,17 @@ exports.getAllBulkAds = catchAsync(async (req, res, next) => {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
 
+  const failedCount = await filter(BulkUploads.find({status:"failed"}));
+  const successCount = totalCount - failedCount;
+  
+
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
     countOnPage: result.length,
     totalCount: totalCount,
+    successcount:successCount,
+    failedCount:failedCount,
     data: {
       result,
     },
@@ -208,6 +214,9 @@ exports.getAllBulkUploadsOfUser = catchAsync(async (req, res, next) => {
     req.query,
   );
 
+  const failedCount = await filter(BulkUploads.find({status:"failed"}));
+  const successCount = totalCount - failedCount;
+
   if (result.length === 0)
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
@@ -216,6 +225,8 @@ exports.getAllBulkUploadsOfUser = catchAsync(async (req, res, next) => {
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
     countOnPage: result.length,
     totalCount: totalCount,
+    successcount:successCount,
+    failedCount:failedCount,
     data: {
       result,
     },
