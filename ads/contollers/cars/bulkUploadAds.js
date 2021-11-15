@@ -14,7 +14,32 @@ exports.createBulkUploads = catchAsync(async (req, res, next) => {
   // Parsing csv file from buffer
   let results = [];
   fastcsv
-    .parseString(req.file.buffer, { headers: true, ignoreEmpty: true })
+    .parseString(req.file.buffer, {
+      headers: [
+        'country',
+        'province',
+        'city',
+        'version',
+        'regNumber',
+        'model',
+        'modelYear',
+        'make',
+        'price',
+        'engineType',
+        'transmission',
+        'condition',
+        'bodyType',
+        'bodyColor',
+        'engineCapacity',
+        'registrationCity',
+        'milage',
+        'assembly',
+        'description',
+        'sellerType',
+      ],
+      renameHeaders: true,
+      ignoreEmpty: true,
+    })
     .validate((data) => data.regNumber !== '')
     .on('data', (data) => results.push(data))
     .on('end', () => {
@@ -52,8 +77,8 @@ exports.createBulkUploads = catchAsync(async (req, res, next) => {
   // if duplicate regNumber exists then it will return this error
   if (isFounded === true) {
     const failedCase = await BulkUploads.create({
-      createdBy: req.user._id,
-      userId: req.params.id,
+      // createdBy: req.user._id,
+      // userId: req.params.id,
       failedAdsCount: results.length,
       status: 'fail',
     });
@@ -90,8 +115,8 @@ exports.createBulkUploads = catchAsync(async (req, res, next) => {
 
   const result = await BulkUploads.create({
     csvFile: Location,
-    createdBy: req.user._id,
-    userId: req.params.id,
+    // createdBy: req.user._id,
+    // userId: req.params.id,
     successAdsCount: results.length,
     status: 'success',
   });

@@ -33,14 +33,12 @@ router
     bulkUploadsController.getAllBulkUploadsOfUser,
   );
 
-router
-  .route('/bulk-ads/:id')
-  .post(
-    authenticate(User),
-    restrictTo('Admin', 'Moderator'),
-    fileUpload().single('csvFile'),
-    bulkUploadsController.createBulkUploads,
-  );
+router.route('/bulk-ads/:id').post(
+  // authenticate(User),
+  // restrictTo('Admin', 'Moderator'),
+  fileUpload().single('csvFile'),
+  bulkUploadsController.createBulkUploads,
+);
 router
   .route('/bulk-ads')
   .get(authenticate(User), restrictTo('Admin', 'Moderator'), bulkUploadsController.getAllBulkAds);
