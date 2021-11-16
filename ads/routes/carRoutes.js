@@ -39,9 +39,7 @@ router.route('/bulk-ads/:id').post(
   fileUpload().single('csvFile'),
   bulkUploadsController.createBulkUploads,
 );
-router
-  .route('/bulk-ads')
-  .get(authenticate(User), restrictTo('Admin', 'Moderator'), bulkUploadsController.getAllBulkAds);
+router.route('/bulk-ads').get(bulkUploadsController.getAllBulkAds);
 
 router
   .route('/bulk-ads/:id')
