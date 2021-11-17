@@ -6,6 +6,9 @@ const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-con
 const { filter, stats, dailyAggregate } = require('../factory/factoryHandler');
 
 exports.createOne = catchAsync(async (req, res, next) => {
+  if (!req.files.selectedImage) {
+    return next(new AppError('Please select image to display on top.'));
+  }
   if (req.files.selectedImage) {
     let { Location } = await uploadS3(
       req.files.selectedImage[0],
@@ -163,29 +166,8 @@ exports.getOne = catchAsync(async (req, res, next) => {
 });
 
 exports.updateOne = catchAsync(async (req, res, next) => {
-  if (req.files.selectedImage) {
-    let { Location } = await uploadS3(
-      req.files.selectedImage[0],
-      process.env.AWS_BUCKET_REGION,
-      process.env.AWS_ACCESS_KEY,
-      process.env.AWS_SECRET_KEY,
-      process.env.AWS_BUCKET_NAME,
-    );
-    req.body.selectedImage = Location;
-    var imagePath = Location;
-  } else {
-    imagePath = req.body.selectedImage;
-  }
-
   if (req.files.image) {
     let array = [];
-    if (imagePath === undefined) {
-      const car = await Car.findById(req.params.id);
-      const selectedImage = car.selectedImage;
-      array = [selectedImage];
-    } else {
-      array = [imagePath];
-    }
     for (var i = 0; i < req.files.image.length; i++) {
       // console.log(req.files.image[i].mimetype);
       let { Location } = await uploadS3(
@@ -198,9 +180,36 @@ exports.updateOne = catchAsync(async (req, res, next) => {
       array.push(Location);
     }
     if (req.body.image) {
-      req.body.image = [...req.body.image, ...array];
+      await Car.updateOne(
+        { _id: req.params.id },
+        { $push: { image: [...req.body.image, ...array] } },
+      );
+      // req.body.image = [...req.body.image, ...array];
     } else {
-      req.body.image = array;
+      await Car.updateOne({ _id: req.params.id }, { $push: { image: array } });
+      // req.body.image = array;
+    }
+  }
+
+  if (req.files.selectedImage) {
+    let { Location } = await uploadS3(
+      req.files.selectedImage[0],
+      process.env.AWS_BUCKET_REGION,
+      process.env.AWS_ACCESS_KEY,
+      process.env.AWS_SECRET_KEY,
+      process.env.AWS_BUCKET_NAME,
+    );
+    // let imageSelected = await Car.findById(req.params.id);
+    // let imageRemoved = imageSelected.selectedImage;
+    // await Car.updateOne({ _id: req.params.id }, { $pull: { image: imageRemoved } });
+    await Car.updateOne({ _id: req.params.id }, { $push: { image: Location } });
+    req.body.selectedImage = Location;
+  } else {
+    let car = await Car.findById(req.params.id);
+    let imageRemoved = car.image;
+    if (imageRemoved.includes(car.selectedImage) !== true) {
+      await Car.updateOne({ _id: req.params.id }, { $push: { image: req.body.selectedImage } });
+      selectedImage = req.body.selectedImage;
     }
   }
 
