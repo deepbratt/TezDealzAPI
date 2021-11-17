@@ -6,11 +6,29 @@ const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-con
 const { filter, stats, dailyAggregate } = require('../factory/factoryHandler');
 
 exports.createOne = catchAsync(async (req, res, next) => {
-  if (req.files) {
+  if (req.files.selectedImage) {
+    let { Location } = await uploadS3(
+      req.files.selectedImage[0],
+      process.env.AWS_BUCKET_REGION,
+      process.env.AWS_ACCESS_KEY,
+      process.env.AWS_SECRET_KEY,
+      process.env.AWS_BUCKET_NAME,
+    );
+    req.body.selectedImage = Location;
+    var imagePath = Location;
+  }
+
+  if (req.files.image) {
     let array = [];
-    for (var i = 0; i < req.files.length; i++) {
+    if (imagePath === undefined) {
+      array = [];
+    } else {
+      array = [imagePath];
+    }
+    for (var i = 0; i < req.files.image.length; i++) {
+      // console.log(req.files.image[i].mimetype);
       let { Location } = await uploadS3(
-        req.files[i],
+        req.files.image[i],
         process.env.AWS_BUCKET_REGION,
         process.env.AWS_ACCESS_KEY,
         process.env.AWS_SECRET_KEY,
@@ -18,8 +36,14 @@ exports.createOne = catchAsync(async (req, res, next) => {
       );
       array.push(Location);
     }
-    req.body.image = array;
+    // console.log(req.body.image);
+    if (req.body.image) {
+      req.body.image = [...req.body.image, ...array];
+    } else {
+      req.body.image = array;
+    }
   }
+
   if (req.user.role !== 'User') {
     if (!req.body.createdBy) {
       return next(new AppError(ERRORS.REQUIRED.USER_ID, STATUS_CODE.BAD_REQUEST));
@@ -143,11 +167,29 @@ exports.getOne = catchAsync(async (req, res, next) => {
 });
 
 exports.updateOne = catchAsync(async (req, res, next) => {
-  if (req.files) {
+  if (req.files.selectedImage) {
+    let { Location } = await uploadS3(
+      req.files.selectedImage[0],
+      process.env.AWS_BUCKET_REGION,
+      process.env.AWS_ACCESS_KEY,
+      process.env.AWS_SECRET_KEY,
+      process.env.AWS_BUCKET_NAME,
+    );
+    req.body.selectedImage = Location;
+    var imagePath = Location;
+  }
+
+  if (req.files.image) {
     let array = [];
-    for (var i = 0; i < req.files.length; i++) {
+    if (imagePath === undefined) {
+      array = [];
+    } else {
+      array = [imagePath];
+    }
+    for (var i = 0; i < req.files.image.length; i++) {
+      // console.log(req.files.image[i].mimetype);
       let { Location } = await uploadS3(
-        req.files[i],
+        req.files.image[i],
         process.env.AWS_BUCKET_REGION,
         process.env.AWS_ACCESS_KEY,
         process.env.AWS_SECRET_KEY,
@@ -162,6 +204,8 @@ exports.updateOne = catchAsync(async (req, res, next) => {
       req.body.image = array;
     }
   }
+
+  // console.log(req.files.selectedImage[0]);
 
   if (req.user.role === 'User' && (!req.body.image || req.body.image.length <= 0)) {
     return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
