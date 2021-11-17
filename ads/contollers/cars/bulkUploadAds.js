@@ -2,7 +2,7 @@ const Car = require('../../models/cars/carModel');
 const BulkUploads = require('../../models/bulkUploads/bulkUploads');
 const { AppError, catchAsync } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
-const csv = require('fast-csv');
+const fastcsv = require('fast-csv');
 const { uploadFile } = require('../../utils/fileUpload');
 const { filter } = require('../factory/factoryHandler');
 
@@ -132,131 +132,106 @@ const { filter } = require('../factory/factoryHandler');
 //   }
 // });
 
-// exports.createBulkUploads = catchAsync(async (req, res, next) => {
-//   if (!req.file) {
-//     return next(new AppError('Please insert a CSV File to add data', STATUS_CODE.BAD_REQUEST));
-//   }
+exports.createBulkUploads = catchAsync(async (req, res, next) => {
+  if (!req.file) {
+    return next(new AppError('Please insert a CSV File to add data', STATUS_CODE.BAD_REQUEST));
+  }
 
-//   // Parsing csv file from buffer
-//   let results = [];
-//   fastcsv
-//     .parseString(req.file.buffer, {
-//       headers: [
-//         'country',
-//         'province',
-//         'city',
-//         'version',
-//         'regNumber',
-//         'model',
-//         'modelYear',
-//         'make',
-//         'price',
-//         'engineType',
-//         'transmission',
-//         'condition',
-//         'bodyType',
-//         'bodyColor',
-//         'engineCapacity',
-//         'registrationCity',
-//         'milage',
-//         'assembly',
-//         'description',
-//         'sellerType',
-//       ],
-//       renameHeaders: true,
-//       ignoreEmpty: true,
-//     })
-//     .validate((data) => data.regNumber !== '')
-//     .on('data', (data) => results.push(data))
-//     .on('end', function () {
-//       if (!results || results.length <= 0) {
-//         return next(
-//           new AppError(
-//             'No data available to insert or something is missing or incorrect',
-//             STATUS_CODE.BAD_REQUEST,
-//           ),
-//         );
-//       }
-//     });
+  // Parsing csv file from buffer
+  let results = [];
+  fastcsv
+    .parseString(req.file.buffer, { headers: true, ignoreEmpty: true })
+    .validate((data) => data.regNumber !== '')
+    .on('data', (data) => results.push(data))
+    .on('end', () => {
+      if (!results || results.length <= 0) {
+        return next(
+          new AppError(
+            'No data available to insert or something is missing or incorrect',
+            STATUS_CODE.BAD_REQUEST,
+          ),
+        );
+      }
+    });
 
-//   // To get all registrationNumbers from cars collection,
-//   let duplicate = await Car.aggregate([
-//     {
-//       $group: {
-//         _id: '$regNumber',
-//       },
-//     },
-//     {
-//       $project: { _id: 1 },
-//     },
-//   ]);
+  // To get all registrationNumbers from cars collection,
+  let duplicate = await Car.aggregate([
+    {
+      $group: {
+        _id: '$regNumber',
+      },
+    },
+    {
+      $project: { _id: 1 },
+    },
+  ]);
 
-//   // Extracting values of registrationNumber from csv file and from cars collection
-//   let allRegNumbers = duplicate.map(({ _id }) => _id);
-//   let regNumsFromFile = results.map(({ regNumber }) => regNumber);
+  // Extracting values of registrationNumber from csv file and from cars collection
+  let allRegNumbers = duplicate.map(({ _id }) => _id);
+  let regNumsFromFile = results.map(({ regNumber }) => regNumber);
 
-//   // Getting same values from both arrays by comairing both arrays
-//   const duplicateRegNumbers = allRegNumbers.filter((element) => regNumsFromFile.includes(element));
+  // Getting same values from both arrays by comairing both arrays
+  const duplicateRegNumbers = allRegNumbers.filter((element) => regNumsFromFile.includes(element));
 
-//   // Checking for duplicate reg numbers
-//   let isFounded = regNumsFromFile.some((val) => allRegNumbers.includes(val));
-//   // if duplicate regNumber exists then it will return this error
-//   if (isFounded === true) {
-//     const failedCase = await BulkUploads.create({
-//       // createdBy: req.user._id,
-//       // userId: req.params.id,
-//       failedAdsCount: results.length,
-//       status: 'fail',
-//     });
+  // Checking for duplicate reg numbers
+  let isFounded = regNumsFromFile.some((val) => allRegNumbers.includes(val));
+  // if duplicate regNumber exists then it will return this error
+  if (isFounded === true) {
+    const failedCase = await BulkUploads.create({
+      createdBy: req.user._id,
+      userId: req.params.id,
+      failedAdsCount: results.length,
+      status: 'fail',
+    });
 
-//     res.status(STATUS_CODE.BAD_REQUEST).json({
-//       status: STATUS.FAIL,
-//       message:
-//         'Please check regNumber column in your CSV File it has Duplicate Registeration Number/Numbers that are already exists! Fix them and try again.',
-//       duplicateRegNumbers,
-//       data: {
-//         failedCase,
-//       },
-//     });
-//   }
-//   if (!results || results.length <= 0) {
-//     res.status(400).json({
-//       status: 'fail',
-//       message: 'No data available to insert or something is missing or incorrect ',
-//     });
-//     // return next(new AppError('No data available to insert ', STATUS_CODE.BAD_REQUEST));
-//   }
+    res.status(STATUS_CODE.BAD_REQUEST).json({
+      status: STATUS.FAIL,
+      message:
+        'Please check regNumber column in your CSV File it has Duplicate Registeration Number/Numbers that are already exists! Fix them and try again.',
+      duplicateRegNumbers,
+      data: {
+        failedCase,
+      },
+    });
+  }
+  if (!results || results.length <= 0) {
+    res.status(400).json({
+      status: 'fail',
+      message: 'No data available to insert or something is missing or incorrect ',
+    });
+    // return next(new AppError('No data available to insert ', STATUS_CODE.BAD_REQUEST));
+  }
 
-//   // inserting key-value pair of createdBy:req.params.id by taking id from params and map it into all elements of array
-//   results.forEach((e) => {
-//     e.createdBy = req.params.id;
-//   });
-//   // creating records in ads collection from parsed file data
-//   await Car.create(results);
+  // inserting key-value pair of createdBy:req.params.id by taking id from params and map it into all elements of array
+  results.forEach((e) => {
+    e.createdBy = req.params.id;
+  });
+  // creating records in ads collection from parsed file data
+  await Car.create(results);
 
-//   // Uploading file to s3 Bucket
-//   const file = req.file;
-//   const { Location } = await uploadFile(file);
-//   req.body.csvFile = Location;
+  // Uploading file to s3 Bucket
+  const file = req.file;
+  const { Location } = await uploadFile(file);
+  req.body.csvFile = Location;
 
-//   const result = await BulkUploads.create({
-//     csvFile: Location,
-//     // createdBy: req.user._id,
-//     // userId: req.params.id,
-//     successAdsCount: results.length,
-//     status: 'success',
-//   });
+  const result = await BulkUploads.create({
+    csvFile: Location,
+    createdBy: req.user._id,
+    userId: req.params.id,
+    successAdsCount: results.length,
+    status: 'success',
+  });
 
-//   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
-//   res.status(STATUS_CODE.CREATED).json({
-//     status: STATUS.SUCCESS,
-//     message: SUCCESS_MSG.SUCCESS_MESSAGES.CREATED,
-//     data: {
-//       result,
-//     },
-//   });
-// });
+  res.status(STATUS_CODE.CREATED).json({
+    status: STATUS.SUCCESS,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.CREATED,
+    data: {
+      result,
+    },
+  });
+});
 
 exports.getAllBulkAds = catchAsync(async (req, res, next) => {
   const [result, totalCount] = await filter(BulkUploads.find(), req.query);

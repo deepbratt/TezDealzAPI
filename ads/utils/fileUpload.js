@@ -37,11 +37,6 @@ exports.fileUpload = (mineType, myType) => {
   return multer({
     storage: memoryStorage(),
     fileFilter: (req, file, callback) => {
-      // console.log(file.mimetype.startsWith(mineType));
-      // console.log(mineType, '2');
-      // console.log(myType);
-      // console.log(file.mimetype);
-
       if (file.mimetype.startsWith(mineType) || file.mimetype.startsWith(myType)) {
         callback(null, true);
       } else {
