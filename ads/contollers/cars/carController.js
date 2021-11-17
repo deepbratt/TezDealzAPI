@@ -16,6 +16,8 @@ exports.createOne = catchAsync(async (req, res, next) => {
     );
     req.body.selectedImage = Location;
     var imagePath = Location;
+  } else {
+    imagePath = req.body.selectedImage;
   }
 
   if (req.files.image) {
@@ -36,7 +38,6 @@ exports.createOne = catchAsync(async (req, res, next) => {
       );
       array.push(Location);
     }
-    // console.log(req.body.image);
     if (req.body.image) {
       req.body.image = [...req.body.image, ...array];
     } else {
@@ -65,12 +66,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
   }
 
   if (req.user.role === 'User' && req.body.associatedPhone) {
-    return next(
-      new AppError(
-        'You are not allowed to add associated phone information',
-        STATUS_CODE.UNAUTHORIZED,
-      ),
-    );
+    return next(new AppError(ERRORS.UNAUTHORIZED.ASSOCIATED_PHONE, STATUS_CODE.UNAUTHORIZED));
   }
 
   const result = await Car.create(req.body);
@@ -78,7 +74,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
 
   res.status(STATUS_CODE.CREATED).json({
     status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.AD_POSTED,
     data: {
       result,
     },
@@ -121,7 +117,7 @@ exports.getAll = catchAsync(async (req, res, next) => {
   }
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.ALL_ADS,
     countOnPage: result.length,
     totalCount: totalCount,
     data: {
@@ -159,7 +155,7 @@ exports.getOne = catchAsync(async (req, res, next) => {
   }
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.ONE_AD,
     data: {
       result,
     },
@@ -177,12 +173,16 @@ exports.updateOne = catchAsync(async (req, res, next) => {
     );
     req.body.selectedImage = Location;
     var imagePath = Location;
+  } else {
+    imagePath = req.body.selectedImage;
   }
 
   if (req.files.image) {
     let array = [];
     if (imagePath === undefined) {
-      array = [];
+      const car = await Car.findById(req.params.id);
+      const selectedImage = car.selectedImage;
+      array = [selectedImage];
     } else {
       array = [imagePath];
     }
@@ -197,15 +197,12 @@ exports.updateOne = catchAsync(async (req, res, next) => {
       );
       array.push(Location);
     }
-    // console.log(req.body.image);
     if (req.body.image) {
       req.body.image = [...req.body.image, ...array];
     } else {
       req.body.image = array;
     }
   }
-
-  // console.log(req.files.selectedImage[0]);
 
   if (req.user.role === 'User' && (!req.body.image || req.body.image.length <= 0)) {
     return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
@@ -220,12 +217,7 @@ exports.updateOne = catchAsync(async (req, res, next) => {
   }
 
   if (req.user.role === 'User' && req.body.associatedPhone) {
-    return next(
-      new AppError(
-        'You are not allowed to update associated phone information',
-        STATUS_CODE.UNAUTHORIZED,
-      ),
-    );
+    return next(new AppError(ERRORS.UNAUTHORIZED.ASSOCIATED_PHONE, STATUS_CODE.UNAUTHORIZED));
   }
 
   const result = await Car.findByIdAndUpdate(req.params.id, req.body, {
@@ -236,7 +228,7 @@ exports.updateOne = catchAsync(async (req, res, next) => {
   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.UPDATE,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.AD_UPDATED,
     data: {
       result,
     },
@@ -261,7 +253,7 @@ exports.getMine = catchAsync(async (req, res, next) => {
 
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.MY_ADS,
     countOnPage: result.length,
     totalCount: totalCount,
     data: {
@@ -300,7 +292,7 @@ exports.favorites = catchAsync(async (req, res, next) => {
 
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.MY_FAVORITE_ADS,
     countOnPage: result.length,
     totalCount: totalCount,
     data: {
@@ -386,12 +378,7 @@ exports.getCarsWithin = catchAsync(async (req, res, next) => {
   const [lat, lng] = latlng.split(',');
   const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
   if (!lat || !lng) {
-    return next(
-      new AppError(
-        'please provide latitude and longitude in format lat,lng',
-        STATUS_CODE.BAD_REQUEST,
-      ),
-    );
+    return next(new AppError(ERRORS.INVALID.PROVIDE_LAT_LNG, STATUS_CODE.BAD_REQUEST));
   }
   const [result, totalCount] = await filter(
     Car.find({
