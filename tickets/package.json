@@ -1,6 +1,6 @@
 {
 	"name": "tickets",
-	"version": "1.0.4",
+	"version": "1.0.6",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
@@ -10,7 +10,7 @@
 	"license": "ISC",
 	"dependencies": {
 		"@auth/tdb-auth": "^1.0.2",
-		"@constants/tdb-constants": "^1.0.37",
+		"@constants/tdb-constants": "^1.0.44",
 		"@utils/tdb_globalutils": "^1.0.101",
 		"compression": "^1.7.4",
 		"cookie-session": "^1.4.0",

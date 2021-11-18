@@ -9,8 +9,8 @@
   "author": "Magnit",
   "license": "ISC",
   "dependencies": {
-    "@constants/tdb-constants": "^1.0.29",
-    "@utils/tdb_globalutils": "^1.0.55",
+    "@constants/tdb-constants": "^1.0.44",
+    "@utils/tdb_globalutils": "^1.0.103",
     "jsonwebtoken": "^8.5.1"
   }
 }
