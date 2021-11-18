@@ -56,7 +56,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   res.status(STATUS_CODE.CREATED).json({
     status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.CREATED,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.ACCOUNT_CREATED,
   });
 });
 
