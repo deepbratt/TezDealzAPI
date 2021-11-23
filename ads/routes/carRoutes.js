@@ -24,7 +24,7 @@ const fileUpload = require('../utils/fileUpload');
 const router = express.Router();
 // const { isCached } = require('../utils/redisCache');
 
-router.post('/bulk-ads', adminController.addBulkCars);
+// router.post('/bulk-ads', fileUpload.single('file'), adminController.addBulkCars);
 
 //Show Number
 router.post('/show-number/:id', authenticate(User), showNumberController.createShowNumberDetails);

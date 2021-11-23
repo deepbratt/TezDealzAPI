@@ -155,6 +155,7 @@ exports.createUser = catchAsync(async (req, res, next) => {
       passwordConfirm: req.body.passwordConfirm,
       signedUpWithEmail: true,
     });
+    await new Email(user.email, { ...user._doc }).welcomeDev();
   } else if (regex.pakPhone.test(req.body.data)) {
     user = await User.create({
       firstName: req.body.firstName.trim(),
@@ -363,11 +364,11 @@ exports.forgotPasswordAdmin = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
   try {
     if (Validator.validate(req.body.data)) {
-        await new Email(user.email, { ...user._doc, adminResetToken }).adminSendPasswordResetToken();
-        return res.status(STATUS_CODE.OK).json({
-          status: STATUS.SUCCESS,
-          message: SUCCESS_MSG.SUCCESS_MESSAGES.TOKEN_SENT_EMAIL,
-        });
+      await new Email(user.email, { ...user._doc, adminResetToken }).adminSendPasswordResetToken();
+      return res.status(STATUS_CODE.OK).json({
+        status: STATUS.SUCCESS,
+        message: SUCCESS_MSG.SUCCESS_MESSAGES.TOKEN_SENT_EMAIL,
+      });
     } else {
       await sendSMS({
         body: `Your TezDealz Admin Password reset code is ${adminResetToken}`,

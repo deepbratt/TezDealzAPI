@@ -7,7 +7,54 @@ const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-con
 const { filter } = require('../factory/factoryHandler');
 const fastcsv = require('fast-csv');
 
-exports.addBulkCars = catchAsync(async (req, res, next) => {});
+// exports.addBulkCars = catchAsync(async (req, res, next) => {
+//   const buf = req.file.buffer;
+//   const buffered = Buffer.from(buf).toString('utf8');
+
+//   const buff = JSON.stringify(buffered);
+//   console.log(buf);
+//   let stream = fs.createReadStream(buff);
+//   let csvData = [];
+//   let csvStream = fastcsv
+//     .parseFile({ headers: true })
+//     .on('data', function (data) {
+//       csvData.push({
+//         country: data[0],
+//         province: data[1],
+//         city: data[2],
+//         createdBy: data[3],
+//         regNumber: data[4],
+//         make: data[5],
+//         model: data[6],
+//         version: data[7],
+//         modelYear: data[8],
+//         price: data[9],
+//         engineType: data[10],
+//         transmission: data[11],
+//         condition: data[12],
+//         bodyType: data[13],
+//         bodyColor: data[14],
+//         engineCapacity: data[15],
+//         registrationCity: data[16],
+//         assembly: data[17],
+//         description: data[18],
+//         associatedPhone: data[19],
+//         sellerType: data[20],
+//         createdAt: data[21],
+//         milage: data[22],
+//       });
+//     })
+//     .on('end', async function () {
+//       // remove the first line: header
+//       csvData.shift();
+
+//       await Car.insertMany(csvData);
+//     });
+
+//   stream.pipe(csvStream);
+
+//   res.send('Done');
+// });
 
 exports.carOwners = catchAsync(async (req, res, next) => {
   const count = await Car.aggregate([
