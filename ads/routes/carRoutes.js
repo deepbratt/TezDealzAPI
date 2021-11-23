@@ -9,6 +9,7 @@ const carMakeController = require('../contollers/cars/carMakeContoller');
 const featuresController = require('../contollers/cars/featuresController');
 const colorController = require('../contollers/cars/colorController');
 const showNumberController = require('../contollers/cars/showNumberController');
+const bulkUploadsController = require('../contollers/cars/bulkUploadAds');
 const carFilters = require('../contollers/cars/carFilters');
 const { authenticate, checkIsLoggedIn, restrictTo } = require('@auth/tdb-auth');
 const {
@@ -18,13 +19,35 @@ const {
   phoneCheckOnupdate,
 } = require('../middleware/cars/index');
 const { upload } = require('@utils/tdb_globalutils');
-const fileUpload = require('../utils/fileUpload');
+const { fileUpload, uploadMultipleImages } = require('../utils/fileUpload');
 //const cache = require('../utils/cache');
 //const cacheExp = 30;
 const router = express.Router();
 // const { isCached } = require('../utils/redisCache');
 
-// router.post('/bulk-ads', fileUpload.single('file'), adminController.addBulkCars);
+router
+  .route('/bulk-uploads-stats/:id')
+  .get(
+    authenticate(User),
+    restrictTo('Admin', 'Moderator'),
+    bulkUploadsController.getAllBulkUploadsOfUser,
+  );
+
+router
+  .route('/bulk-ads/:id')
+  .post(
+    authenticate(User),
+    restrictTo('Admin', 'Moderator'),
+    upload('text').single('csvFile'),
+    bulkUploadsController.createBulkUploads,
+  );
+router.route('/bulk-ads').get(bulkUploadsController.getAllBulkAds);
+
+router
+  .route('/bulk-ads/:id')
+  .get(authenticate(User), restrictTo('Admin', 'Moderator'), bulkUploadsController.getOneBulkAd)
+  .patch(authenticate(User), restrictTo('Admin', 'Moderator'), bulkUploadsController.UpdateBulkAd)
+  .delete(authenticate(User), restrictTo('Admin', 'Moderator'), bulkUploadsController.deleteBulkAd);
 
 //Show Number
 router.post('/show-number/:id', authenticate(User), showNumberController.createShowNumberDetails);
@@ -210,14 +233,15 @@ router.delete(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-router
-  .route('/')
-  .post(
-    authenticate(User),
-    upload('image').array('image', 20),
-    phoneCheckOnCreate,
-    carController.createOne,
-  );
+router.route('/').post(
+  authenticate(User),
+  fileUpload('image', 'application').fields([
+    { name: 'image', maxCount: 20 },
+    { name: 'selectedImage', maxCount: 1 },
+  ]),
+  phoneCheckOnCreate,
+  carController.createOne,
+);
 router.route('/').get(
   checkIsLoggedIn(User), //cache(cacheExp),
   carController.getAll,
@@ -271,7 +295,10 @@ router
   .patch(
     authenticate(User),
     permessionCheck,
-    upload('image').array('image', 20),
+    fileUpload('image', 'application').fields([
+      { name: 'image', maxCount: 20 },
+      { name: 'selectedImage', maxCount: 1 },
+    ]),
     phoneCheckOnupdate,
     carController.updateOne,
   )

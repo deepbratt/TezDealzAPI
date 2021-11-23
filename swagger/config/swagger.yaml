@@ -4,6 +4,128 @@ info:
   version: '1.0.0'
   title: 'TezDeals'
 paths:
+  /v1/ads/cars/bulk-uploads-stats/{id}:
+    get:
+      tags:
+        - 'Bulk Advertisements'
+      summary: 'used to get one bulk ad data stats of specific user and only Admin and Moderator can perform this request'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Return stats of that user according to the specified id.'
+  /v1/ads/cars/bulk-ads/:id:
+    post:
+      tags:
+        - 'Bulk Advertisements'
+      summary: 'We can create multiple ads from csv file using this route.'
+      description: ''
+      consumes:
+        - 'text/csv'
+      produces:
+        - 'text/csv'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: ''
+          required: true
+          schema:
+            $ref: '#/definitions/bulk-ads'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'created Successfully'
+  /v1/ads/cars/bulk-ads:
+    get:
+      tags:
+        - 'Bulk Advertisements'
+      summary: 'To get all bulk ads data'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'All details of bulk ads document in response'
+  /v1/ads/cars/bulk-ads/{id}:
+    get:
+      tags:
+        - 'Bulk Advertisements'
+      summary: 'used to get one bulk ad data and only Admin and Moderator can perform this request'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'Return result againt id'
+  /v1/ads/cars/bulk-ads/:{id}:
+    patch:
+      tags:
+        - 'Bulk Advertisements'
+      summary: 'used to updated bulk ads data and only Admin and Moderator can perform this request'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: ''
+          required: true
+          schema:
+            $ref: '#/definitions/bulk-ads'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'updated Successfully'
+  /v1/ads/cars/bulk-ads/id:
+    delete:
+      tags:
+        - 'Bulk Advertisements'
+      summary: 'used to delete bulk ad document details and only Admin and Moderator can perform this request'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          type: 'string'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '200':
+          description: 'bulk ad document deleted Successfully'
   /v1/ads/cars/show-number/:id:
     post:
       tags:
@@ -2298,3 +2420,8 @@ definitions:
         type: 'string'
       clickedDate:
         type: 'date'
+  bulk-ads:
+    type: 'object'
+    properties:
+      csvFile:
+        type: 'file'

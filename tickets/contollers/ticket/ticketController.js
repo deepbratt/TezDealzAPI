@@ -27,15 +27,13 @@ exports.createTechAssistance = catchAsync(async (req, res, next) => {
 
     res.status(STATUS_CODE.CREATED).json({
       status: STATUS.SUCCESS,
-      message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+      message: SUCCESS_MSG.SUCCESS_MESSAGES.TICKET_TECHNICAL_ISSUE_CREATED,
       data: {
         result,
       },
     });
   } else {
-    return next(
-      new AppError('Please Provide valid Email or Phone Number', STATUS_CODE.BAD_REQUEST),
-    );
+    return next(new AppError(ERRORS.INVALID.PROVIDE_VALID_EMAIL_PHONE, STATUS_CODE.BAD_REQUEST));
   }
 });
 
@@ -49,7 +47,7 @@ exports.createAdvAssistance = catchAsync(async (req, res, next) => {
 
   res.status(STATUS_CODE.CREATED).json({
     status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.TICKET_ADVERTISEMENT_ASSISTANCE_CREATED,
     data: {
       result,
     },
@@ -64,7 +62,7 @@ exports.getAll = catchAsync(async (req, res, next) => {
   }
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.ALL_TICKETS,
     countOnPage: result.length,
     totalCount: totalCount,
     data: {
@@ -77,7 +75,7 @@ exports.getOne = catchAsync(async (req, res, next) => {
   const result = await Ticket.findById(req.params.id);
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.ONE_TICKET,
     data: {
       result,
     },
@@ -89,7 +87,7 @@ exports.deleteOne = catchAsync(async (req, res, next) => {
   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.DELETE_TICKET,
     data: null,
   });
 });
@@ -101,7 +99,7 @@ exports.updateOne = catchAsync(async (req, res, next) => {
   }
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.UPDATE,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.UPDATE_TICKET,
     data: {
       result,
     },
@@ -123,7 +121,7 @@ exports.closeTicket = catchAsync(async (req, res, next) => {
   );
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
-    message: 'Ticket Closed successfully',
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.TICKET_CLOSED,
     data: {
       result,
     },

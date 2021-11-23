@@ -1,6 +1,6 @@
 {
 	"name": "users",
-	"version": "1.0.85",
+	"version": "1.0.88",
 	"description": "users service",
 	"main": "index.js",
 	"scripts": {

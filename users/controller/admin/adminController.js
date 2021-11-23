@@ -21,7 +21,7 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
   }
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.ALL_USERS,
     countOnPage: result[0].length,
     totalCount: result[1],
     data: {
@@ -40,7 +40,7 @@ exports.getUser = catchAsync(async (req, res, next) => {
   }
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.ONE_USER,
     data: {
       result,
     },
@@ -177,7 +177,7 @@ exports.createUser = catchAsync(async (req, res, next) => {
   }
   res.status(STATUS_CODE.CREATED).json({
     status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.CREATED,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.USER_CREATED,
   });
 });
 
