@@ -57,12 +57,7 @@ module.exports = class Email {
       `{"firstName": "${this.obj.firstName}","resetToken": "${this.obj.adminResetToken}"}`,
     );
   }
-  //   async customEmail() {
-  //     await this.send(
-  //       'custom',
-  //       'Customer Support',
-  //       `{"fname": "${this.obj.firstName}",\
-  // 		  "text": "${this.obj.text}"}`,
-  //     );
-  //   }
+  async welcomeDev() {
+    await this.send('welcome-carokta', 'Welcome to Carokta', `{"fname": "${this.obj.firstName}"}`);
+  }
 };

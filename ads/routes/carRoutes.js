@@ -19,7 +19,7 @@ const {
   phoneCheckOnupdate,
 } = require('../middleware/cars/index');
 const { upload } = require('@utils/tdb_globalutils');
-const { fileUpload, uploadMultipleImages } = require('../utils/fileUpload');
+const { fileUpload } = require('../utils/fileUpload');
 //const cache = require('../utils/cache');
 //const cacheExp = 30;
 const router = express.Router();
