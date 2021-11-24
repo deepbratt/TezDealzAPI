@@ -209,7 +209,7 @@ exports.updateOne = catchAsync(async (req, res, next) => {
     );
 
     req.body.selectedImage = Location;
-    // when we only send selectedImage then it will add in images array
+    // when we only send selectedImage then it will push selectedImage to images array
     await Car.updateOne({ _id: req.params.id }, { $push: { image: Location } });
     var imagePath = Location;
   } else {
