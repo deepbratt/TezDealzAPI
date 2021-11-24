@@ -1,11 +1,28 @@
 const Car = require('../../models/cars/carModel');
 const User = require('../../models/user/userModel');
+const mongoose = require('mongoose');
 const { AppError, catchAsync, uploadS3, APIFeatures } = require('@utils/tdb_globalutils');
 const { ERRORS, STATUS, STATUS_CODE, SUCCESS_MSG } = require('@constants/tdb-constants');
 
 exports.permessionCheck = catchAsync(async (req, res, next) => {
+  let result;
   const currentUserId = req.user._id;
-  const result = await Car.findById(req.params.id);
+  ObjectId = mongoose.isValidObjectId(req.params.id);
+  if (ObjectId !== true) {
+    let stringValues = req.params.id;
+    let splitValues = stringValues.split('-');
+    // let idFromValues = splitValues.pop();
+    let idFromValues = splitValues.slice(-1)[0];
+    req.params.id = idFromValues;
+    let validId = mongoose.isValidObjectId(req.params.id);
+    if (validId === true) {
+      result = await Car.findById(req.params.id);
+    }
+  } else {
+    result = await Car.findById(req.params.id);
+  }
+
+  // const result = await Car.findById(req.params.id);
   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   if (!currentUserId.equals(result.createdBy) && req.user.role === 'User') {
     return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
@@ -14,8 +31,23 @@ exports.permessionCheck = catchAsync(async (req, res, next) => {
 });
 
 exports.favPermessionCheck = catchAsync(async (req, res, next) => {
+  let result;
   const currentUserId = req.user._id;
-  const result = await Car.findById(req.params.id);
+  ObjectId = mongoose.isValidObjectId(req.params.id);
+  if (ObjectId !== true) {
+    let stringValues = req.params.id;
+    let splitValues = stringValues.split('-');
+    // let idFromValues = splitValues.pop();
+    let idFromValues = splitValues.slice(-1)[0];
+    req.params.id = idFromValues;
+    let validId = mongoose.isValidObjectId(req.params.id);
+    if (validId === true) {
+      result = await Car.findById(req.params.id);
+    }
+  } else {
+    result = await Car.findById(req.params.id);
+  }
+
   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   if (currentUserId.equals(result.createdBy)) {
     return next(new AppError(ERRORS.INVALID.CANT_ADD_FAV, STATUS_CODE.BAD_REQUEST));

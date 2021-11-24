@@ -155,6 +155,7 @@ exports.createUser = catchAsync(async (req, res, next) => {
       passwordConfirm: req.body.passwordConfirm,
       signedUpWithEmail: true,
     });
+    await new Email(user.email, { ...user._doc }).welcomeDev();
   } else if (regex.pakPhone.test(req.body.data)) {
     user = await User.create({
       firstName: req.body.firstName.trim(),
