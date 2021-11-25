@@ -3,7 +3,7 @@ const RequestIp = require('@supercharge/request-ip');
 const Car = require('../../models/cars/carModel');
 const CarView = require('../../models/cars/car-views/ip-views-model');
 const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
-const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
+const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS, ROLES } = require('@constants/tdb-constants');
 const { filter, stats, dailyAggregate } = require('../factory/factoryHandler');
 
 exports.createOne = catchAsync(async (req, res, next) => {
@@ -45,7 +45,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
     }
   }
 
-  if (req.user.role !== 'User') {
+  if (req.user.role !== ROLES.USERROLES.INDIVIDUAL) {
     if (!req.body.createdBy) {
       return next(new AppError(ERRORS.REQUIRED.USER_ID, STATUS_CODE.BAD_REQUEST));
     }
@@ -53,19 +53,31 @@ exports.createOne = catchAsync(async (req, res, next) => {
     req.body.createdBy = req.user._id;
   }
 
-  if (req.user.role === 'User' && (!req.body.image || req.body.image.length <= 0)) {
+  if (
+    req.user.role === ROLES.USERROLES.INDIVIDUAL &&
+    (!req.body.image || req.body.image.length <= 0)
+  ) {
     return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
-  } else if (req.user.role === 'User' && (req.body.image || req.body.image.length >= 0)) {
+  } else if (
+    req.user.role === ROLES.USERROLES.INDIVIDUAL &&
+    (req.body.image || req.body.image.length >= 0)
+  ) {
     req.body.imageStatus = true;
   }
 
-  if (req.user.role !== 'User' && (!req.body.image || req.body.image.length <= 0)) {
+  if (
+    req.user.role !== ROLES.USERROLES.INDIVIDUAL &&
+    (!req.body.image || req.body.image.length <= 0)
+  ) {
     req.body.imageStatus = false;
-  } else if (req.user.role !== 'User' && (req.body.image || req.body.image.length >= 0)) {
+  } else if (
+    req.user.role !== ROLES.USERROLES.INDIVIDUAL &&
+    (req.body.image || req.body.image.length >= 0)
+  ) {
     req.body.imageStatus = true;
   }
 
-  if (req.user.role === 'User' && req.body.associatedPhone) {
+  if (req.user.role === ROLES.USERROLES.INDIVIDUAL && req.body.associatedPhone) {
     return next(new AppError(ERRORS.UNAUTHORIZED.ASSOCIATED_PHONE, STATUS_CODE.UNAUTHORIZED));
   }
 
@@ -84,7 +96,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
 exports.getAll = catchAsync(async (req, res, next) => {
   let data;
   if (req.user) {
-    if (req.user.role !== 'User') {
+    if (req.user.role !== ROLES.USERROLES.INDIVIDUAL) {
       data = await filter(Car.find(), req.query);
     } else {
       data = await filter(
@@ -104,7 +116,7 @@ exports.getAll = catchAsync(async (req, res, next) => {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
   //current user fav status
-  if (req.user && req.user.role === 'User') {
+  if (req.user && req.user.role === ROLES.USERROLES.INDIVIDUAL) {
     for (var i = 0; i < result.length; i++) {
       if (result[i].favOf) {
         if (result[i].favOf.length > 0 && result[i].favOf.includes(req.user._id)) {
@@ -150,14 +162,17 @@ exports.getOne = catchAsync(async (req, res, next) => {
   if (!result.active || result.banned) {
     if (req.user) {
       const currentUser = req.user._id;
-      if (req.user.role === 'User' && !currentUser.equals(result.createdBy._id)) {
+      if (
+        req.user.role === ROLES.USERROLES.INDIVIDUAL &&
+        !currentUser.equals(result.createdBy._id)
+      ) {
         return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
       }
     } else {
       return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
     }
   }
-  if (req.user && req.user.role === 'User') {
+  if (req.user && req.user.role === ROLES.USERROLES.INDIVIDUAL) {
     if (result.favOf.includes(req.user._id)) {
       result.isFav = true;
     } else {
@@ -256,19 +271,31 @@ exports.updateOne = catchAsync(async (req, res, next) => {
     req.body.image = array;
   }
 
-  if (req.user.role === 'User' && (!req.body.image || req.body.image.length <= 0)) {
+  if (
+    req.user.role === ROLES.USERROLES.INDIVIDUAL &&
+    (!req.body.image || req.body.image.length <= 0)
+  ) {
     return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
-  } else if (req.user.role === 'User' && (req.body.image || req.body.image.length >= 0)) {
+  } else if (
+    req.user.role === ROLES.USERROLES.INDIVIDUAL &&
+    (req.body.image || req.body.image.length >= 0)
+  ) {
     req.body.imageStatus = true;
   }
 
-  if (req.user.role !== 'User' && (!req.body.image || req.body.image.length <= 0)) {
+  if (
+    req.user.role !== ROLES.USERROLES.INDIVIDUAL &&
+    (!req.body.image || req.body.image.length <= 0)
+  ) {
     req.body.imageStatus = false;
-  } else if (req.user.role !== 'User' && (req.body.image || req.body.image.length >= 0)) {
+  } else if (
+    req.user.role !== ROLES.USERROLES.INDIVIDUAL &&
+    (req.body.image || req.body.image.length >= 0)
+  ) {
     req.body.imageStatus = true;
   }
 
-  if (req.user.role === 'User' && req.body.associatedPhone) {
+  if (req.user.role === ROLES.USERROLES.INDIVIDUAL && req.body.associatedPhone) {
     return next(new AppError(ERRORS.UNAUTHORIZED.ASSOCIATED_PHONE, STATUS_CODE.UNAUTHORIZED));
   }
 

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcryptjs = require('bcryptjs');
 const crypto = require('crypto');
-const { ERRORS } = require('@constants/tdb-constants');
+const { ERRORS, ROLES } = require('@constants/tdb-constants');
 
 const userSchema = new mongoose.Schema(
   {
@@ -98,7 +98,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: 'User',
       enum: {
-        values: ['User', 'Moderator', 'Admin'],
+        values: [ROLES.USERROLES.INDIVIDUAL, ROLES.USERROLES.MODERATOR, ROLES.USERROLES.ADMIN],
         message: ERRORS.INVALID.ROLE_SIGNUP,
       },
     },

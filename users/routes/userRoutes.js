@@ -1,6 +1,7 @@
 const express = require('express');
 const User = require('../model/userModel');
 const { authenticate, restrictTo } = require('@auth/tdb-auth');
+const { ROLES } = require('@constants/tdb-constants');
 const authController = require('../controller/auth/index');
 const userController = require('../controller/user/userController');
 const adminController = require('../controller/admin/adminController');
@@ -41,7 +42,11 @@ router.patch(
 router.use(authenticate(User));
 
 // Add User, Moderators or Admins by Admin
-router.post('/create-user', restrictTo('Admin', 'Moderator'), adminController.createUser);
+router.post(
+  '/create-user',
+  restrictTo(ROLES.USERROLES.ADMIN, ROLES.USERROLES.MODERATOR),
+  adminController.createUser,
+);
 
 // Update Current User's Password
 router.patch('/updateMyPassword', validationFunction, authController.updatePassword);
@@ -53,28 +58,49 @@ router.patch('/updateMe', upload('image').single('image'), userController.update
 router.delete('/deleteMe', userController.deleteMe);
 
 // Active User
-router.patch('/active-user/:id', restrictTo('Admin', 'Moderator'), adminController.activeUser);
+router.patch(
+  '/active-user/:id',
+  restrictTo(ROLES.USERROLES.ADMIN, ROLES.USERROLES.MODERATOR),
+  adminController.activeUser,
+);
 
 // inctive User
-router.patch('/inactive-user/:id', restrictTo('Admin', 'Moderator'), adminController.inactiveUser);
+router.patch(
+  '/inactive-user/:id',
+  restrictTo(ROLES.USERROLES.ADMIN, ROLES.USERROLES.MODERATOR),
+  adminController.inactiveUser,
+);
 
 // Ban User By Admin
-router.patch('/ban-user/:id', restrictTo('Admin', 'Moderator'), adminController.banUser);
+router.patch(
+  '/ban-user/:id',
+  restrictTo(ROLES.USERROLES.ADMIN, ROLES.USERROLES.MODERATOR),
+  adminController.banUser,
+);
 
 // unBan User By Admin
-router.patch('/unban-user/:id', restrictTo('Admin', 'Moderator'), adminController.unbanUser);
+router.patch(
+  '/unban-user/:id',
+  restrictTo(ROLES.USERROLES.ADMIN, ROLES.USERROLES.MODERATOR),
+  adminController.unbanUser,
+);
 
 //users
 router.route('/currentUser').get(authController.isLoggedIn);
 
 // Statistcs of Users
-router.route('/stats').get(restrictTo('Admin', 'Moderator'), adminController.userStats);
+router
+  .route('/stats')
+  .get(restrictTo(ROLES.USERROLES.ADMIN, ROLES.USERROLES.MODERATOR), adminController.userStats);
 router
   .route('/daily-stats/:min/:max')
-  .get(restrictTo('Admin', 'Moderator'), adminController.dailyUserAggregate);
+  .get(
+    restrictTo(ROLES.USERROLES.ADMIN, ROLES.USERROLES.MODERATOR),
+    adminController.dailyUserAggregate,
+  );
 
 // Only accessibe by Admin and Moderator
-router.use(restrictTo('Admin', 'Moderator'));
+router.use(restrictTo(ROLES.USERROLES.ADMIN, ROLES.USERROLES.MODERATOR));
 
 router
   .route('/')
