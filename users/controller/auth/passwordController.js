@@ -2,7 +2,7 @@ const crypto = require('crypto');
 var validator = require('email-validator');
 const User = require('../../model/userModel');
 const { AppError, catchAsync } = require('@utils/tdb_globalutils');
-const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
+const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS, ROLES } = require('@constants/tdb-constants');
 const sendSMS = require('../../utils/sendSMS');
 const jwtManagement = require('../../utils/jwtManagement');
 const { regex, pakPhone } = require('../../utils/regex');
@@ -21,10 +21,10 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   if (validator.validate(req.body.data)) {
     user = await User.findOne({
       email: req.body.data,
-      role: 'User',
+      role: ROLES.USERROLES.INDIVIDUAL,
     });
   } else if (regex.pakPhone.test(req.body.data)) {
-    user = await User.findOne({ phone: req.body.data, role: 'User' });
+    user = await User.findOne({ phone: req.body.data, role: ROLES.USERROLES.INDIVIDUAL });
   }
 
   if (!user) {
@@ -39,11 +39,11 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
   try {
     if (validator.validate(req.body.data)) {
-        await new Email(user.email, { ...user._doc, resetToken }).sendPasswordResetToken();
-        return res.status(STATUS_CODE.OK).json({
-          status: STATUS.SUCCESS,
-          message: SUCCESS_MSG.SUCCESS_MESSAGES.TOKEN_SENT_EMAIL,
-        });
+      await new Email(user.email, { ...user._doc, resetToken }).sendPasswordResetToken();
+      return res.status(STATUS_CODE.OK).json({
+        status: STATUS.SUCCESS,
+        message: SUCCESS_MSG.SUCCESS_MESSAGES.TOKEN_SENT_EMAIL,
+      });
     } else {
       await sendSMS({
         body: `Your TezDealz password reset code is ${resetToken}`,
@@ -73,7 +73,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     passwordResetExpires: { $gt: Date.now() },
   });
 
-  if (!user || user.role !== 'User') {
+  if (!user || user.role !== ROLES.USERROLES.INDIVIDUAL) {
     return next(new AppError(ERRORS.INVALID.INVALID_RESET_LINK, STATUS_CODE.BAD_REQUEST));
   }
 

@@ -4,7 +4,7 @@ const Validator = require('email-validator');
 const User = require('../../model/userModel');
 const { AppError } = require('@utils/tdb_globalutils');
 const catchAsync = require('@utils/tdb_globalutils/errorHandling/catchAsync');
-const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
+const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS, ROLES } = require('@constants/tdb-constants');
 const jwtManagement = require('../../utils/jwtManagement');
 const { pakPhone, regex } = require('../../utils/regex');
 const Email = require('../../utils/email-mailgun');
@@ -88,7 +88,7 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
   }
-  if (user.role !== 'User') {
+  if (user.role !== ROLES.USERROLES.INDIVIDUAL) {
     return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
   }
   // Check if user is banned , if banned then Throw Error
@@ -127,7 +127,7 @@ exports.adminPanellogin = catchAsync(async (req, res, next) => {
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
   }
-  if (user.role === 'User') {
+  if (user.role === ROLES.USERROLES.INDIVIDUAL) {
     return next(new AppError(ERRORS.INVALID.INVALID_CREDENTIALS, STATUS_CODE.BAD_REQUEST));
   }
   // Check if user is banned , if banned then Throw Error
