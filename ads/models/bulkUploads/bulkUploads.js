@@ -20,6 +20,12 @@ const bulkUploadSchema = new mongoose.Schema(
     failedAdsCount: {
       type: Number,
     },
+    totalAdsCount: {
+      type: Number,
+    },
+    failedAds: {
+      type: String,
+    },
     status: {
       type: String,
     },
