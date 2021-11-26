@@ -40,7 +40,7 @@ router
     authenticate(User),
     restrictTo(ROLES.USERROLES.ADMIN, ROLES.USERROLES.MODERATOR),
     upload('text').single('csvFile'),
-    bulkUploadsController.createBulkUploads,
+    bulkUploadsController.createBulkUploadAds,
   );
 router.route('/bulk-ads').get(bulkUploadsController.getAllBulkAds);
 
