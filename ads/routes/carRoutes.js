@@ -42,7 +42,13 @@ router
     upload('text').single('csvFile'),
     bulkUploadsController.createBulkUploadAds,
   );
-router.route('/bulk-ads').get(bulkUploadsController.getAllBulkAds);
+router
+  .route('/bulk-ads')
+  .get(
+    authenticate(User),
+    restrictTo(ROLES.USERROLES.ADMIN, ROLES.USERROLES.MODERATOR),
+    bulkUploadsController.getAllBulkAds,
+  );
 
 router
   .route('/bulk-ads/:id')
