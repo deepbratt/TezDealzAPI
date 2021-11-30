@@ -71,80 +71,79 @@ const validateAdsCSVTemplate = async (req, next) => {
 };
 
 const checkDuplicateRegNumbersInCSV = (data) => {
-  
-  let isDuplicate = false, testObject = {};
-  data.map(function(item) {
+  let isDuplicate = false,
+    testObject = {};
+  data.map(function (item) {
     var itemPropertyName = item['regNumber'];
     if (itemPropertyName in testObject) {
       testObject[itemPropertyName].duplicate = true;
       item.duplicate = true;
       isDuplicate = true;
-    }
-    else {
+    } else {
       testObject[itemPropertyName] = item;
       delete item.duplicate;
     }
   });
   return isDuplicate;
-}
+};
 
-const dataValidation = async(data, userId) => {
-  let validRecords =[], failedRecords = [];
-  for(var i = 0; i < data.length; i++ ){
+const dataValidation = async (data, userId) => {
+  let validRecords = [],
+    failedRecords = [];
+  for (var i = 0; i < data.length; i++) {
     let adDetail = data[i];
     let isValidAd = true;
     let failedReason = [];
-    const isExist = await Car.find( { 'regNumber': adDetail.regNumber } );
-    if(isExist.length > 0){
+    const isExist = await Car.find({ regNumber: adDetail.regNumber });
+    if (isExist.length > 0) {
       isValidAd = false;
       failedReason.push('Register number already exist in the system');
     }
     //Can include anyother data validations
     // .
     // /
-    if(!isValidAd){
+    if (!isValidAd) {
       adDetail.failedReason = failedReason;
       failedRecords.push(adDetail);
-    }
-    else{
+    } else {
       adDetail.createdBy = userId;
       validRecords.push(adDetail);
     }
   }
-  return {validRecords, failedRecords}
-}
+  return { validRecords, failedRecords };
+};
 
-const processBulkUpload = async(userId, data, bulkUploadRefId) => {
+const processBulkUpload = async (userId, data, bulkUploadRefId) => {
   try {
     const { validRecords, failedRecords } = await dataValidation(data, userId);
     await Car.create(validRecords);
-    await BulkUploads.update(
+    await BulkUploads.updateOne(
       {
-        _id: bulkUploadRefId
+        _id: bulkUploadRefId,
       },
       {
-        $set : {
+        $set: {
           successAdsCount: validRecords.length,
           failedAdsCount: failedRecords.length,
           failedAds: JSON.stringify(failedRecords),
           status: 'completed',
-        }
-      }
-    )
+        },
+      },
+    );
   } catch (ex) {
     console.log('Bulk upload process failed');
-    await BulkUploads.update(
+    await BulkUploads.updateOne(
       {
-        _id: bulkUploadRefId
+        _id: bulkUploadRefId,
       },
       {
-        $set : {
+        $set: {
           status: 'failed',
-        }
-      }
-    )
+        },
+      },
+    );
   }
-}
+};
 
 exports.createBulkUploadAds = catchAsync(async (req, res, next) => {
   try {
@@ -152,28 +151,36 @@ exports.createBulkUploadAds = catchAsync(async (req, res, next) => {
       return next(new AppError('Please insert a CSV File to add data', STATUS_CODE.BAD_REQUEST));
     }
     const csvValidationResult = await validateAdsCSVTemplate(req, next);
-    if(csvValidationResult.isValid){
+    if (csvValidationResult.data.length <= 0) {
+      return next(
+        new AppError(
+          'No Data available to insert!!! Please add data in CSV File to create records',
+          STATUS_CODE.BAD_REQUEST,
+        ),
+      );
+    }
+
+    if (csvValidationResult.isValid) {
       const isDuplicate = checkDuplicateRegNumbersInCSV(csvValidationResult.data);
-      if(!isDuplicate){
+      if (!isDuplicate) {
         const file = req.file;
         const { Location } = await uploadFile(file);
         const result = await BulkUploads.create({
           csvFile: Location,
-          createdBy: req.user._id,
+          // createdBy: req.user._id,
           userId: req.params.id,
           status: 'inprogress',
-          totalAdsCount: csvValidationResult.data.length
+          totalAdsCount: csvValidationResult.data.length,
         });
         res.status(STATUS_CODE.CREATED).json({
           status: STATUS.SUCCESS,
-          message: "Initiated the bulkupload",
+          message: 'Initiated the bulkupload',
           data: {
             result,
           },
         });
-        processBulkUpload(req.params.id, csvValidationResult.data, result._id)
-      }
-      else{
+        processBulkUpload(req.params.id, csvValidationResult.data, result._id);
+      } else {
         const error = {
           code: 400,
           status: 'FAILED',
@@ -183,24 +190,23 @@ exports.createBulkUploadAds = catchAsync(async (req, res, next) => {
         res.status(500);
         res.json(error);
       }
-    }
-    else{
-      res.status (400);
+    } else {
+      res.status(400);
       result = {
-          code: 400,
-          status: 'FAILED',
-          message: 'Invalid CSV template',
-          details: {
-              failed: {
-                  fieldValidationResult: {
-                    csvUploaded : req.file.originalname,
-                    message: csvValidationResult.message,
-                    missingFields: csvValidationResult.misingFields,
-                    referenceId: referenceId,
-                  }
-              }
-          }
-      }
+        code: 400,
+        status: 'FAILED',
+        message: 'Invalid CSV template',
+        details: {
+          failed: {
+            fieldValidationResult: {
+              csvUploaded: req.file.originalname,
+              message: csvValidationResult.message,
+              missingFields: csvValidationResult.misingFields,
+              referenceId: referenceId,
+            },
+          },
+        },
+      };
     }
   } catch (ex) {
     console.log('Ads upload failed');
@@ -222,9 +228,9 @@ exports.getAllBulkAds = catchAsync(async (req, res, next) => {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
 
-  const failedCount = await filter(BulkUploads.find({ status: 'fail' }), req.query);
+  const failedCount = await filter(BulkUploads.find({ failedAdsCount: { $gt: 0 } }), req.query);
 
-  const successCount = totalCount - failedCount[0].length;
+  const successCount = totalCount - failedCount.length;
 
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
@@ -232,7 +238,7 @@ exports.getAllBulkAds = catchAsync(async (req, res, next) => {
     countOnPage: result.length,
     totalCount: totalCount,
     successcount: successCount,
-    failedCount: failedCount[0].length,
+    failedCount: failedCount.length,
     data: {
       result,
     },
@@ -297,9 +303,11 @@ exports.getAllBulkUploadsOfUser = catchAsync(async (req, res, next) => {
     req.query,
   );
 
-  const failedCount = await filter(BulkUploads.find({ status: 'fail' }), req.query);
+  const failedCount = await filter(BulkUploads.find({ failedAdsCount: { $gt: 0 } }), req.query);
+  console.log(failedCount.length);
 
-  const successCount = totalCount - failedCount[0].length;
+  const successCount = totalCount - failedCount.length;
+  console.log(successCount);
 
   if (result.length === 0)
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
@@ -308,9 +316,9 @@ exports.getAllBulkUploadsOfUser = catchAsync(async (req, res, next) => {
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
     countOnPage: result.length,
-    totalCount: totalCount,
+    totalCount,
     successcount: successCount,
-    failedCount: failedCount[0].length,
+    failedCount: failedCount.length,
     data: {
       result,
     },
