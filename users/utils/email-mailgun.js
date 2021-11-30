@@ -57,7 +57,6 @@ module.exports = class Email {
       `{"firstName": "${this.obj.firstName}","resetToken": "${this.obj.adminResetToken}"}`,
     );
   }
-
   async welcomeDev() {
     await this.send('welcome-carokta', 'Welcome to Carokta', `{"fname": "${this.obj.firstName}"}`);
   }

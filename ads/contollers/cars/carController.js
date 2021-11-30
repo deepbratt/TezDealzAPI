@@ -1,8 +1,9 @@
+const mongoose = require('mongoose');
 const RequestIp = require('@supercharge/request-ip');
 const Car = require('../../models/cars/carModel');
 const CarView = require('../../models/cars/car-views/ip-views-model');
 const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
-const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-constants');
+const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS, ROLES } = require('@constants/tdb-constants');
 const { filter, stats, dailyAggregate } = require('../factory/factoryHandler');
 
 exports.createOne = catchAsync(async (req, res, next) => {
@@ -44,7 +45,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
     }
   }
 
-  if (req.user.role !== 'User') {
+  if (req.user.role !== ROLES.USERROLES.INDIVIDUAL) {
     if (!req.body.createdBy) {
       return next(new AppError(ERRORS.REQUIRED.USER_ID, STATUS_CODE.BAD_REQUEST));
     }
@@ -52,19 +53,31 @@ exports.createOne = catchAsync(async (req, res, next) => {
     req.body.createdBy = req.user._id;
   }
 
-  if (req.user.role === 'User' && (!req.body.image || req.body.image.length <= 0)) {
+  if (
+    req.user.role === ROLES.USERROLES.INDIVIDUAL &&
+    (!req.body.image || req.body.image.length <= 0)
+  ) {
     return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
-  } else if (req.user.role === 'User' && (req.body.image || req.body.image.length >= 0)) {
+  } else if (
+    req.user.role === ROLES.USERROLES.INDIVIDUAL &&
+    (req.body.image || req.body.image.length >= 0)
+  ) {
     req.body.imageStatus = true;
   }
 
-  if (req.user.role !== 'User' && (!req.body.image || req.body.image.length <= 0)) {
+  if (
+    req.user.role !== ROLES.USERROLES.INDIVIDUAL &&
+    (!req.body.image || req.body.image.length <= 0)
+  ) {
     req.body.imageStatus = false;
-  } else if (req.user.role !== 'User' && (req.body.image || req.body.image.length >= 0)) {
+  } else if (
+    req.user.role !== ROLES.USERROLES.INDIVIDUAL &&
+    (req.body.image || req.body.image.length >= 0)
+  ) {
     req.body.imageStatus = true;
   }
 
-  if (req.user.role === 'User' && req.body.associatedPhone) {
+  if (req.user.role === ROLES.USERROLES.INDIVIDUAL && req.body.associatedPhone) {
     return next(new AppError(ERRORS.UNAUTHORIZED.ASSOCIATED_PHONE, STATUS_CODE.UNAUTHORIZED));
   }
 
@@ -83,7 +96,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
 exports.getAll = catchAsync(async (req, res, next) => {
   let data;
   if (req.user) {
-    if (req.user.role !== 'User') {
+    if (req.user.role !== ROLES.USERROLES.INDIVIDUAL) {
       data = await filter(Car.find(), req.query);
     } else {
       data = await filter(
@@ -103,7 +116,7 @@ exports.getAll = catchAsync(async (req, res, next) => {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
   //current user fav status
-  if (req.user && req.user.role === 'User') {
+  if (req.user && req.user.role === ROLES.USERROLES.INDIVIDUAL) {
     for (var i = 0; i < result.length; i++) {
       if (result[i].favOf) {
         if (result[i].favOf.length > 0 && result[i].favOf.includes(req.user._id)) {
@@ -126,21 +139,40 @@ exports.getAll = catchAsync(async (req, res, next) => {
 });
 
 exports.getOne = catchAsync(async (req, res, next) => {
-  const result = await Car.findById(req.params.id).populate('createdBy');
+  let result;
+  const ObjectId = mongoose.isValidObjectId(req.params.id);
+  if (ObjectId !== true) {
+    let stringValues = req.params.id;
+    let splitValues = stringValues.split('-');
+    // let idFromValues = splitValues.pop();
+    let idFromValues = splitValues.slice(-1)[0];
+    req.params.id = idFromValues;
+    let validId = mongoose.isValidObjectId(req.params.id);
+    if (validId === true) {
+      result = await Car.findById(req.params.id).populate('createdBy');
+    }
+  } else {
+    result = await Car.findById(req.params.id).populate('createdBy');
+  }
+
   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+
   const ip = RequestIp.getClientIp(req);
-  //current user fav status
+
   if (!result.active || result.banned) {
     if (req.user) {
       const currentUser = req.user._id;
-      if (req.user.role === 'User' && !currentUser.equals(result.createdBy._id)) {
+      if (
+        req.user.role === ROLES.USERROLES.INDIVIDUAL &&
+        !currentUser.equals(result.createdBy._id)
+      ) {
         return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
       }
     } else {
       return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
     }
   }
-  if (req.user && req.user.role === 'User') {
+  if (req.user && req.user.role === ROLES.USERROLES.INDIVIDUAL) {
     if (result.favOf.includes(req.user._id)) {
       result.isFav = true;
     } else {
@@ -162,6 +194,26 @@ exports.getOne = catchAsync(async (req, res, next) => {
 });
 
 exports.updateOne = catchAsync(async (req, res, next) => {
+  let car, result, ObjectId;
+  ObjectId = mongoose.isValidObjectId(req.params.id);
+  if (ObjectId !== true) {
+    let stringValues = req.params.id;
+    let splitValues = stringValues.split('-');
+    // let idFromValues = splitValues.pop();
+    let idFromValues = splitValues.slice(-1)[0];
+    req.params.id = idFromValues;
+    let validId = mongoose.isValidObjectId(req.params.id);
+    if (validId === true) {
+      car = await Car.findById(req.params.id);
+    }
+  } else {
+    car = await Car.findById(req.params.id);
+  }
+
+  if (!car) {
+    return next(new AppError('No Result Found', STATUS_CODE.BAD_REQUEST));
+  }
+
   if (req.files.selectedImage) {
     let { Location } = await uploadS3(
       req.files.selectedImage[0],
@@ -172,6 +224,7 @@ exports.updateOne = catchAsync(async (req, res, next) => {
     );
 
     req.body.selectedImage = Location;
+    // when we only send selectedImage then it will push selectedImage to images array
     await Car.updateOne({ _id: req.params.id }, { $push: { image: Location } });
     var imagePath = Location;
   } else {
@@ -200,10 +253,13 @@ exports.updateOne = catchAsync(async (req, res, next) => {
   }
   if (req.body.image) {
     let array = [];
+    const selectedImage = car.selectedImage;
+    // if selectedImage's value is undefined
     if (imagePath === undefined) {
-      const car = await Car.findById(req.params.id);
-      const selectedImage = car.selectedImage;
-      array = [selectedImage];
+      // if selectedImage Field in collection is not undefined then do operation
+      if (selectedImage !== undefined) {
+        array = [selectedImage];
+      }
     } else {
       array = [imagePath];
     }
@@ -211,29 +267,79 @@ exports.updateOne = catchAsync(async (req, res, next) => {
       let images = req.body.image[i];
       array.push(images);
     }
+    // let unique = [...new Set(array)];
     req.body.image = array;
   }
 
-  if (req.user.role === 'User' && (!req.body.image || req.body.image.length <= 0)) {
+  if (
+    req.user.role === ROLES.USERROLES.INDIVIDUAL &&
+    (!req.body.image || req.body.image.length <= 0)
+  ) {
     return next(new AppError(ERRORS.REQUIRED.IMAGE_REQUIRED, STATUS_CODE.BAD_REQUEST));
-  } else if (req.user.role === 'User' && (req.body.image || req.body.image.length >= 0)) {
+  } else if (
+    req.user.role === ROLES.USERROLES.INDIVIDUAL &&
+    (req.body.image || req.body.image.length >= 0)
+  ) {
     req.body.imageStatus = true;
   }
 
-  if (req.user.role !== 'User' && (!req.body.image || req.body.image.length <= 0)) {
+  if (
+    req.user.role !== ROLES.USERROLES.INDIVIDUAL &&
+    (!req.body.image || req.body.image.length <= 0)
+  ) {
     req.body.imageStatus = false;
-  } else if (req.user.role !== 'User' && (req.body.image || req.body.image.length >= 0)) {
+  } else if (
+    req.user.role !== ROLES.USERROLES.INDIVIDUAL &&
+    (req.body.image || req.body.image.length >= 0)
+  ) {
     req.body.imageStatus = true;
   }
 
-  if (req.user.role === 'User' && req.body.associatedPhone) {
+  if (req.user.role === ROLES.USERROLES.INDIVIDUAL && req.body.associatedPhone) {
     return next(new AppError(ERRORS.UNAUTHORIZED.ASSOCIATED_PHONE, STATUS_CODE.UNAUTHORIZED));
   }
 
-  const result = await Car.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  if (req.body.bodyColor) {
+    car.bodyColor = req.body.bodyColor;
+    await car.save();
+  }
+  if (req.body.make) {
+    car.make = req.body.make;
+    await car.save();
+  }
+  if (req.body.model) {
+    car.model = req.body.model;
+    await car.save();
+  }
+  if (req.body.city) {
+    car.city = req.body.city;
+    await car.save();
+  }
+  if (req.body.modelYear) {
+    car.modelYear = req.body.modelYear;
+    await car.save();
+  }
+
+  ObjectId = mongoose.isValidObjectId(req.params.id);
+  if (ObjectId !== true) {
+    let stringValues = req.params.id;
+    let splitValues = stringValues.split('-');
+    // let idFromValues = splitValues.pop();
+    let idFromValues = splitValues.slice(-1)[0];
+    req.params.id = idFromValues;
+    let validId = mongoose.isValidObjectId(req.params.id);
+    if (validId === true) {
+      result = await Car.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+        runValidators: true,
+      });
+    }
+  } else {
+    result = await Car.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+  }
 
   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   res.status(STATUS_CODE.OK).json({
@@ -246,12 +352,27 @@ exports.updateOne = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteOne = catchAsync(async (req, res, next) => {
-  const result = await Car.findByIdAndDelete(req.params.id);
+  let result;
+  const ObjectId = mongoose.isValidObjectId(req.params.id);
+  if (ObjectId !== true) {
+    let stringValues = req.params.id;
+    let splitValues = stringValues.split('-');
+    // let idFromValues = splitValues.pop();
+    let idFromValues = splitValues.slice(-1)[0];
+    req.params.id = idFromValues;
+
+    let validId = mongoose.isValidObjectId(req.params.id);
+    if (validId === true) {
+      result = await Car.findByIdAndDelete(req.params.id);
+    }
+  } else {
+    result = await Car.findByIdAndDelete(req.params.id);
+  }
+
   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.OPERATION_SUCCESSFULL,
-    data: null,
+    message: SUCCESS_MSG.SUCCESS_MESSAGES.AD_DELETED,
   });
 });
 

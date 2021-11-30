@@ -5,232 +5,214 @@ const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS } = require('@constants/tdb-con
 const fastcsv = require('fast-csv');
 const { uploadFile } = require('../../utils/fileUpload');
 const { filter } = require('../factory/factoryHandler');
+const { Exception } = require('../../constants/messages');
+const { json } = require('express');
 
-// const validateAdsCSVTemplate = async (req, next) => {
-//   return new Promise((resolve, reject) => {
-//     var csvValidationResult = [];
-//     var missingFields = [];
-//     var uploadData = [];
-//     var result = { isValid: true, message: '', failureReason: '', misingFields: '', data: [] };
-//     csv
-//       .parseString(req.file.buffer, { headers: true })
-//       .validate(function (row, cb) {
-//         if (row.country === '') missingFields.push('Please add country name');
-//         if (row.province === '') missingFields.push('Please add province name');
-//         if (row.city === '') missingFields.push('Please add city name');
-//         if (row.version === '') missingFields.push('Please add version of car');
-//         if (row.regNumber === '') missingFields.push('Please add Registration Number of car');
-//         if (row.model === '') missingFields.push('Please add model of car');
-//         if (row.make === '') missingFields.push('Please add make of car');
-//         if (row.price === '') missingFields.push('Please add price of car');
-//         if (row.engineType === '') missingFields.push('Please add engine type of car');
-//         if (row.transmission === '') missingFields.push('Please add transmission of car');
-//         if (row.condition === '') missingFields.push('Please add condition of car');
-//         if (row.bodyType === '') missingFields.push('Please add body ype of car');
-//         if (row.bodyColor === '') missingFields.push('Please add body color of car');
-//         if (row.engineCapacity === '') missingFields.push('Please add engine Capacity of car');
-//         if (row.registrationCity === '') missingFields.push('Please add registration City of car');
-//         if (row.milage === '') missingFields.push('Please add milage of car');
-//         if (row.assembly === '') missingFields.push('Assembly should be Local or Imported');
-//         if (row.description === '') missingFields.push('Please add description of car');
-//         if (row.sellerType === '') missingFields.push('Seller Type should be Dealer or Individual');
+const validateAdsCSVTemplate = async (req, next) => {
+  return new Promise((resolve, reject) => {
+    var csvValidationResult = {};
+    var missingFields = [];
+    var uploadData = [];
+    var result = { isValid: true, message: '', failureReason: '', misingFields: '', data: [] };
+    fastcsv
+      .parseString(req.file.buffer, { headers: true })
+      .validate(function (row, cb) {
+        if (row.country === '') missingFields.push('Please add country name');
+        if (row.province === '') missingFields.push('Please add province name');
+        if (row.city === '') missingFields.push('Please add city name');
+        if (row.version === '') missingFields.push('Please add version of car');
+        if (row.regNumber === '') missingFields.push('Please add Registration Number of car');
+        if (row.model === '') missingFields.push('Please add model of car');
+        if (row.make === '') missingFields.push('Please add make of car');
+        if (row.price === '') missingFields.push('Please add price of car');
+        if (row.engineType === '') missingFields.push('Please add engine type of car');
+        if (row.transmission === '') missingFields.push('Please add transmission of car');
+        if (row.condition === '') missingFields.push('Please add condition of car');
+        if (row.bodyType === '') missingFields.push('Please add body ype of car');
+        if (row.bodyColor === '') missingFields.push('Please add body color of car');
+        if (row.engineCapacity === '') missingFields.push('Please add engine Capacity of car');
+        if (row.registrationCity === '') missingFields.push('Please add registration City of car');
+        if (row.milage === '') missingFields.push('Please add milage of car');
+        if (row.assembly === '') missingFields.push('Assembly should be Local or Imported');
+        if (row.description === '') missingFields.push('Please add description of car');
+        if (row.sellerType === '') missingFields.push('Seller Type should be Dealer or Individual');
 
-//         // Add all other field validations
-//         if (missingFields.length > 0) {
-//           var unique = missingFields.filter(function (elem, index, self) {
-//             return index === self.indexOf(elem);
-//           });
-//           return cb(null, false, unique.join(', '));
-//         } else {
-//           return cb(null, true);
-//         }
-//       })
-//       .on('data', (data) => {
-//         // you can format data in this point
-//         uploadData.push(data);
-//       })
-//       .on('data-invalid', (row, rowNumber, reason) => {
-//         if (reason) {
-//           console.log(
-//             `${req.file.originalname} is invalid file. Invalid [rowNumber=${rowNumber}] `,
-//           );
+        // Add all other field validations
+        if (missingFields.length > 0) {
+          var unique = missingFields.filter(function (elem, index, self) {
+            return index === self.indexOf(elem);
+          });
+          return cb(null, false, unique.join(', '));
+        } else {
+          return cb(null, true);
+        }
+      })
+      .on('data', (data) => {
+        // you can format data in this point
+        uploadData.push(data);
+      })
+      .on('data-invalid', (row, rowNumber, reason) => {
+        if (reason) {
+          console.log(
+            `${req.file.originalname} is invalid file. Invalid [rowNumber=${rowNumber}] `,
+          );
 
-//           result.isValid = false;
-//           result.message = ` ${req.file.originalname} is invalid file. Invalid [rowNumber=${rowNumber}]  `;
-//           result.misingFields = reason;
-//         }
-//       })
-//       .on('end', () => {
-//         result.data.push(uploadData);
-//         csvValidationResult.push(result);
-//         resolve(csvValidationResult);
-//       });
-//   });
-// };
+          result.isValid = false;
+          result.message = ` ${req.file.originalname} is invalid file. Invalid [rowNumber=${rowNumber}]  `;
+          result.misingFields = reason;
+        }
+      })
+      .on('end', () => {
+        result.data = uploadData;
+        csvValidationResult = result;
+        resolve(csvValidationResult);
+      });
+  });
+};
 
-// exports.createBulkUploads = catchAsync(async (req, res, next) => {
-//   try {
-//     const csvValidationResult = await validateAdsCSVTemplate(req, next);
-//     console.log(csvValidationResult[0].data[0]);
+const checkDuplicateRegNumbersInCSV = (data) => {
+  
+  let isDuplicate = false, testObject = {};
+  data.map(function(item) {
+    var itemPropertyName = item['regNumber'];
+    if (itemPropertyName in testObject) {
+      testObject[itemPropertyName].duplicate = true;
+      item.duplicate = true;
+      isDuplicate = true;
+    }
+    else {
+      testObject[itemPropertyName] = item;
+      delete item.duplicate;
+    }
+  });
+  return isDuplicate;
+}
 
-//     if (csvValidationResult[0].isValid === true) {
-//       const { successRecords, errorRecords } = await validateCSVData(csvValidationResult[0].data);
-
-//       if (successRecords.length > 0) {
-//       }
-//       if (errorRecords.length > 0) {
-//         // insert to new db collection
-//       }
-
-//       let response = await uploadFile(req.file); // Upload the file to S3 and track the deatils in DB collection
-//       // const file = req.file;
-//       // const { Location } = await uploadFile(file);
-//       // req.body.csvFile = Location;
-//       // console.log(csvValidationResult[0].data[0]);
-//       csvValidationResult[0].data[0].forEach((e) => {
-//         e.createdBy = req.params.id;
-//       });
-
-//       await Car.create(csvValidationResult[0].data[0]);
-//       console.log(csvValidationResult[0].data[0]);
-//       res.status(200);
-//       result = {
-//         code: STATUS_CODE.CREATED,
-//         status: STATUS.SUCCESS,
-//         message: 'Ads uploaded successfully',
-//         details: response.details,
-//       };
-//       res.json(result);
-//     } else {
-//       console.log(csvValidationResult[0].data[0].length);
-//       res.status(403).json({
-//         status: STATUS.FAIL,
-//         message: 'Invalid CSV template',
-//         details: {
-//           failed: {
-//             fieldValidationResult: {
-//               csvUploaded: req.file.originalname,
-//               message: csvValidationResult[0].message,
-//               missingFields: csvValidationResult[0].misingFields,
-//               reason: csvValidationResult[0].reason,
-//               // referenceId: referenceId,
-//             },
-//           },
-//         },
-//       });
-//     }
-//   } catch (ex) {
-//     console.log('Ads upload failed');
-//     const error = {
-//       code: 400,
-//       status: 'FAILED',
-//       message: 'Bad Request',
-//       err: ex.message,
-//     };
-//     res.status(500);
-//     res.json(error);
-//   }
-// });
-
-exports.createBulkUploads = catchAsync(async (req, res, next) => {
-  if (!req.file) {
-    return next(new AppError('Please insert a CSV File to add data', STATUS_CODE.BAD_REQUEST));
+const dataValidation = async(data, userId) => {
+  let validRecords =[], failedRecords = [];
+  for(var i = 0; i < data.length; i++ ){
+    let adDetail = data[i];
+    let isValidAd = true;
+    let failedReason = [];
+    const isExist = await Car.find( { 'regNumber': adDetail.regNumber } );
+    if(isExist.length > 0){
+      isValidAd = false;
+      failedReason.push('Register number already exist in the system');
+    }
+    //Can include anyother data validations
+    // .
+    // /
+    if(!isValidAd){
+      adDetail.failedReason = failedReason;
+      failedRecords.push(adDetail);
+    }
+    else{
+      adDetail.createdBy = userId;
+      validRecords.push(adDetail);
+    }
   }
+  return {validRecords, failedRecords}
+}
 
-  // Parsing csv file from buffer
-  let results = [];
-  fastcsv
-    .parseString(req.file.buffer, { headers: true, ignoreEmpty: true })
-    .validate((data) => data.regNumber !== '')
-    .on('data', (data) => results.push(data))
-    .on('end', () => {
-      if (!results || results.length <= 0) {
-        return next(
-          new AppError(
-            'No data available to insert or something is missing or incorrect',
-            STATUS_CODE.BAD_REQUEST,
-          ),
-        );
+const processBulkUpload = async(userId, data, bulkUploadRefId) => {
+  try {
+    const { validRecords, failedRecords } = await dataValidation(data, userId);
+    await Car.create(validRecords);
+    await BulkUploads.update(
+      {
+        _id: bulkUploadRefId
+      },
+      {
+        $set : {
+          successAdsCount: validRecords.length,
+          failedAdsCount: failedRecords.length,
+          failedAds: JSON.stringify(failedRecords),
+          status: 'completed',
+        }
       }
-    });
-
-  // To get all registrationNumbers from cars collection,
-  let duplicate = await Car.aggregate([
-    {
-      $group: {
-        _id: '$regNumber',
+    )
+  } catch (ex) {
+    console.log('Bulk upload process failed');
+    await BulkUploads.update(
+      {
+        _id: bulkUploadRefId
       },
-    },
-    {
-      $project: { _id: 1 },
-    },
-  ]);
-
-  // Extracting values of registrationNumber from csv file and from cars collection
-  let allRegNumbers = duplicate.map(({ _id }) => _id);
-  let regNumsFromFile = results.map(({ regNumber }) => regNumber);
-
-  // Getting same values from both arrays by comairing both arrays
-  const duplicateRegNumbers = allRegNumbers.filter((element) => regNumsFromFile.includes(element));
-
-  // Checking for duplicate reg numbers
-  let isFounded = regNumsFromFile.some((val) => allRegNumbers.includes(val));
-  // if duplicate regNumber exists then it will return this error
-  if (isFounded === true) {
-    const failedCase = await BulkUploads.create({
-      createdBy: req.user._id,
-      userId: req.params.id,
-      failedAdsCount: results.length,
-      status: 'fail',
-    });
-
-    res.status(STATUS_CODE.BAD_REQUEST).json({
-      status: STATUS.FAIL,
-      message:
-        'Please check regNumber column in your CSV File it has Duplicate Registeration Number/Numbers that are already exists! Fix them and try again.',
-      duplicateRegNumbers,
-      data: {
-        failedCase,
-      },
-    });
+      {
+        $set : {
+          status: 'failed',
+        }
+      }
+    )
   }
-  if (!results || results.length <= 0) {
-    res.status(400).json({
-      status: 'fail',
-      message: 'No data available to insert or something is missing or incorrect ',
-    });
-    // return next(new AppError('No data available to insert ', STATUS_CODE.BAD_REQUEST));
+}
+
+exports.createBulkUploadAds = catchAsync(async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return next(new AppError('Please insert a CSV File to add data', STATUS_CODE.BAD_REQUEST));
+    }
+    const csvValidationResult = await validateAdsCSVTemplate(req, next);
+    if(csvValidationResult.isValid){
+      const isDuplicate = checkDuplicateRegNumbersInCSV(csvValidationResult.data);
+      if(!isDuplicate){
+        const file = req.file;
+        const { Location } = await uploadFile(file);
+        const result = await BulkUploads.create({
+          csvFile: Location,
+          createdBy: req.user._id,
+          userId: req.params.id,
+          status: 'inprogress',
+          totalAdsCount: csvValidationResult.data.length
+        });
+        res.status(STATUS_CODE.CREATED).json({
+          status: STATUS.SUCCESS,
+          message: "Initiated the bulkupload",
+          data: {
+            result,
+          },
+        });
+        processBulkUpload(req.params.id, csvValidationResult.data, result._id)
+      }
+      else{
+        const error = {
+          code: 400,
+          status: 'FAILED',
+          message: 'Bad Request',
+          err: 'File contains duplicate register numbers',
+        };
+        res.status(500);
+        res.json(error);
+      }
+    }
+    else{
+      res.status (400);
+      result = {
+          code: 400,
+          status: 'FAILED',
+          message: 'Invalid CSV template',
+          details: {
+              failed: {
+                  fieldValidationResult: {
+                    csvUploaded : req.file.originalname,
+                    message: csvValidationResult.message,
+                    missingFields: csvValidationResult.misingFields,
+                    referenceId: referenceId,
+                  }
+              }
+          }
+      }
+    }
+  } catch (ex) {
+    console.log('Ads upload failed');
+    const error = {
+      code: 500,
+      status: 'FAILED',
+      message: Exception.GeneralError,
+      err: ex.message,
+    };
+    res.status(500);
+    res.json(error);
   }
-
-  // inserting key-value pair of createdBy:req.params.id by taking id from params and map it into all elements of array
-  results.forEach((e) => {
-    e.createdBy = req.params.id;
-  });
-  // creating records in ads collection from parsed file data
-  await Car.create(results);
-
-  // Uploading file to s3 Bucket
-  const file = req.file;
-  const { Location } = await uploadFile(file);
-  req.body.csvFile = Location;
-
-  const result = await BulkUploads.create({
-    csvFile: Location,
-    createdBy: req.user._id,
-    userId: req.params.id,
-    successAdsCount: results.length,
-    status: 'success',
-  });
-
-  if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-
-  res.status(STATUS_CODE.CREATED).json({
-    status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.CREATED,
-    data: {
-      result,
-    },
-  });
 });
 
 exports.getAllBulkAds = catchAsync(async (req, res, next) => {

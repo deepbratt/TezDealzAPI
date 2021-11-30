@@ -30,9 +30,9 @@
 		"morgan": "^1.10.0",
 		"node-cache": "^5.1.2",
 		"redis": "^3.1.2",
+		"slugify": "^1.6.2",
 		"stopword": "^1.0.11",
 		"util": "^0.12.4",
-		"uuid": "^8.3.2",
 		"validator": "^13.6.0"
 	},
 	"devDependencies": {

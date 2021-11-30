@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 const validator = require('validator');
 const { ERRORS } = require('@constants/tdb-constants');
 
@@ -169,6 +170,10 @@ const carsSchema = new mongoose.Schema(
     selectedImage: {
       type: String,
     },
+    slug: {
+      type: String,
+      unique: true,
+    },
   },
   {
     timestamps: true,
@@ -179,6 +184,7 @@ const carsSchema = new mongoose.Schema(
 
 carsSchema.index({ active: -1, isSold: 1, banned: 1 });
 carsSchema.index({ location: '2dsphere' });
+carsSchema.index({ uniqueId: 1 });
 
 carsSchema.index({
   country: 'text',
@@ -194,6 +200,21 @@ carsSchema.index({
   transmission: 'text',
 });
 
+carsSchema.pre('save', async function (next) {
+  if (
+    this.isModified('bodyColor ') ||
+    this.isModified('make') ||
+    this.isModified('model') ||
+    this.isModified('city') ||
+    this.isModified('modelYear') ||
+    this.isNew
+  ) {
+    this.slug = slugify(
+      `${this.bodyColor}-${this.make}-${this.model}-in-${this.city}-${this.modelYear}-${this._id}`,
+    );
+  }
+  next();
+});
 // carsSchema.pre('save', function (next) {
 //   if (this.isNew && Array.isArray(this.location) && 0 === this.location.length) {
 //     this.location = undefined;
