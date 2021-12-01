@@ -39,7 +39,7 @@ router
   .post(
     authenticate(User),
     restrictTo(ROLES.USERROLES.ADMIN, ROLES.USERROLES.MODERATOR),
-    upload('text').single('csvFile'),
+    fileUpload('text', 'application').single('csvFile'),
     bulkUploadsController.createBulkUploadAds,
   );
 router
@@ -339,16 +339,16 @@ router.delete(
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-router.route('/').post(
+router.route('/car-images').post(
   authenticate(User),
   fileUpload('image', 'application').fields([
     { name: 'image', maxCount: 20 },
     { name: 'selectedImage', maxCount: 1 },
   ]),
-  phoneCheckOnCreate,
-  carController.createOne,
+  carController.imageUploader,
 );
+
+router.route('/').post(authenticate(User), phoneCheckOnCreate, carController.createOne);
 router.route('/').get(
   checkIsLoggedIn(User), //cache(cacheExp),
   carController.getAll,

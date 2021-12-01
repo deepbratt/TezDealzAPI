@@ -1,6 +1,6 @@
 {
 	"name": "ads",
-	"version": "1.0.92",
+	"version": "1.0.93",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
@@ -30,6 +30,7 @@
 		"morgan": "^1.10.0",
 		"node-cache": "^5.1.2",
 		"redis": "^3.1.2",
+		"sharp": "^0.29.3",
 		"slugify": "^1.6.2",
 		"stopword": "^1.0.11",
 		"util": "^0.12.4",
