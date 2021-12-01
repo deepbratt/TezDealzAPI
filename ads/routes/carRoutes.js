@@ -26,6 +26,8 @@ const { fileUpload } = require('../utils/fileUpload');
 const router = express.Router();
 // const { isCached } = require('../utils/redisCache');
 
+router.route('/resize-images/:width/:height').get(carController.imageResize);
+
 router
   .route('/bulk-uploads-stats/:id')
   .get(

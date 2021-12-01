@@ -5,7 +5,58 @@ const CarView = require('../../models/cars/car-views/ip-views-model');
 const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS, ROLES } = require('@constants/tdb-constants');
 const { filter, stats, dailyAggregate } = require('../factory/factoryHandler');
-const sharp = require('sharp');
+const Sharp = require('sharp');
+const Jimp = require('jimp');
+const gm = require('gm').subClass({ imageMagick: true });
+
+exports.imageResize = catchAsync(async (req, res, next) => {
+  let resizeArray = [];
+  let width = req.params.width;
+  let height = req.params.height;
+  // ! resize image by taking file from req.files
+  // First resize images by giving width and height and getting buffer as output
+  // for (var i = 0; i < req.files.length; i++) {
+  //   let file = req.files[i];
+  //   let resize = await sharp(file.buffer)
+  //     .resize(parseInt(width), parseInt(height))
+  //     .toFormat('jpg')
+  //     .jpeg({ quality: 100 })
+  //     .toBuffer();
+  //   resizeArray.push(resize);
+  // }
+  // return resizeArray;
+
+  const url = req.body.image;
+  //! 2nd
+  // let buffer = Buffer.from(url);
+  // let resize = gm(url)
+  //   .resize(100, 100)
+  //   .toBuffer('jpg', function (err, buffer) {
+  //     console.log('hello');
+  //     console.log(buffer, '111');
+
+  //     return buffer;
+  //     res.end(buffer);
+  //   });
+  // // console.log({ resize });
+  // console.log(resize, '222');
+
+  //! 3rd
+  //! It is taking s3 image URL and saving image to root directory after resizing
+  // const resize = await Jimp.read(url).then((image) => {
+  //   image.resize(parseInt(width), parseInt(height)).write('img.jpg');
+  //   console.log(image);
+  // });
+  // console.log(resize);
+
+  //! 4th
+  // let buffer = Buffer.from(url, );
+  // console.log(buffer);
+
+  // const resize = await Sharp(buffer).resize(parseInt(width), parseInt(height)).toBuffer();
+
+  // return resize;
+});
 
 exports.imageUploader = catchAsync(async (req, res, next) => {
   let array = [];
