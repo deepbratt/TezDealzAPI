@@ -11,22 +11,6 @@ exports.imageUploader = catchAsync(async (req, res, next) => {
   let array = [];
   let selectedImage;
 
-  // let resizeArray = [];
-  // let width = req.params.width;
-  // let height = req.params.height;
-
-  // // First resize images by giving width and height and getting buffer as output
-  // for (var i = 0; i < req.files.length; i++) {
-  //   let file = req.files[i];
-  //   let resize = await sharp(file.buffer)
-  //     .resize(parseInt(width), parseInt(height))
-  //     .toFormat('jpg')
-  //     .jpeg({ quality: 100 })
-  //     .toBuffer();
-
-  //   resizeArray.push(resize);
-  // }
-
   if (req.files.selectedImage) {
     let { Location } = await uploadS3(
       req.files.selectedImage[0],
