@@ -4,6 +4,28 @@ info:
   version: '1.0.0'
   title: 'TezDeals'
 paths:
+  /v1/ads/cars/car-images:
+    post:
+      tags:
+        - 'Image Upload'
+      summary: 'used to post image and selectedImage to S3 Bucket'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'used to post image and selectedImage to S3 Bucket'
+          required: true
+          schema:
+            $ref: '#/definitions/image-upload'
+      responses:
+        '400':
+          description: 'Invalid input'
+        '201':
+          description: 'images Posted Successfully'
   /v1/ads/cars/bulk-uploads-stats/{id}:
     get:
       tags:
@@ -2425,3 +2447,12 @@ definitions:
     properties:
       csvFile:
         type: 'file'
+  image-upload:
+    type: 'object'
+    properties:
+      image:
+        type: array
+        items:
+          type: string
+      selectedImage: 
+        type: 'string'

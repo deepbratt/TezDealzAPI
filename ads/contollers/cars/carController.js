@@ -5,8 +5,12 @@ const CarView = require('../../models/cars/car-views/ip-views-model');
 const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS, ROLES } = require('@constants/tdb-constants');
 const { filter, stats, dailyAggregate } = require('../factory/factoryHandler');
+const sharp = require('sharp');
 
-exports.createOne = catchAsync(async (req, res, next) => {
+exports.imageUploader = catchAsync(async (req, res, next) => {
+  let array = [];
+  let selectedImage;
+
   if (req.files.selectedImage) {
     let { Location } = await uploadS3(
       req.files.selectedImage[0],
@@ -15,20 +19,11 @@ exports.createOne = catchAsync(async (req, res, next) => {
       process.env.AWS_SECRET_KEY,
       process.env.AWS_BUCKET_NAME,
     );
-    req.body.selectedImage = Location;
-    var imagePath = Location;
-  } else {
-    imagePath = req.body.selectedImage;
+    selectedImage = Location;
   }
 
   if (req.files.image) {
-    let array = [];
-    if (imagePath !== undefined) {
-      array = [imagePath];
-    }
-
     for (var i = 0; i < req.files.image.length; i++) {
-      // console.log(req.files.image[i].mimetype);
       let { Location } = await uploadS3(
         req.files.image[i],
         process.env.AWS_BUCKET_REGION,
@@ -36,15 +31,25 @@ exports.createOne = catchAsync(async (req, res, next) => {
         process.env.AWS_SECRET_KEY,
         process.env.AWS_BUCKET_NAME,
       );
+
       array.push(Location);
     }
-    if (req.body.image) {
-      req.body.image = [...req.body.image, ...array];
-    } else {
-      req.body.image = array;
+    if (selectedImage !== undefined) {
+      array.push(selectedImage);
     }
   }
 
+  res.status(STATUS_CODE.OK).json({
+    stats: STATUS.SUCCESS,
+    message: 'Images Uploaded Successfully',
+    data: {
+      array,
+      selectedImage,
+    },
+  });
+});
+
+exports.createOne = catchAsync(async (req, res, next) => {
   if (req.user.role !== ROLES.USERROLES.INDIVIDUAL) {
     if (!req.body.createdBy) {
       return next(new AppError(ERRORS.REQUIRED.USER_ID, STATUS_CODE.BAD_REQUEST));
