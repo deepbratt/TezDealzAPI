@@ -5,58 +5,6 @@ const CarView = require('../../models/cars/car-views/ip-views-model');
 const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS, ROLES } = require('@constants/tdb-constants');
 const { filter, stats, dailyAggregate } = require('../factory/factoryHandler');
-const Sharp = require('sharp');
-const Jimp = require('jimp');
-const gm = require('gm').subClass({ imageMagick: true });
-
-exports.imageResize = catchAsync(async (req, res, next) => {
-  let resizeArray = [];
-  let width = req.params.width;
-  let height = req.params.height;
-  // ! resize image by taking file from req.files
-  // First resize images by giving width and height and getting buffer as output
-  // for (var i = 0; i < req.files.length; i++) {
-  //   let file = req.files[i];
-  //   let resize = await sharp(file.buffer)
-  //     .resize(parseInt(width), parseInt(height))
-  //     .toFormat('jpg')
-  //     .jpeg({ quality: 100 })
-  //     .toBuffer();
-  //   resizeArray.push(resize);
-  // }
-  // return resizeArray;
-
-  const url = req.body.image;
-  //! 2nd
-  // let buffer = Buffer.from(url);
-  // let resize = gm(url)
-  //   .resize(100, 100)
-  //   .toBuffer('jpg', function (err, buffer) {
-  //     console.log('hello');
-  //     console.log(buffer, '111');
-
-  //     return buffer;
-  //     res.end(buffer);
-  //   });
-  // // console.log({ resize });
-  // console.log(resize, '222');
-
-  //! 3rd
-  //! It is taking s3 image URL and saving image to root directory after resizing
-  // const resize = await Jimp.read(url).then((image) => {
-  //   image.resize(parseInt(width), parseInt(height)).write('img.jpg');
-  //   console.log(image);
-  // });
-  // console.log(resize);
-
-  //! 4th
-  // let buffer = Buffer.from(url, );
-  // console.log(buffer);
-
-  // const resize = await Sharp(buffer).resize(parseInt(width), parseInt(height)).toBuffer();
-
-  // return resize;
-});
 
 exports.imageUploader = catchAsync(async (req, res, next) => {
   let array = [];
@@ -82,11 +30,7 @@ exports.imageUploader = catchAsync(async (req, res, next) => {
         process.env.AWS_SECRET_KEY,
         process.env.AWS_BUCKET_NAME,
       );
-
       array.push(Location);
-    }
-    if (selectedImage !== undefined) {
-      array.push(selectedImage);
     }
   }
 
@@ -137,6 +81,18 @@ exports.createOne = catchAsync(async (req, res, next) => {
     return next(new AppError(ERRORS.UNAUTHORIZED.ASSOCIATED_PHONE, STATUS_CODE.UNAUTHORIZED));
   }
 
+  if (req.body.selectedImage) {
+    selectedImage = req.body.selectedImage;
+    req.body.image = [selectedImage, ...req.body.image];
+  }
+
+  if (req.body.isPublished !== true) {
+    req.body.assembly = 'Not Available';
+    req.body.bodyType = 'Not Available';
+    req.body.condition = 'Not Available';
+    req.body.sellerType = 'Not Available';
+  }
+
   const result = await Car.create(req.body);
   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
@@ -156,13 +112,25 @@ exports.getAll = catchAsync(async (req, res, next) => {
       data = await filter(Car.find(), req.query);
     } else {
       data = await filter(
-        Car.find({ active: true, isSold: false, banned: false, imageStatus: true }),
+        Car.find({
+          active: true,
+          isSold: false,
+          banned: false,
+          imageStatus: true,
+          isPublished: true,
+        }),
         req.query,
       );
     }
   } else {
     data = await filter(
-      Car.find({ active: true, isSold: false, banned: false, imageStatus: true }),
+      Car.find({
+        active: true,
+        isSold: false,
+        banned: false,
+        imageStatus: true,
+        isPublished: true,
+      }),
       req.query,
     );
   }
@@ -281,10 +249,10 @@ exports.updateOne = catchAsync(async (req, res, next) => {
 
     req.body.selectedImage = Location;
     // when we only send selectedImage then it will push selectedImage to images array
-    await Car.updateOne({ _id: req.params.id }, { $push: { image: Location } });
+    // await Car.updateOne({ _id: req.params.id }, { $push: { image: Location } });
     var imagePath = Location;
   } else {
-    await Car.updateOne({ _id: req.params.id }, { $push: { image: req.body.selectedImage } });
+    // await Car.updateOne({ _id: req.params.id }, { $push: { image: req.body.selectedImage } });
     imagePath = req.body.selectedImage;
   }
 
@@ -584,5 +552,27 @@ exports.getCarsWithin = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.publishAd = catchAsync(async (req, res, next) => {
+  const result = await Car.findOne({ _id: req.params.id });
+
+  if (!result) {
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  }
+
+  if (result.isPublished === true) {
+    return next(
+      new AppError('This Advertisement is Already been Published', STATUS_CODE.BAD_REQUEST),
+    );
+  }
+
+  await Car.updateOne({ _id: req.params.id }, { isPublished: true, publishedDate: Date.now() });
+
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: 'Your Ad is published successfully',
+  });
+});
+
 exports.carStats = stats(Car);
 exports.carDailyStats = dailyAggregate(Car);
