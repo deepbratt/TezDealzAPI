@@ -5,7 +5,6 @@ const CarView = require('../../models/cars/car-views/ip-views-model');
 const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS, ROLES } = require('@constants/tdb-constants');
 const { filter, stats, dailyAggregate } = require('../factory/factoryHandler');
-const sharp = require('sharp');
 
 exports.imageUploader = catchAsync(async (req, res, next) => {
   let array = [];
@@ -31,11 +30,7 @@ exports.imageUploader = catchAsync(async (req, res, next) => {
         process.env.AWS_SECRET_KEY,
         process.env.AWS_BUCKET_NAME,
       );
-
       array.push(Location);
-    }
-    if (selectedImage !== undefined) {
-      array.push(selectedImage);
     }
   }
 
@@ -50,6 +45,11 @@ exports.imageUploader = catchAsync(async (req, res, next) => {
 });
 
 exports.createOne = catchAsync(async (req, res, next) => {
+  if (req.body.selectedImage) {
+    selectedImage = req.body.selectedImage;
+    req.body.image = [selectedImage, ...req.body.image];
+  }
+
   if (req.user.role !== ROLES.USERROLES.INDIVIDUAL) {
     if (!req.body.createdBy) {
       return next(new AppError(ERRORS.REQUIRED.USER_ID, STATUS_CODE.BAD_REQUEST));
@@ -86,6 +86,13 @@ exports.createOne = catchAsync(async (req, res, next) => {
     return next(new AppError(ERRORS.UNAUTHORIZED.ASSOCIATED_PHONE, STATUS_CODE.UNAUTHORIZED));
   }
 
+  if (req.body.isPublished !== 'true') {
+    req.body.assembly = 'Not Available';
+    req.body.bodyType = 'Not Available';
+    req.body.condition = 'Not Available';
+    req.body.sellerType = 'Not Available';
+  }
+
   const result = await Car.create(req.body);
   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
@@ -105,13 +112,25 @@ exports.getAll = catchAsync(async (req, res, next) => {
       data = await filter(Car.find(), req.query);
     } else {
       data = await filter(
-        Car.find({ active: true, isSold: false, banned: false, imageStatus: true }),
+        Car.find({
+          active: true,
+          isSold: false,
+          banned: false,
+          imageStatus: true,
+          isPublished: true,
+        }),
         req.query,
       );
     }
   } else {
     data = await filter(
-      Car.find({ active: true, isSold: false, banned: false, imageStatus: true }),
+      Car.find({
+        active: true,
+        isSold: false,
+        banned: false,
+        imageStatus: true,
+        isPublished: true,
+      }),
       req.query,
     );
   }
@@ -230,10 +249,16 @@ exports.updateOne = catchAsync(async (req, res, next) => {
 
     req.body.selectedImage = Location;
     // when we only send selectedImage then it will push selectedImage to images array
-    await Car.updateOne({ _id: req.params.id }, { $push: { image: Location } });
+    const alreadyExist = await Car.findOne({ image: req.body.selectedImage });
+    if (!!alreadyExist !== true) {
+      await Car.updateOne({ _id: req.params.id }, { $push: { image: req.body.selectedImage } });
+    }
     var imagePath = Location;
   } else {
-    await Car.updateOne({ _id: req.params.id }, { $push: { image: req.body.selectedImage } });
+    const alreadyExist = await Car.findOne({ image: req.body.selectedImage });
+    if (!!alreadyExist !== true) {
+      await Car.updateOne({ _id: req.params.id }, { $push: { image: req.body.selectedImage } });
+    }
     imagePath = req.body.selectedImage;
   }
 
@@ -533,5 +558,27 @@ exports.getCarsWithin = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.publishAd = catchAsync(async (req, res, next) => {
+  const result = await Car.findOne({ _id: req.params.id });
+
+  if (!result) {
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  }
+
+  if (result.isPublished === true) {
+    return next(
+      new AppError('This Advertisement is Already been Published', STATUS_CODE.BAD_REQUEST),
+    );
+  }
+
+  await Car.updateOne({ _id: req.params.id }, { isPublished: true, publishedDate: Date.now() });
+
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: 'Your Ad is published successfully',
+  });
+});
+
 exports.carStats = stats(Car);
 exports.carDailyStats = dailyAggregate(Car);
