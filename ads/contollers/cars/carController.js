@@ -45,6 +45,11 @@ exports.imageUploader = catchAsync(async (req, res, next) => {
 });
 
 exports.createOne = catchAsync(async (req, res, next) => {
+  if (req.body.selectedImage) {
+    selectedImage = req.body.selectedImage;
+    req.body.image = [selectedImage, ...req.body.image];
+  }
+
   if (req.user.role !== ROLES.USERROLES.INDIVIDUAL) {
     if (!req.body.createdBy) {
       return next(new AppError(ERRORS.REQUIRED.USER_ID, STATUS_CODE.BAD_REQUEST));
@@ -81,12 +86,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
     return next(new AppError(ERRORS.UNAUTHORIZED.ASSOCIATED_PHONE, STATUS_CODE.UNAUTHORIZED));
   }
 
-  if (req.body.selectedImage) {
-    selectedImage = req.body.selectedImage;
-    req.body.image = [selectedImage, ...req.body.image];
-  }
-
-  if (req.body.isPublished !== true) {
+  if (req.body.isPublished !== 'true') {
     req.body.assembly = 'Not Available';
     req.body.bodyType = 'Not Available';
     req.body.condition = 'Not Available';
@@ -249,10 +249,16 @@ exports.updateOne = catchAsync(async (req, res, next) => {
 
     req.body.selectedImage = Location;
     // when we only send selectedImage then it will push selectedImage to images array
-    // await Car.updateOne({ _id: req.params.id }, { $push: { image: Location } });
+    const alreadyExist = await Car.findOne({ image: req.body.selectedImage });
+    if (!!alreadyExist !== true) {
+      await Car.updateOne({ _id: req.params.id }, { $push: { image: req.body.selectedImage } });
+    }
     var imagePath = Location;
   } else {
-    // await Car.updateOne({ _id: req.params.id }, { $push: { image: req.body.selectedImage } });
+    const alreadyExist = await Car.findOne({ image: req.body.selectedImage });
+    if (!!alreadyExist !== true) {
+      await Car.updateOne({ _id: req.params.id }, { $push: { image: req.body.selectedImage } });
+    }
     imagePath = req.body.selectedImage;
   }
 

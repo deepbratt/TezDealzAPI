@@ -341,6 +341,7 @@ router.delete(
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+// To post ads images directly to the S3 Bucket
 router.route('/car-images').post(
   authenticate(User),
   fileUpload('image', 'application').fields([
@@ -350,7 +351,15 @@ router.route('/car-images').post(
   carController.imageUploader,
 );
 
-router.route('/').post(authenticate(User), phoneCheckOnCreate, carController.createOne);
+router.route('/').post(
+  authenticate(User),
+  fileUpload('image', 'application').fields([
+    { name: 'image', maxCount: 20 },
+    { name: 'selectedImage', maxCount: 1 },
+  ]),
+  phoneCheckOnCreate,
+  carController.createOne,
+);
 router.route('/').get(
   checkIsLoggedIn(User), //cache(cacheExp),
   carController.getAll,
