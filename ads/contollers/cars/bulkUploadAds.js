@@ -167,7 +167,7 @@ exports.createBulkUploadAds = catchAsync(async (req, res, next) => {
         const { Location } = await uploadFile(file);
         const result = await BulkUploads.create({
           csvFile: Location,
-          createdBy: req.user._id,
+          // createdBy: req.user._id,
           userId: req.params.id,
           status: 'inprogress',
           totalAdsCount: csvValidationResult.data.length,
