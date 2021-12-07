@@ -18,9 +18,9 @@ const {
   phoneCheckOnCreate,
   phoneCheckOnupdate,
 } = require('../middleware/cars/index');
-const { upload } = require('@utils/tdb_globalutils');
+// const { upload } = require('@utils/tdb_globalutils');
 const { ROLES } = require('@constants/tdb-constants');
-const { fileUpload } = require('../utils/fileUpload');
+const { fileUpload, upload } = require('../utils/fileUpload');
 //const cache = require('../utils/cache');
 //const cacheExp = 30;
 const router = express.Router();
