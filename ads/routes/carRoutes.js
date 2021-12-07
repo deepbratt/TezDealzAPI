@@ -351,15 +351,7 @@ router.route('/car-images').post(
   carController.imageUploader,
 );
 
-router.route('/').post(
-  authenticate(User),
-  fileUpload('image', 'application').fields([
-    { name: 'image', maxCount: 20 },
-    { name: 'selectedImage', maxCount: 1 },
-  ]),
-  phoneCheckOnCreate,
-  carController.createOne,
-);
+router.route('/').post(authenticate(User), phoneCheckOnCreate, carController.createOne);
 router.route('/').get(
   checkIsLoggedIn(User), //cache(cacheExp),
   carController.getAll,
@@ -413,10 +405,10 @@ router
   .patch(
     authenticate(User),
     permessionCheck,
-    fileUpload('image', 'application').fields([
-      { name: 'image', maxCount: 20 },
-      { name: 'selectedImage', maxCount: 1 },
-    ]),
+    // fileUpload('image', 'application').fields([
+    //   { name: 'image', maxCount: 20 },
+    //   { name: 'selectedImage', maxCount: 1 },
+    // ]),
     phoneCheckOnupdate,
     carController.updateOne,
   )

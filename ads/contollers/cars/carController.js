@@ -86,7 +86,7 @@ exports.createOne = catchAsync(async (req, res, next) => {
     return next(new AppError(ERRORS.UNAUTHORIZED.ASSOCIATED_PHONE, STATUS_CODE.UNAUTHORIZED));
   }
 
-  if (req.body.isPublished !== 'true') {
+  if (req.body.isPublished !== true) {
     req.body.assembly = 'Not Available';
     req.body.bodyType = 'Not Available';
     req.body.condition = 'Not Available';
@@ -238,67 +238,22 @@ exports.updateOne = catchAsync(async (req, res, next) => {
     return next(new AppError('No Result Found', STATUS_CODE.BAD_REQUEST));
   }
 
-  if (req.files.selectedImage) {
-    let { Location } = await uploadS3(
-      req.files.selectedImage[0],
-      process.env.AWS_BUCKET_REGION,
-      process.env.AWS_ACCESS_KEY,
-      process.env.AWS_SECRET_KEY,
-      process.env.AWS_BUCKET_NAME,
-    );
-
-    req.body.selectedImage = Location;
-    // when we only send selectedImage then it will push selectedImage to images array
-    const alreadyExist = await Car.findOne({ image: req.body.selectedImage });
-    if (!!alreadyExist !== true) {
-      await Car.updateOne({ _id: req.params.id }, { $push: { image: req.body.selectedImage } });
-    }
-    var imagePath = Location;
-  } else {
-    const alreadyExist = await Car.findOne({ image: req.body.selectedImage });
-    if (!!alreadyExist !== true) {
-      await Car.updateOne({ _id: req.params.id }, { $push: { image: req.body.selectedImage } });
-    }
-    imagePath = req.body.selectedImage;
-  }
-
-  if (req.files.image) {
-    let array = [];
-    for (var i = 0; i < req.files.image.length; i++) {
-      // console.log(req.files.image[i].mimetype);
-      let { Location } = await uploadS3(
-        req.files.image[i],
-        process.env.AWS_BUCKET_REGION,
-        process.env.AWS_ACCESS_KEY,
-        process.env.AWS_SECRET_KEY,
-        process.env.AWS_BUCKET_NAME,
-      );
-      array.push(Location);
-    }
-    if (req.body.image) {
-      req.body.image = [...req.body.image, ...array];
-    } else {
-      req.body.image = array;
-    }
-  }
   if (req.body.image) {
-    let array = [];
+    var imagePath = req.body.selectedImage;
     const selectedImage = car.selectedImage;
     // if selectedImage's value is undefined
-    if (imagePath === undefined) {
+    if (imagePath === undefined && selectedImage !== undefined) {
       // if selectedImage Field in collection is not undefined then do operation
-      if (selectedImage !== undefined) {
-        array = [selectedImage];
-      }
+      req.body.image = [selectedImage, ...req.body.image];
     } else {
-      array = [imagePath];
+      const alreadyExist = await Car.findOne({ _id: req.params.id, image: req.body.selectedImage });
+      if (!!alreadyExist !== true) {
+        req.body.image = [imagePath, ...req.body.image];
+      }
+      req.body.image = [imagePath, ...req.body.image];
+      let unique = [...new Set(req.body.image)];
+      req.body.image = unique;
     }
-    for (var i = 0; i < req.body.image.length; i++) {
-      let images = req.body.image[i];
-      array.push(images);
-    }
-    // let unique = [...new Set(array)];
-    req.body.image = array;
   }
 
   if (
