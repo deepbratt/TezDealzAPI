@@ -2,47 +2,10 @@ const mongoose = require('mongoose');
 const RequestIp = require('@supercharge/request-ip');
 const Car = require('../../models/cars/carModel');
 const CarView = require('../../models/cars/car-views/ip-views-model');
-const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
+const CarImages = require('../../models/cars/carsImages/carsImagesModel');
+const { AppError, catchAsync } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS, ROLES } = require('@constants/tdb-constants');
 const { filter, stats, dailyAggregate } = require('../factory/factoryHandler');
-
-exports.imageUploader = catchAsync(async (req, res, next) => {
-  let array = [];
-  let selectedImage;
-
-  if (req.files.selectedImage) {
-    let { Location } = await uploadS3(
-      req.files.selectedImage[0],
-      process.env.AWS_BUCKET_REGION,
-      process.env.AWS_ACCESS_KEY,
-      process.env.AWS_SECRET_KEY,
-      process.env.AWS_BUCKET_NAME,
-    );
-    selectedImage = Location;
-  }
-
-  if (req.files.image) {
-    for (var i = 0; i < req.files.image.length; i++) {
-      let { Location } = await uploadS3(
-        req.files.image[i],
-        process.env.AWS_BUCKET_REGION,
-        process.env.AWS_ACCESS_KEY,
-        process.env.AWS_SECRET_KEY,
-        process.env.AWS_BUCKET_NAME,
-      );
-      array.push(Location);
-    }
-  }
-
-  res.status(STATUS_CODE.OK).json({
-    stats: STATUS.SUCCESS,
-    message: 'Images Uploaded Successfully',
-    data: {
-      array,
-      selectedImage,
-    },
-  });
-});
 
 exports.createOne = catchAsync(async (req, res, next) => {
   if (req.body.selectedImage) {
