@@ -21,7 +21,7 @@ const carsSchema = new mongoose.Schema(
       type: {
         type: String,
         enum: ['Point'],
-        default: 'Point',
+        // default: 'Point',
       },
       coordinates: [Number],
       address: String,
@@ -31,7 +31,17 @@ const carsSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: 'User',
     },
-    image: [String],
+    image: [
+      {
+        _id: false,
+        reference: {
+          type: String,
+        },
+        location: {
+          type: String,
+        },
+      },
+    ],
     version: {
       type: String,
     },
@@ -169,8 +179,15 @@ const carsSchema = new mongoose.Schema(
       default: 0,
     },
     selectedImage: {
-      type: String,
+      _id: false,
+      reference: {
+        type: String,
+      },
+      location: {
+        type: String,
+      },
     },
+
     slug: {
       type: String,
       unique: true,
