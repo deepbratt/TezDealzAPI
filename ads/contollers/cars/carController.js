@@ -11,6 +11,19 @@ exports.createOne = catchAsync(async (req, res, next) => {
   if (req.body.selectedImage) {
     selectedImage = req.body.selectedImage;
     req.body.image = [selectedImage, ...req.body.image];
+
+    // To set req.body.image unique
+    let unique = [
+      ...new Map(req.body.image.map((value) => [JSON.stringify(value), value])).values(),
+    ];
+    req.body.image = unique;
+  } else {
+    req.body.selectedImage = req.body.image[0];
+    // To set req.body.image unique
+    let unique = [
+      ...new Map(req.body.image.map((value) => [JSON.stringify(value), value])).values(),
+    ];
+    req.body.image = unique;
   }
 
   if (req.user.role !== ROLES.USERROLES.INDIVIDUAL) {
@@ -201,22 +214,22 @@ exports.updateOne = catchAsync(async (req, res, next) => {
     return next(new AppError('No Result Found', STATUS_CODE.BAD_REQUEST));
   }
 
-  if (req.body.image) {
-    var imagePath = req.body.selectedImage;
-    const selectedImage = car.selectedImage;
-    // if selectedImage's value is undefined
-    if (imagePath === undefined && selectedImage !== undefined) {
-      // if selectedImage Field in collection is not undefined then do operation
-      req.body.image = [selectedImage, ...req.body.image];
-    } else {
-      const alreadyExist = await Car.findOne({ _id: req.params.id, image: req.body.selectedImage });
-      if (!!alreadyExist !== true) {
-        req.body.image = [imagePath, ...req.body.image];
-      }
-      req.body.image = [imagePath, ...req.body.image];
-      let unique = [...new Set(req.body.image)];
-      req.body.image = unique;
-    }
+  if (req.body.selectedImage) {
+    selectedImage = req.body.selectedImage;
+    req.body.image = [selectedImage, ...req.body.image];
+
+    // To set req.body.image unique
+    let unique = [
+      ...new Map(req.body.image.map((value) => [JSON.stringify(value), value])).values(),
+    ];
+    req.body.image = unique;
+  } else {
+    req.body.selectedImage = req.body.image[0];
+    // To set req.body.image unique
+    let unique = [
+      ...new Map(req.body.image.map((value) => [JSON.stringify(value), value])).values(),
+    ];
+    req.body.image = unique;
   }
 
   if (
