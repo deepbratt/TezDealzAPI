@@ -1,6 +1,6 @@
 {
 	"name": "ads",
-	"version": "1.0.90",
+	"version": "1.0.100",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
@@ -11,7 +11,7 @@
 	"license": "ISC",
 	"dependencies": {
 		"@auth/tdb-auth": "^1.0.2",
-		"@constants/tdb-constants": "^1.0.44",
+		"@constants/tdb-constants": "^1.0.46",
 		"@supercharge/request-ip": "^1.1.2",
 		"@utils/tdb_globalutils": "^1.0.103",
 		"amqplib": "^0.8.0",
@@ -31,10 +31,11 @@
 		"morgan": "^1.10.0",
 		"node-cache": "^5.1.2",
 		"redis": "^3.1.2",
+		"requests": "^0.3.0",
+		"slugify": "^1.6.2",
 		"stopword": "^1.0.11",
 		"underscore": "^1.13.1",
 		"util": "^0.12.4",
-		"uuid": "^8.3.2",
 		"validator": "^13.6.0"
 	},
 	"devDependencies": {

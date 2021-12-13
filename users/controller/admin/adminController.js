@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const User = require('../../model/userModel');
 const moment = require('moment');
 const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
-const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS } = require('@constants/tdb-constants');
+const { ERRORS, STATUS_CODE, SUCCESS_MSG, STATUS, ROLES } = require('@constants/tdb-constants');
 const { regex, pakPhone } = require('../../utils/regex');
 const { send } = require('../../utils/rabbitMQ');
 const { filterObj, filter } = require('../factory/factoryHandler');
@@ -11,10 +11,10 @@ const sendSMS = require('../../utils/sendSMS');
 const Email = require('../../utils/email-mailgun');
 exports.getAllUsers = catchAsync(async (req, res, next) => {
   let result;
-  if (req.user.role === 'Admin') {
+  if (req.user.role === ROLES.USERROLES.ADMIN) {
     result = await filter(User.find(), req.query);
   } else {
-    result = await filter(User.find({ role: 'User' }), req.query);
+    result = await filter(User.find({ role: ROLES.USERROLES.INDIVIDUAL }), req.query);
   }
   if (result[0].length <= 0) {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
@@ -35,7 +35,7 @@ exports.getUser = catchAsync(async (req, res, next) => {
   if (!result) {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
-  if (req.user.role !== 'Admin' && result.role !== 'User') {
+  if (req.user.role !== ROLES.USERROLES.ADMIN && result.role !== ROLES.USERROLES.INDIVIDUAL) {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
   res.status(STATUS_CODE.OK).json({
@@ -52,7 +52,7 @@ exports.updateUserProfile = catchAsync(async (req, res, next) => {
   if (!result) {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
-  if (req.user.role !== 'Admin' && result.role !== 'User') {
+  if (req.user.role !== ROLES.USERROLES.ADMIN && result.role !== ROLES.USERROLES.INDIVIDUAL) {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
   // Image Upload
@@ -129,7 +129,7 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
   if (!result) {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
-  if (req.user.role !== 'Admin' && result.role !== 'User') {
+  if (req.user.role !== ROLES.USERROLES.ADMIN && result.role !== ROLES.USERROLES.INDIVIDUAL) {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
   await User.findByIdAndDelete(req.params.id);
@@ -141,7 +141,7 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
 
 exports.createUser = catchAsync(async (req, res, next) => {
   let user;
-  if (req.user.role !== 'Admin' && req.body.role !== 'User') {
+  if (req.user.role !== ROLES.USERROLES.ADMIN && req.body.role !== ROLES.USERROLES.INDIVIDUAL) {
     return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
   }
   if (Validator.validate(req.body.data)) {
@@ -155,6 +155,7 @@ exports.createUser = catchAsync(async (req, res, next) => {
       passwordConfirm: req.body.passwordConfirm,
       signedUpWithEmail: true,
     });
+    await new Email(user.email, { ...user._doc }).welcomeDev();
   } else if (regex.pakPhone.test(req.body.data)) {
     user = await User.create({
       firstName: req.body.firstName.trim(),
@@ -185,7 +186,7 @@ exports.inactiveUser = catchAsync(async (req, res, next) => {
   if (!result) {
     return next(new AppError(ERRORS.INVALID.INACTIVE_USER, STATUS_CODE.BAD_REQUEST));
   }
-  if (req.user.role !== 'Admin' && result.role !== 'User') {
+  if (req.user.role !== ROLES.USERROLES.ADMIN && result.role !== ROLES.USERROLES.INDIVIDUAL) {
     return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
   }
   await User.updateOne({ _id: req.params.id }, { active: false });
@@ -202,7 +203,7 @@ exports.activeUser = catchAsync(async (req, res, next) => {
   if (!result) {
     return next(new AppError(ERRORS.INVALID.ACTIVE_USER, STATUS_CODE.BAD_REQUEST));
   }
-  if (req.user.role !== 'Admin' && result.role !== 'User') {
+  if (req.user.role !== ROLES.USERROLES.ADMIN && result.role !== ROLES.USERROLES.INDIVIDUAL) {
     return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
   }
   await User.updateOne({ _id: req.params.id }, { active: true });
@@ -217,7 +218,7 @@ exports.unbanUser = catchAsync(async (req, res, next) => {
   if (!result) {
     return next(new AppError(ERRORS.INVALID.UNBAN_USER, STATUS_CODE.BAD_REQUEST));
   }
-  if (req.user.role !== 'Admin' && result.role !== 'User') {
+  if (req.user.role !== ROLES.USERROLES.ADMIN && result.role !== ROLES.USERROLES.INDIVIDUAL) {
     return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
   }
   await User.updateOne({ _id: req.params.id }, { banned: false });
@@ -232,7 +233,7 @@ exports.banUser = catchAsync(async (req, res, next) => {
   if (!result) {
     return next(new AppError(ERRORS.INVALID.BAN_USER, STATUS_CODE.BAD_REQUEST));
   }
-  if (req.user.role !== 'Admin' && result.role !== 'User') {
+  if (req.user.role !== ROLES.USERROLES.ADMIN && result.role !== ROLES.USERROLES.INDIVIDUAL) {
     return next(new AppError(ERRORS.UNAUTHORIZED.UNAUTHORIZE, STATUS_CODE.UNAUTHORIZED));
   }
   await User.updateOne({ _id: req.params.id }, { banned: true });
@@ -329,10 +330,10 @@ exports.forgotPasswordAdmin = catchAsync(async (req, res, next) => {
       email: req.body.data,
       $or: [
         {
-          role: 'Admin',
+          role: ROLES.USERROLES.ADMIN,
         },
         {
-          role: 'Moderator',
+          role: ROLES.USERROLES.MODERATOR,
         },
       ],
     });
@@ -341,10 +342,10 @@ exports.forgotPasswordAdmin = catchAsync(async (req, res, next) => {
       phone: req.body.data,
       $or: [
         {
-          role: 'Admin',
+          role: ROLES.USERROLES.ADMIN,
         },
         {
-          role: 'Moderator',
+          role: ROLES.USERROLES.MODERATOR,
         },
       ],
     });
@@ -395,7 +396,7 @@ exports.resetPasswordAdmin = catchAsync(async (req, res, next) => {
     passwordResetExpires: { $gt: Date.now() },
   });
 
-  if (!user || user.role === 'User') {
+  if (!user || user.role === ROLES.USERROLES.INDIVIDUAL) {
     return next(new AppError(ERRORS.INVALID.INVALID_RESET_LINK, STATUS_CODE.BAD_REQUEST));
   }
 
