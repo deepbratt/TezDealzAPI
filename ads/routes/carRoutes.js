@@ -10,6 +10,7 @@ const featuresController = require('../contollers/cars/featuresController');
 const colorController = require('../contollers/cars/colorController');
 const showNumberController = require('../contollers/cars/showNumberController');
 const bulkUploadsController = require('../contollers/cars/bulkUploadAds');
+const countryStateProvince = require('../contollers/country-city-province/countryCityProvince');
 const carFilters = require('../contollers/cars/carFilters');
 const { authenticate, checkIsLoggedIn, restrictTo } = require('@auth/tdb-auth');
 const {
@@ -24,6 +25,19 @@ const { fileUpload, uploadMultipleImages } = require('../utils/fileUpload');
 //const cacheExp = 30;
 const router = express.Router();
 // const { isCached } = require('../utils/redisCache');
+
+// router
+// .route('/all-cities').get(
+//   countryStateProvince.getAllCities
+// );
+
+
+// Countries routes here 
+router
+    .route('/all-cities')
+    .get(countryStateProvince.getAllCities);
+
+
 
 router
   .route('/bulk-uploads-stats/:id')
@@ -120,6 +134,12 @@ router
     upload('image').single('image'),
     featuresController.createFeature,
   );
+
+router
+    .route('/all-cities')
+    .get(countryStateProvince.getAllCities);
+
+
 router
   .route('/features/:id')
   .get(authenticate(User), restrictTo('Admin', 'Moderator'), featuresController.getOneFeature)
@@ -311,6 +331,7 @@ router.route('/filter/cities-with-cars').get(
   carFilters.getCitiesByProvince,
 );
 
+
 module.exports = router;
 
 // To remove Model in models array by finding with Id.
@@ -337,3 +358,7 @@ module.exports = router;
 //router.route('/stats').get(authenticate(User), carController.carStats);
 //router.route('/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);
 //router.route('/cars/daily-stats/:min/:max').get(authenticate(User), carController.carDailyStats);
+
+
+// Country State Province
+

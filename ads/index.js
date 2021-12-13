@@ -16,7 +16,9 @@ const { errorHandler, AppError } = require('@utils/tdb_globalutils');
 const receivers = require('./utils/rabbitMq');
 
 const adsRoutes = require('./constants/consts').routeConsts.carRoutes;
+const countriesRoutes = require('./constants/consts').routeConsts.countriesRoutes;
 const adsRouter = require('./routes/carRoutes');
+const countriesRouter = require('./routes/countriesRoutes');
 
 const app = express();
 
@@ -32,12 +34,13 @@ app.use(
 	session({
 		signed: false,
 	})
-);
+); 
 
 app.use(compression());
 //routes
 receivers.userbanReceiver();
 app.use(adsRoutes, adsRouter);
+app.use('/',countriesRouter);
 app.all('*', (req, res, next) => {
 	next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
 });

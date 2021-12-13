@@ -12,7 +12,7 @@ exports.createFeature = catchAsync(async (req, res, next) => {
       process.env.AWS_SECRET_KEY,
       process.env.AWS_BUCKET_NAME,
     );
-    req.body.image = Location;
+    req.body.image = Location; 
   }
 
   const result = await Features.create(req.body);

@@ -137,7 +137,7 @@ exports.createBulkUploads = catchAsync(async (req, res, next) => {
     return next(new AppError('Please insert a CSV File to add data', STATUS_CODE.BAD_REQUEST));
   }
 
-  // Parsing csv file from buffer
+  // Parsing csv file from buffer 
   let results = [];
   fastcsv
     .parseString(req.file.buffer, { headers: true, ignoreEmpty: true })

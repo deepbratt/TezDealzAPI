@@ -24,6 +24,7 @@
 		"express": "^4.17.1",
 		"fast-csv": "^4.3.6",
 		"jsonwebtoken": "^8.5.1",
+		"lodash": "^4.17.21",
 		"moment": "^2.29.1",
 		"mongoose": "^5.13.2",
 		"mongoose-query-logger": "^0.2.3",
@@ -31,6 +32,7 @@
 		"node-cache": "^5.1.2",
 		"redis": "^3.1.2",
 		"stopword": "^1.0.11",
+		"underscore": "^1.13.1",
 		"util": "^0.12.4",
 		"uuid": "^8.3.2",
 		"validator": "^13.6.0"
