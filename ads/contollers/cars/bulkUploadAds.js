@@ -107,6 +107,8 @@ const dataValidation = async (data, userId) => {
       failedRecords.push(adDetail);
     } else {
       adDetail.createdBy = userId;
+      adDetail.imageStatus = false;
+      adDetail.isPublished = false;
       validRecords.push(adDetail);
     }
   }
