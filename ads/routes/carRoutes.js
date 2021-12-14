@@ -11,6 +11,7 @@ const colorController = require('../contollers/cars/colorController');
 const showNumberController = require('../contollers/cars/showNumberController');
 const bulkUploadsController = require('../contollers/cars/bulkUploadAds');
 const carImagesController = require('../contollers/cars/carsImagesController');
+const countryStateProvince = require('../contollers/country-city-state-province/countryCityState');
 const carFilters = require('../contollers/cars/carFilters');
 const { authenticate, checkIsLoggedIn, restrictTo } = require('@auth/tdb-auth');
 const {
@@ -26,6 +27,41 @@ const { fileUpload, upload } = require('../utils/fileUpload');
 //const cacheExp = 30;
 const router = express.Router();
 // const { isCached } = require('../utils/redisCache');
+
+
+router
+    .route('/all-cities')
+    .get(countryStateProvince.getAllCities);
+
+
+router
+    .route('/all-states')
+    .get(countryStateProvince.getAllStates);
+
+router
+    .route('/cities/country-code/:countrycode')
+    .get(countryStateProvince.getCitiesOfCountry);
+
+router
+    .route('/cities/state-code/:stateCode/:countryCode')
+    .get(countryStateProvince.getCitiesOfState);
+
+router
+    .route('/states/state-code/:stateCode')
+    .get(countryStateProvince.getStateByCode);
+
+router
+    .route('/states/country-code/:stateCode/:countryCode')
+    .get(countryStateProvince.getStateByCodeAndCountry);
+
+router
+    .route('/states/country-code/:countryCode')
+    .get(countryStateProvince.getStatesOfCountry);
+ 
+
+
+
+
 
 // To post ads images directly to the S3 Bucket
 router

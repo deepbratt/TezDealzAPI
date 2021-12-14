@@ -33,6 +33,7 @@
 		"requests": "^0.3.0",
 		"slugify": "^1.6.2",
 		"stopword": "^1.0.11",
+		"underscore": "^1.13.1",
 		"util": "^0.12.4",
 		"validator": "^13.6.0"
 	},
