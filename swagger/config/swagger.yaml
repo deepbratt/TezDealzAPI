@@ -4,6 +4,128 @@ info:
   version: '1.0.0'
   title: 'TezDeals'
 paths:
+  /v1/ads/cars/all-cities:
+    get:
+      tags:
+        - 'Cities'
+      summary: 'use to get all cities'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'No Cities Found'
+        '200':
+          description: 'All cities'
+  /v1/ads/cars/cities/country-code/{countryCode}:
+    get:
+      tags:
+        - 'Cities'
+      summary: 'use to get all cities of a country based on country code.'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'countryCode'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'No cities Found'
+        '200':
+          description: 'All cities of a country.'
+  /v1/ads/cars/cities/state-code/{stateCode}/{countryCode}:
+    get:
+      tags:
+        - 'Cities'
+      summary: 'use to get all cities based on state code and country code.'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'stateCode'
+          required: true
+          type: 'string'
+
+        - in: 'path'
+          name: 'countryCode'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'No cities Found'
+        '200':
+          description: 'All cities based on state code and country code.'
+
+  /v1/ads/cars/all-states:
+    get:
+      tags:
+        - 'States'
+      summary: 'use to get all states'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      responses:
+        '404':
+          description: 'No states Found'
+        '200':
+          description: 'All states'
+  /v1/ads/cars/states/state-code/{stateCode}:
+    get:
+      tags:
+        - 'States'
+      summary: 'use to get states using state code.'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'stateCode'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'No states Found'
+        '200':
+          description: 'All states with matching state code.'
+  /v1/ads/cars/states/country-code/{stateCode}/{countryCode}:
+    get:
+      tags:
+        - 'States'
+      summary: 'use to get states using state code and country code.'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'stateCode'
+          required: true
+          type: 'string'
+        - in: 'path'
+          name: 'countryCode'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'No states Found'
+        '200':
+          description: 'All states with matching state code and country code.'
+
+  
   /v1/ads/cars/publish-ad/:{id}:
     patch:
       tags:
