@@ -1,5 +1,5 @@
 const CarImages = require('../../models/cars/carsImages/carsImagesModel');
-const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
+const { AppError, catchAsync, uploadS3WithTag } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS, ROLES } = require('@constants/tdb-constants');
 const { filter } = require('../factory/factoryHandler');
 
@@ -8,7 +8,7 @@ exports.imageUploader = catchAsync(async (req, res, next) => {
   let selectedImage;
 
   if (req.files.selectedImage) {
-    let { Location, Key } = await uploadS3(
+    let { Location, Key } = await uploadS3WithTag(
       req.files.selectedImage[0],
       process.env.AWS_BUCKET_REGION,
       process.env.AWS_ACCESS_KEY,
@@ -20,7 +20,7 @@ exports.imageUploader = catchAsync(async (req, res, next) => {
 
   if (req.files.image) {
     for (var i = 0; i < req.files.image.length; i++) {
-      let { Location, Key } = await uploadS3(
+      let { Location, Key } = await uploadS3WithTag(
         req.files.image[i],
         process.env.AWS_BUCKET_REGION,
         process.env.AWS_ACCESS_KEY,
