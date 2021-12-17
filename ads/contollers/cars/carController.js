@@ -6,6 +6,7 @@ const CarImages = require('../../models/cars/carsImages/carsImagesModel');
 const { AppError, catchAsync } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS, ROLES } = require('@constants/tdb-constants');
 const { filter, stats, dailyAggregate } = require('../factory/factoryHandler');
+const postAdUpdateS3Tag = require('../../utils/updateS3Tags');
 
 exports.createOne = catchAsync(async (req, res, next) => {
   if (req.body.selectedImage) {
@@ -71,6 +72,11 @@ exports.createOne = catchAsync(async (req, res, next) => {
 
   const result = await Car.create(req.body);
   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+
+  // To Update Tag in S3 Bucket from Temporary to Permanent
+  let references = req.body.image.map((a) => a.reference);
+  let uniqueReferences = [...new Set(references)];
+  await postAdUpdateS3Tag(uniqueReferences, 'imageType', 'Permanent');
 
   res.status(STATUS_CODE.CREATED).json({
     status: STATUS.SUCCESS,
@@ -303,6 +309,7 @@ exports.updateOne = catchAsync(async (req, res, next) => {
   }
 
   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,
     message: SUCCESS_MSG.SUCCESS_MESSAGES.AD_UPDATED,
@@ -314,6 +321,12 @@ exports.updateOne = catchAsync(async (req, res, next) => {
 
 exports.deleteOne = catchAsync(async (req, res, next) => {
   let result;
+
+  let data = await Car.findById(req.params.id);
+  let references = data.image.map((a) => a.reference);
+  let uniqueReferences = [...new Set(references)];
+  await postAdUpdateS3Tag(uniqueReferences, 'imageType', 'Temporary');
+
   const ObjectId = mongoose.isValidObjectId(req.params.id);
   if (ObjectId !== true) {
     let stringValues = req.params.id;
@@ -340,18 +353,22 @@ exports.deleteOne = catchAsync(async (req, res, next) => {
 exports.getMine = catchAsync(async (req, res, next) => {
   const [result, totalCount] = await filter(Car.find({ createdBy: req.user._id }), req.query);
 
-  if (result.length === 0)
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
-
-  res.status(STATUS_CODE.OK).json({
-    status: STATUS.SUCCESS,
-    message: SUCCESS_MSG.SUCCESS_MESSAGES.MY_ADS,
-    countOnPage: result.length,
-    totalCount: totalCount,
-    data: {
-      result,
-    },
-  });
+  if (result.length === 0) {
+    res.status(STATUS_CODE.OK).json({
+      status: STATUS.SUCCESS,
+      message: `You do not have any advertisements`,
+    });
+  } else {
+    res.status(STATUS_CODE.OK).json({
+      status: STATUS.SUCCESS,
+      message: SUCCESS_MSG.SUCCESS_MESSAGES.MY_ADS,
+      countOnPage: result.length,
+      totalCount: totalCount,
+      data: {
+        result,
+      },
+    });
+  }
 });
 
 exports.addtoFav = catchAsync(async (req, res, next) => {
