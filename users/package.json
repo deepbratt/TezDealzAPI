@@ -1,6 +1,6 @@
 {
 	"name": "users",
-	"version": "1.0.87",
+	"version": "1.0.88",
 	"description": "users service",
 	"main": "index.js",
 	"scripts": {
@@ -12,7 +12,7 @@
 		"@auth/tdb-auth": "^1.0.2",
 		"@constants/tdb-constants": "^1.0.46",
 		"@mailchimp/mailchimp_transactional": "^1.0.31",
-		"@utils/tdb_globalutils": "^1.0.101",
+		"@utils/tdb_globalutils": "^1.0.107",
 		"amqplib": "^0.8.0",
 		"axios": "^0.21.1",
 		"bcryptjs": "^2.4.3",
