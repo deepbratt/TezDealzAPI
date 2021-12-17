@@ -119,7 +119,7 @@ exports.getAll = catchAsync(async (req, res, next) => {
   const [result, totalCount] = data;
 
   if (result.length <= 0) {
-    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.OK));
   }
   //current user fav status
   if (req.user && req.user.role === ROLES.USERROLES.INDIVIDUAL) {
