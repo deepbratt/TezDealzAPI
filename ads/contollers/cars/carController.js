@@ -2,47 +2,28 @@ const mongoose = require('mongoose');
 const RequestIp = require('@supercharge/request-ip');
 const Car = require('../../models/cars/carModel');
 const CarView = require('../../models/cars/car-views/ip-views-model');
-const { AppError, catchAsync, uploadS3 } = require('@utils/tdb_globalutils');
+const CarImages = require('../../models/cars/carsImages/carsImagesModel');
+const { AppError, catchAsync } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS, ROLES } = require('@constants/tdb-constants');
 const { filter, stats, dailyAggregate } = require('../factory/factoryHandler');
 
 exports.createOne = catchAsync(async (req, res, next) => {
-  if (req.files.selectedImage) {
-    let { Location } = await uploadS3(
-      req.files.selectedImage[0],
-      process.env.AWS_BUCKET_REGION,
-      process.env.AWS_ACCESS_KEY,
-      process.env.AWS_SECRET_KEY,
-      process.env.AWS_BUCKET_NAME,
-    );
-    req.body.selectedImage = Location;
-    var imagePath = Location;
+  if (req.body.selectedImage) {
+    selectedImage = req.body.selectedImage;
+    req.body.image = [selectedImage, ...req.body.image];
+
+    // To set req.body.image unique
+    let unique = [
+      ...new Map(req.body.image.map((value) => [JSON.stringify(value), value])).values(),
+    ];
+    req.body.image = unique;
   } else {
-    imagePath = req.body.selectedImage;
-  }
-
-  if (req.files.image) {
-    let array = [];
-    if (imagePath !== undefined) {
-      array = [imagePath];
-    }
-
-    for (var i = 0; i < req.files.image.length; i++) {
-      // console.log(req.files.image[i].mimetype);
-      let { Location } = await uploadS3(
-        req.files.image[i],
-        process.env.AWS_BUCKET_REGION,
-        process.env.AWS_ACCESS_KEY,
-        process.env.AWS_SECRET_KEY,
-        process.env.AWS_BUCKET_NAME,
-      );
-      array.push(Location);
-    }
-    if (req.body.image) {
-      req.body.image = [...req.body.image, ...array];
-    } else {
-      req.body.image = array;
-    }
+    req.body.selectedImage = req.body.image[0];
+    // To set req.body.image unique
+    let unique = [
+      ...new Map(req.body.image.map((value) => [JSON.stringify(value), value])).values(),
+    ];
+    req.body.image = unique;
   }
 
   if (req.user.role !== ROLES.USERROLES.INDIVIDUAL) {
@@ -81,6 +62,13 @@ exports.createOne = catchAsync(async (req, res, next) => {
     return next(new AppError(ERRORS.UNAUTHORIZED.ASSOCIATED_PHONE, STATUS_CODE.UNAUTHORIZED));
   }
 
+  if (req.body.isPublished !== true) {
+    req.body.assembly = 'Not Available';
+    req.body.bodyType = 'Not Available';
+    req.body.condition = 'Not Available';
+    req.body.sellerType = 'Not Available';
+  }
+
   const result = await Car.create(req.body);
   if (!result) return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
 
@@ -100,13 +88,25 @@ exports.getAll = catchAsync(async (req, res, next) => {
       data = await filter(Car.find(), req.query);
     } else {
       data = await filter(
-        Car.find({ active: true, isSold: false, banned: false, imageStatus: true }),
+        Car.find({
+          active: true,
+          isSold: false,
+          banned: false,
+          imageStatus: true,
+          isPublished: true,
+        }),
         req.query,
       );
     }
   } else {
     data = await filter(
-      Car.find({ active: true, isSold: false, banned: false, imageStatus: true }),
+      Car.find({
+        active: true,
+        isSold: false,
+        banned: false,
+        imageStatus: true,
+        isPublished: true,
+      }),
       req.query,
     );
   }
@@ -214,61 +214,22 @@ exports.updateOne = catchAsync(async (req, res, next) => {
     return next(new AppError('No Result Found', STATUS_CODE.BAD_REQUEST));
   }
 
-  if (req.files.selectedImage) {
-    let { Location } = await uploadS3(
-      req.files.selectedImage[0],
-      process.env.AWS_BUCKET_REGION,
-      process.env.AWS_ACCESS_KEY,
-      process.env.AWS_SECRET_KEY,
-      process.env.AWS_BUCKET_NAME,
-    );
+  if (req.body.selectedImage) {
+    selectedImage = req.body.selectedImage;
+    req.body.image = [selectedImage, ...req.body.image];
 
-    req.body.selectedImage = Location;
-    // when we only send selectedImage then it will push selectedImage to images array
-    await Car.updateOne({ _id: req.params.id }, { $push: { image: Location } });
-    var imagePath = Location;
+    // To set req.body.image unique
+    let unique = [
+      ...new Map(req.body.image.map((value) => [JSON.stringify(value), value])).values(),
+    ];
+    req.body.image = unique;
   } else {
-    await Car.updateOne({ _id: req.params.id }, { $push: { image: req.body.selectedImage } });
-    imagePath = req.body.selectedImage;
-  }
-
-  if (req.files.image) {
-    let array = [];
-    for (var i = 0; i < req.files.image.length; i++) {
-      // console.log(req.files.image[i].mimetype);
-      let { Location } = await uploadS3(
-        req.files.image[i],
-        process.env.AWS_BUCKET_REGION,
-        process.env.AWS_ACCESS_KEY,
-        process.env.AWS_SECRET_KEY,
-        process.env.AWS_BUCKET_NAME,
-      );
-      array.push(Location);
-    }
-    if (req.body.image) {
-      req.body.image = [...req.body.image, ...array];
-    } else {
-      req.body.image = array;
-    }
-  }
-  if (req.body.image) {
-    let array = [];
-    const selectedImage = car.selectedImage;
-    // if selectedImage's value is undefined
-    if (imagePath === undefined) {
-      // if selectedImage Field in collection is not undefined then do operation
-      if (selectedImage !== undefined) {
-        array = [selectedImage];
-      }
-    } else {
-      array = [imagePath];
-    }
-    for (var i = 0; i < req.body.image.length; i++) {
-      let images = req.body.image[i];
-      array.push(images);
-    }
-    // let unique = [...new Set(array)];
-    req.body.image = array;
+    req.body.selectedImage = req.body.image[0];
+    // To set req.body.image unique
+    let unique = [
+      ...new Map(req.body.image.map((value) => [JSON.stringify(value), value])).values(),
+    ];
+    req.body.image = unique;
   }
 
   if (
@@ -528,5 +489,27 @@ exports.getCarsWithin = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.publishAd = catchAsync(async (req, res, next) => {
+  const result = await Car.findOne({ _id: req.params.id });
+
+  if (!result) {
+    return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
+  }
+
+  if (result.isPublished === true) {
+    return next(
+      new AppError('This Advertisement is Already been Published', STATUS_CODE.BAD_REQUEST),
+    );
+  }
+
+  await Car.updateOne({ _id: req.params.id }, { isPublished: true, publishedDate: Date.now() });
+
+  res.status(STATUS_CODE.OK).json({
+    status: STATUS.SUCCESS,
+    message: 'Your Ad is published successfully',
+  });
+});
+
 exports.carStats = stats(Car);
 exports.carDailyStats = dailyAggregate(Car);

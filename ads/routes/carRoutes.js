@@ -10,6 +10,7 @@ const featuresController = require('../contollers/cars/featuresController');
 const colorController = require('../contollers/cars/colorController');
 const showNumberController = require('../contollers/cars/showNumberController');
 const bulkUploadsController = require('../contollers/cars/bulkUploadAds');
+const carImagesController = require('../contollers/cars/carsImagesController');
 const carFilters = require('../contollers/cars/carFilters');
 const { authenticate, checkIsLoggedIn, restrictTo } = require('@auth/tdb-auth');
 const {
@@ -26,6 +27,24 @@ const { fileUpload, upload } = require('../utils/fileUpload');
 const router = express.Router();
 // const { isCached } = require('../utils/redisCache');
 
+// To post ads images directly to the S3 Bucket
+router
+  .route('/car-images')
+  .post(
+    authenticate(User),
+    fileUpload('image', 'application').fields([
+      { name: 'image', maxCount: 20 },
+      { name: 'selectedImage', maxCount: 1 },
+    ]),
+    carImagesController.imageUploader,
+  )
+  .get(authenticate(User), carImagesController.getAllCarImages);
+
+router.route('/car-images/:id').get(authenticate(User), carImagesController.getOneCarImage);
+
+// Publish Ad
+router.route('/publish-ad/:id').patch(authenticate(User), permessionCheck, carController.publishAd);
+
 router
   .route('/bulk-uploads-stats/:id')
   .get(
@@ -39,7 +58,7 @@ router
   .post(
     authenticate(User),
     restrictTo(ROLES.USERROLES.ADMIN, ROLES.USERROLES.MODERATOR),
-    upload('text').single('csvFile'),
+    fileUpload('text', 'application').single('csvFile'),
     bulkUploadsController.createBulkUploadAds,
   );
 router
@@ -339,16 +358,8 @@ router.delete(
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-router.route('/').post(
-  authenticate(User),
-  fileUpload('image', 'application').fields([
-    { name: 'image', maxCount: 20 },
-    { name: 'selectedImage', maxCount: 1 },
-  ]),
-  phoneCheckOnCreate,
-  carController.createOne,
-);
+// Create an Advertisement
+router.route('/').post(authenticate(User), phoneCheckOnCreate, carController.createOne);
 router.route('/').get(
   checkIsLoggedIn(User), //cache(cacheExp),
   carController.getAll,
@@ -402,10 +413,10 @@ router
   .patch(
     authenticate(User),
     permessionCheck,
-    fileUpload('image', 'application').fields([
-      { name: 'image', maxCount: 20 },
-      { name: 'selectedImage', maxCount: 1 },
-    ]),
+    // fileUpload('image', 'application').fields([
+    //   { name: 'image', maxCount: 20 },
+    //   { name: 'selectedImage', maxCount: 1 },
+    // ]),
     phoneCheckOnupdate,
     carController.updateOne,
   )
