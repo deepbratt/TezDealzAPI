@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const { ERRORS, ROLES } = require('@constants/tdb-constants');
+const { ERRORS } = require('@constants/tdb-constants');
 
 const userSchema = new mongoose.Schema(
   {
@@ -96,7 +96,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: 'User',
       enum: {
-        values: [ROLES.USERROLES.INDIVIDUAL, ROLES.USERROLES.MODERATOR, ROLES.USERROLES.ADMIN],
+        values: ['User', 'Moderator', 'Admin'],
         message: 'Role Must be User, Moderator or Admin',
       },
     },
