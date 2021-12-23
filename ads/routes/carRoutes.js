@@ -28,40 +28,23 @@ const { fileUpload, upload } = require('../utils/fileUpload');
 const router = express.Router();
 // const { isCached } = require('../utils/redisCache');
 
+router.route('/cities').get(countryStateProvince.getAllCities);
+
+router.route('/states').get(countryStateProvince.getAllStates);
+
+router.route('/cities/country-code/:countrycode').get(countryStateProvince.getCitiesOfCountry);
 
 router
-    .route('/all-cities')
-    .get(countryStateProvince.getAllCities);
+  .route('/cities/state-code/:stateCode/:countryCode')
+  .get(countryStateProvince.getCitiesOfState);
 
-
-router
-    .route('/all-states')
-    .get(countryStateProvince.getAllStates);
+router.route('/states/state-code/:stateCode').get(countryStateProvince.getStateByCode);
 
 router
-    .route('/cities/country-code/:countrycode')
-    .get(countryStateProvince.getCitiesOfCountry);
+  .route('/states/country-code/:stateCode/:countryCode')
+  .get(countryStateProvince.getStateByCodeAndCountry);
 
-router
-    .route('/cities/state-code/:stateCode/:countryCode')
-    .get(countryStateProvince.getCitiesOfState);
-
-router
-    .route('/states/state-code/:stateCode')
-    .get(countryStateProvince.getStateByCode);
-
-router
-    .route('/states/country-code/:stateCode/:countryCode')
-    .get(countryStateProvince.getStateByCodeAndCountry);
-
-router
-    .route('/states/country-code/:countryCode')
-    .get(countryStateProvince.getStatesOfCountry);
- 
-
-
-
-
+router.route('/states/country-code/:countryCode').get(countryStateProvince.getStatesOfCountry);
 
 // To post ads images directly to the S3 Bucket
 router
