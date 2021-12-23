@@ -95,8 +95,6 @@ typings/
 
 # dotenv environment variables file
 
-.env
-.env.test
 
 # parcel-bundler cache (https://parceljs.org/)
 
@@ -150,4 +148,5 @@ adsDataFile.json
 adsDataFileNew.json
 prodData.json
 prodDatabaseForCars.json
-
+data
+config.bat

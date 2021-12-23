@@ -4,7 +4,7 @@ info:
   version: '1.0.0'
   title: 'TezDeals'
 paths:
-  /v1/ads/cars/all-cities:
+  /v1/ads/cars/cities:
     get:
       tags:
         - 'Cities'
@@ -65,7 +65,7 @@ paths:
         '200':
           description: 'All cities based on state code and country code.'
 
-  /v1/ads/cars/all-states:
+  /v1/ads/cars/states:
     get:
       tags:
         - 'States'
@@ -124,8 +124,27 @@ paths:
           description: 'No states Found'
         '200':
           description: 'All states with matching state code and country code.'
+  /v1/ads/cars/states/country-code/{countryCode}:
+    get:
+      tags:
+        - 'States'
+      summary: 'use to get states using country code.'
+      description: ''
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'path'
+          name: 'countryCode'
+          required: true
+          type: 'string'
+      responses:
+        '404':
+          description: 'No states Found'
+        '200':
+          description: 'All states with matching country code.'
 
-  
   /v1/ads/cars/publish-ad/:{id}:
     patch:
       tags:
