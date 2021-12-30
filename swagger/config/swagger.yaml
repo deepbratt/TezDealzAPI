@@ -2466,6 +2466,12 @@ definitions:
         type: 'string'
       dateOfBirth:
         type: 'string'
+      about: 
+        type: 'string'
+      bannerImage:
+        type: 'string'
+      description:
+        type: 'string'
   UpdateMyPassword:
     type: object
     properties:
