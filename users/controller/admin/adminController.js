@@ -56,15 +56,26 @@ exports.updateUserProfile = catchAsync(async (req, res, next) => {
     return next(new AppError(ERRORS.INVALID.NOT_FOUND, STATUS_CODE.NOT_FOUND));
   }
   // Image Upload
-  if (req.file) {
+  if (req.files.image) {
     let { Location } = await uploadS3(
-      req.file,
+      req.files.image[0],
       process.env.AWS_BUCKET_REGION,
       process.env.AWS_ACCESS_KEY,
       process.env.AWS_SECRET_KEY,
       process.env.AWS_BUCKET_NAME,
     );
     req.body.image = Location;
+  }
+
+  if (req.files.bannerImage) {
+    let { Location } = await uploadS3(
+      req.files.bannerImage[0],
+      process.env.AWS_BUCKET_REGION,
+      process.env.AWS_ACCESS_KEY,
+      process.env.AWS_SECRET_KEY,
+      process.env.AWS_BUCKET_NAME,
+    );
+    req.body.bannerImage = Location;
   }
 
   // filter out fileds that cannot be updated e.g Role etc
@@ -76,6 +87,9 @@ exports.updateUserProfile = catchAsync(async (req, res, next) => {
       'lastName',
       'phone',
       'image',
+      'bannerImage',
+      'about',
+      'description',
       'gender',
       'country',
       'city',
@@ -88,6 +102,9 @@ exports.updateUserProfile = catchAsync(async (req, res, next) => {
       'lastName',
       'email',
       'image',
+      'bannerImage',
+      'about',
+      'description',
       'gender',
       'country',
       'city',

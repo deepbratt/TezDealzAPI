@@ -12,9 +12,9 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   }
 
   // Image Upload
-  if (req.file) {
+  if (req.files.image) {
     let { Location } = await uploadS3(
-      req.file,
+      req.files.image[0],
       process.env.AWS_BUCKET_REGION,
       process.env.AWS_ACCESS_KEY,
       process.env.AWS_SECRET_KEY,
@@ -23,6 +23,16 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     req.body.image = Location;
   }
 
+  if (req.files.bannerImage) {
+    let { Location } = await uploadS3(
+      req.files.bannerImage[0],
+      process.env.AWS_BUCKET_REGION,
+      process.env.AWS_ACCESS_KEY,
+      process.env.AWS_SECRET_KEY,
+      process.env.AWS_BUCKET_NAME,
+    );
+    req.body.bannerImage = Location;
+  }
   // filter out fileds that cannot be updated e.g Role etc
   let filteredBody;
   if (req.user.signedUpWithEmail) {
@@ -32,6 +42,9 @@ exports.updateMe = catchAsync(async (req, res, next) => {
       'lastName',
       'phone',
       'image',
+      'bannerImage',
+      'about',
+      'description',
       'gender',
       'country',
       'city',
@@ -44,6 +57,9 @@ exports.updateMe = catchAsync(async (req, res, next) => {
       'lastName',
       'email',
       'image',
+      'bannerImage',
+      'about',
+      'description',
       'gender',
       'country',
       'city',
@@ -68,7 +84,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
 // User can also delete/inactive himself
 exports.deleteMe = catchAsync(async (req, res, next) => {
-  await Users.findByIdAndUpdate(req.user.id, { active: false });
+  await Users.findByIdAndUpdate(req.user._id, { active: false });
 
   res.status(STATUS_CODE.OK).json({
     status: STATUS.SUCCESS,

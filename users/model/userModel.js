@@ -102,6 +102,15 @@ const userSchema = new mongoose.Schema(
         message: ERRORS.INVALID.ROLE_SIGNUP,
       },
     },
+    bannerImage: {
+      type: String,
+    },
+    about: {
+      type: String,
+    },
+    description: {
+      type: String,
+    },
     // isVerified: {
     // 	type: Boolean,
     // 	default: false,
