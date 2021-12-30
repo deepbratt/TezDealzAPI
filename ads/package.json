@@ -1,6 +1,6 @@
 {
 	"name": "ads",
-	"version": "1.0.103",
+	"version": "1.0.104",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
@@ -13,7 +13,7 @@
 		"@auth/tdb-auth": "^1.0.2",
 		"@constants/tdb-constants": "^1.0.46",
 		"@supercharge/request-ip": "^1.1.2",
-		"@utils/tdb_globalutils": "^1.0.107",
+		"@utils/tdb_globalutils": "^1.0.110",
 		"amqplib": "^0.8.0",
 		"aws-sdk": "^2.1022.0",
 		"axios": "^0.21.1",
@@ -23,6 +23,7 @@
 		"dotenv": "^10.0.0",
 		"express": "^4.17.1",
 		"fast-csv": "^4.3.6",
+		"jimp": "^0.16.1",
 		"jsonwebtoken": "^8.5.1",
 		"moment": "^2.29.1",
 		"mongoose": "^5.13.2",

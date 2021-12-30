@@ -16,7 +16,7 @@ const {
   //   continueGoogleRules,
   //   continueFaceBookRules,
 } = require('../utils/validations');
-const { upload } = require('@utils/tdb_globalutils');
+const { upload, multipleUploads } = require('@utils/tdb_globalutils');
 
 const router = express.Router();
 router.post('/signup', signupRules, validationFunction, authController.signup);
@@ -52,7 +52,14 @@ router.post(
 router.patch('/updateMyPassword', validationFunction, authController.updatePassword);
 
 // Update Current User's Data
-router.patch('/updateMe', upload('image').single('image'), userController.updateMe);
+router.patch(
+  '/updateMe',
+  multipleUploads('image', 'application').fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'bannerImage', maxCount: 1 },
+  ]),
+  userController.updateMe,
+);
 
 // Delete/Inactive Current User
 router.delete('/deleteMe', userController.deleteMe);
@@ -109,7 +116,13 @@ router
 router
   .route('/:id')
   .get(adminController.getUser)
-  .patch(upload('image').single('image'), adminController.updateUserProfile)
+  .patch(
+    multipleUploads('image', 'application').fields([
+      { name: 'image', maxCount: 1 },
+      { name: 'bannerImage', maxCount: 1 },
+    ]),
+    adminController.updateUserProfile,
+  )
   .delete(adminController.deleteUser);
 router
   .route('/updateUserPassword/:id')

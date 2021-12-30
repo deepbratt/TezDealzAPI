@@ -20,7 +20,7 @@ const {
   phoneCheckOnCreate,
   phoneCheckOnupdate,
 } = require('../middleware/cars/index');
-// const { upload } = require('@utils/tdb_globalutils');
+const { multipleUploads } = require('@utils/tdb_globalutils');
 const { ROLES } = require('@constants/tdb-constants');
 const { fileUpload, upload } = require('../utils/fileUpload');
 //const cache = require('../utils/cache');
@@ -51,7 +51,7 @@ router
   .route('/car-images')
   .post(
     authenticate(User),
-    fileUpload('image', 'application').fields([
+    multipleUploads('image', 'application').fields([
       { name: 'image', maxCount: 20 },
       { name: 'selectedImage', maxCount: 1 },
     ]),
@@ -77,7 +77,7 @@ router
   .post(
     authenticate(User),
     restrictTo(ROLES.USERROLES.ADMIN, ROLES.USERROLES.MODERATOR),
-    fileUpload('text', 'application').single('csvFile'),
+    multipleUploads('text', 'application').single('csvFile'),
     bulkUploadsController.createBulkUploadAds,
   );
 router
@@ -429,16 +429,7 @@ router
     checkIsLoggedIn(User), //cache(cacheExp),
     carController.getOne,
   )
-  .patch(
-    authenticate(User),
-    permessionCheck,
-    // fileUpload('image', 'application').fields([
-    //   { name: 'image', maxCount: 20 },
-    //   { name: 'selectedImage', maxCount: 1 },
-    // ]),
-    phoneCheckOnupdate,
-    carController.updateOne,
-  )
+  .patch(authenticate(User), permessionCheck, phoneCheckOnupdate, carController.updateOne)
   .delete(authenticate(User), permessionCheck, carController.deleteOne);
 /////////////////////////////////////////////////////////////////////////////////////////////
 //city filter
