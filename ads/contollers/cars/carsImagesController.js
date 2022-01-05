@@ -2,10 +2,12 @@ const CarImages = require('../../models/cars/carsImages/carsImagesModel');
 const { AppError, catchAsync, uploadS3WithTag } = require('@utils/tdb_globalutils');
 const { STATUS, STATUS_CODE, SUCCESS_MSG, ERRORS, ROLES } = require('@constants/tdb-constants');
 const { filter } = require('../factory/factoryHandler');
+var sizeOf = require('image-size');
 
 exports.imageUploader = catchAsync(async (req, res, next) => {
   let arrayOfImages = [];
   let selectedImage;
+  let errorImage = [];
 
   if (req.files.selectedImage) {
     let { Location, Key } = await uploadS3WithTag(
@@ -20,14 +22,18 @@ exports.imageUploader = catchAsync(async (req, res, next) => {
 
   if (req.files.image) {
     for (var i = 0; i < req.files.image.length; i++) {
-      let { Location, Key } = await uploadS3WithTag(
-        req.files.image[i],
-        process.env.AWS_BUCKET_REGION,
-        process.env.AWS_ACCESS_KEY,
-        process.env.AWS_SECRET_KEY,
-        process.env.AWS_BUCKET_NAME,
-      );
-      arrayOfImages.push({ reference: Key, location: Location });
+      if(sizeOf.width <= 1080 || sizeOf.height <=720){
+        let { Location, Key } = await uploadS3(
+          req.files.image[i],
+          process.env.AWS_BUCKET_REGION,
+          process.env.AWS_ACCESS_KEY,
+          process.env.AWS_SECRET_KEY,
+          process.env.AWS_BUCKET_NAME,
+        );
+        arrayOfImages.push({ reference: Key, location: Location });  
+      }else{
+        errorImage.push(req.files.image[i]);
+      }
     }
   }
   const result = await CarImages.create({
@@ -36,13 +42,23 @@ exports.imageUploader = catchAsync(async (req, res, next) => {
     selectedImage: selectedImage,
   });
 
-  res.status(STATUS_CODE.CREATED).json({
-    stats: STATUS.SUCCESS,
-    message: 'Images Uploaded Successfully',
-    data: {
-      result,
-    },
-  });
+  if(errorImage.length == 0){
+    res.status(STATUS_CODE.CREATED).json({
+      stats: STATUS.SUCCESS,
+      message: 'Images Uploaded Successfully',
+      data: {
+        result,
+      },
+    });
+  }else{
+    res.status(STATUS_CODE.CREATED).json({
+      stats: 209,
+      message: 'Images are in lower resolution than expected',
+      data: {
+        errorImage,
+      },
+    });
+  }
 });
 
 exports.getAllCarImages = catchAsync(async (req, res, next) => {
