@@ -1,6 +1,6 @@
-const Appointments = require('../models/appointmentsModel');
-const { AppError, catchAsync, uploadS3, APIFeatures } = require('@utils/tdb_globalutils');
-const { ERRORS, STATUS, STATUS_CODE, SUCCESS_MSG } = require('@constants/tdb-constants');
+const Appointments = require('../models/appointments/inspectionAppointmentModel');
+const { AppError, catchAsync } = require('@utils/tdb_globalutils');
+const { ERRORS, STATUS_CODE } = require('@constants/tdb-constants');
 
 exports.permessionCheck = catchAsync(async (req, res, next) => {
   const currentUserId = req.user._id;
