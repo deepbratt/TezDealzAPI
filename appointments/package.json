@@ -10,8 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "@auth/tdb-auth": "^1.0.2",
-    "@constants/tdb-constants": "^1.0.46",
-    "@utils/tdb_globalutils": "^1.0.110",
+    "@constants/tdb-constants": "^1.0.37",
+    "@utils/tdb_globalutils": "^1.0.102",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
     "cookie-session": "^1.4.0",

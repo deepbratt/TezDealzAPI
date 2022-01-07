@@ -1,42 +1,26 @@
 const express = require('express');
 const User = require('../models/User/userModel');
-const appointmentsController = require('../controllers/appointments/inspectionAppointment');
+const appointmentsController = require('../controllers/appointments/appointmentsController');
 const { checkIsLoggedIn, authenticate, restrictTo } = require('@auth/tdb-auth');
 const { permessionCheck } = require('../middlewares/index');
 
 const router = express.Router();
 
-router.post(
-  '/car_inspection',
-  checkIsLoggedIn(User),
-  appointmentsController.createInspectionAppointment,
-);
+router.post('/', checkIsLoggedIn(User), appointmentsController.createAppointment);
 
 router.use(authenticate(User));
 
-router.patch(
-  '/cancel-inspection/:id',
-  permessionCheck,
-  appointmentsController.cancelInspectionAppointment,
-);
-router.patch(
-  '/reopen-inspection/:id',
-  permessionCheck,
-  appointmentsController.reOpenInspectionAppointment,
-);
+router.patch('/cancel-appointment/:id', permessionCheck, appointmentsController.cancelAppointment);
+router.patch('/reopen-appointment/:id', permessionCheck, appointmentsController.reOpenAppointment);
 
-router.get('/my_inspection_appointments', appointmentsController.getMyInspectionAppointments);
+router.get('/my-appointments', appointmentsController.getMine);
 
-router.get(
-  '/car_inspection',
-  restrictTo('Admin', 'Moderator'),
-  appointmentsController.getAllInspectionAppointments,
-);
+router.get('/', restrictTo('Admin', 'Moderator'), appointmentsController.getAllAppointments);
 
 router
-  .route('/car_inspection/:id')
-  .get(restrictTo('Admin', 'Moderator'), appointmentsController.getOneInspectionAppointment)
-  .patch(restrictTo('Admin', 'Moderator'), appointmentsController.updateInspectionAppointment)
-  .delete(restrictTo('Admin', 'Moderator'), appointmentsController.deleteInspectionAppointment);
+  .route('/:id')
+  .get(restrictTo('Admin', 'Moderator'), appointmentsController.getOneAppointment)
+  .patch(restrictTo('Admin', 'Moderator'), appointmentsController.updateAppointment)
+  .delete(restrictTo('Admin', 'Moderator'), appointmentsController.deleteAppointment);
 
 module.exports = router;
