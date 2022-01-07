@@ -1,11 +1,11 @@
 version: '3.5'
 services:
-  # appointments:
-  #   build: './appointments'
-  #   ports:
-  #     - '3006:3006'
-  #   networks:
-  #     - ms_network
+  appointments:
+    build: './appointments'
+    ports:
+      - '3006:3006'
+    networks:
+      - ms_network
   swagger:
     build: './swagger'
     ports:
