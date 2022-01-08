@@ -54,7 +54,7 @@ router.patch('/updateMyPassword', validationFunction, authController.updatePassw
 // Update Current User's Data
 router.patch(
   '/updateMe',
-  multipleUploads('image', 'application').fields([
+  upload('image', 'application').fields([
     { name: 'image', maxCount: 1 },
     { name: 'bannerImage', maxCount: 1 },
   ]),
@@ -117,7 +117,7 @@ router
   .route('/:id')
   .get(adminController.getUser)
   .patch(
-    multipleUploads('image', 'application').fields([
+    upload('image', 'application').fields([
       { name: 'image', maxCount: 1 },
       { name: 'bannerImage', maxCount: 1 },
     ]),
