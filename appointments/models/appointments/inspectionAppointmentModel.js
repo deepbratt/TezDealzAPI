@@ -1,5 +1,15 @@
 const mongoose = require('mongoose');
 
+const LocationSchema = mongoose.Schema({
+  city: String,
+  address: String,
+});
+
+const AppointmentTimeSchema = mongoose.Schema({
+  startTime: String,
+  endTime: String,
+})
+
 const appointmentsSchema = new mongoose.Schema(
   {
     user_id: {
@@ -11,17 +21,28 @@ const appointmentsSchema = new mongoose.Schema(
       ref: 'Car',
     },
     carLocation: {
-      type: String,
+      type: LocationSchema,
       required: true,
+    },
+    inspectionLocation:{
+      type: String,
+      default: 'carlocation',
+      enum: {
+        values: ['carlocation', 'dealerlocation'],
+        message: 'Please Enter Valid inspection location.',
+      },
     },
     firstName: {
       type: String,
+      required:true,
     },
     lastName: {
       type: String,
+      required:true,
     },
     phone: {
       type: String,
+      required:true,
     },
     userAvailability: {
       type: String,
@@ -30,7 +51,13 @@ const appointmentsSchema = new mongoose.Schema(
       type: String,
     },
     appointmentTime: {
+      type: AppointmentTimeSchema,
+    },
+    appointmentDate:{
       type: String,
+    },
+    appointmentSlot:{
+      type:String,
     },
     mechanicAssigned: {
       type: Boolean,
