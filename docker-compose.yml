@@ -26,6 +26,14 @@ services:
       - users
     networks:
       - ms_network
+  ecommerce:
+    build: './ecommerce'
+    ports:
+      - '3007:3007'
+    depends_on:
+      - users
+    networks:
+      - ms_network
   tickets:
     build: './tickets'
     ports:
@@ -45,7 +53,7 @@ services:
       - ads
       - swagger
       - tickets
-      # - appointments
+      - appointments
     networks:
       - ms_network
 networks:
