@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const LocationSchema = mongoose.Schema({
   city: String,
+  province: String,
   address: String,
 });
 
@@ -58,6 +59,37 @@ const appointmentsSchema = new mongoose.Schema(
     },
     appointmentSlot:{
       type:String,
+    },
+    carModel: {
+      type: String,
+      required: [true, ERRORS.REQUIRED.CAR_MODEL_REQUIRED],
+    },
+    modelYear: {
+      type: Number,
+      min: [1960, ERRORS.INVALID.INVALID_MODEL_YEAR],
+      max: [Number(new Date().getFullYear()), ERRORS.INVALID.INVALID_MODEL_YEAR],
+      required: [true, ERRORS.REQUIRED.MODEL_YEAR_REQUIRED],
+    },
+    carMake: {
+      type: String,
+      required: [true, ERRORS.REQUIRED.CAR_MAKE_REQUIRED],
+    },
+    bodyColor: {
+      type: String,
+      required: [true, ERRORS.REQUIRED.BODY_COLOR_REQUIRED],
+    },
+    engineType: {
+      type: String,
+      required: [true, ERRORS.REQUIRED.ENGINE_TYPE_REQUIRED],
+      trim: true,
+    },
+    transmission: {
+      type: String,
+      required: [true, ERRORS.REQUIRED.TRANSMISSION_TYPE_REQUIRED],
+      enum: {
+        values: ['Manual', 'Automatic'],
+        message: ERRORS.INVALID.INVALID_TRANSMISSION_TYPE,
+      },
     },
     mechanicAssigned: {
       type: Boolean,
