@@ -27,6 +27,24 @@ const carsSchema = new mongoose.Schema(
       address: String,
       required: false,
     },
+    adType:{
+      type: String,
+      required: [true, ERRORS.REQUIRED.AD_TYPE_REQUIRED],
+      enum: {
+        values: ['Sell', 'Rental'],
+        message: ERRORS.INVALID.INVALID_CONDITION,
+      },
+    },
+    rentType:{
+      type: String,
+      enum:{
+        values: ["Daily", "Weekly", "Monthly"],
+        message: ERRORS.INVALID.INVALID_CONDITION,
+      }
+    },
+    rentalCharge:{
+      type: Number
+    },
     createdBy: {
       type: mongoose.Schema.ObjectId,
       ref: 'User',
